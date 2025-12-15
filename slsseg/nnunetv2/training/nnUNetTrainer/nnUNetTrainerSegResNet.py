@@ -25,6 +25,8 @@ class nnUNetTrainerSegResNet(nnUNetTrainerNoDeepSupervision):
         self.grad_scaler = None
         self.initial_lr = 1e-4
         self.weight_decay = 1e-5
+        self.save_every = 5 # before 50
+        self.num_epochs = 150 # before 1000
 
     @staticmethod
     def build_network_architecture(plans_manager: PlansManager,

@@ -1,0 +1,7 @@
+DATASET_ID="333"
+CONFIGURATION="3d_fullres"
+FOLD="all"
+TRAINER="nnUNetTrainer_TverskyBCE"
+DEVICE="cuda"
+
+nnUNetv2_train $DATASET_ID $CONFIGURATION $FOLD -tr $TRAINER -device $DEVICE
