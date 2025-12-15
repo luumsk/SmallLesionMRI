@@ -15,12 +15,11 @@ setup(name='nnunetv2',
           "dynamic-network-architectures>=0.2",
           "tqdm",
           "dicom2nifti",
-          "scikit-image>=0.14",
           "medpy",
           "scipy",
           "batchgenerators>=0.25",
-          "numpy",
-          "scikit-learn",
+          "numpy==1.26.4",
+          "scikit-learn==1.7.2",
           "scikit-image>=0.19.3",
           "SimpleITK>=2.2.1",
           "pandas",
@@ -33,7 +32,7 @@ setup(name='nnunetv2',
           "imagecodecs",
           "yacs",
           "monai==1.3.0",
-          "opencv-python"
+          "opencv-python==4.7.0.72"
       ],
       entry_points={
           'console_scripts': [
