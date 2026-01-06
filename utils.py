@@ -18,7 +18,9 @@ from scipy.ndimage import (
 # -------------------------------------------
 # Utility functions for lesion analysis
 # -------------------------------------------
-def connected_components(mask):
+def connected_components(mask,
+                         rank: int = 3,
+                         connectivity: int = 1) -> tuple[np.ndarray, int]:
     """
     Computes connected components in a 3D binary mask.
 
@@ -30,7 +32,7 @@ def connected_components(mask):
         - labeled_mask (numpy.ndarray): A 3D array where each connected component is assigned a unique integer label.
         - num_components (int): The number of connected components found in the mask.
     """
-    structure = generate_binary_structure(rank=3, connectivity=3)  # 26-connectivity
+    structure = generate_binary_structure(rank=rank, connectivity=connectivity)  # 26-connectivity
     labeled_mask, num_components = label(mask, structure=structure)
     return labeled_mask, num_components
 
