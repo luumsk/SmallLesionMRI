@@ -451,20 +451,55 @@ def boundary_band_gradient_sharpness(
     image: np.ndarray,
     mask: np.ndarray,
     spacing: Tuple[float, float, float] = (1.0, 1.0, 1.0),
-    sigma: float = 1.0,
+    sigma_mm: float = 1.0,
     band_iters: int = 1,
+    summary: str = "median",
 ) -> Dict[str, float]:
-    """
-    Sharpness = gradient magnitude sampled in a thin band around lesion
-    (inside + outside). Connectivity is 26 via 3x3x3 structuring element.
+    """Compute lesion-boundary sharpness using gradient magnitude in a band.
 
-    band_iters controls band thickness in voxels.
+    This metric samples the image gradient magnitude in a thin band around the
+    lesion boundary (inside + outside). Higher values generally indicate a
+    sharper boundary (stronger intensity change across the edge).
+
+    IMPORTANT
+    ---------
+    - For a *single-lesion* sharpness, `mask` must contain only that lesion.
+      (e.g., `mask = (lesion_label_map == lesion_id)`.)
+    - To compare across subjects/scans, prefer using an intensity-normalized
+      image (e.g., brain-masked z-score) as `image`.
+
+    Parameters
+    ----------
+    image:
+        3D image array in (X, Y, Z) order.
+    mask:
+        3D binary mask of ONE lesion.
+    spacing:
+        (sx, sy, sz) voxel spacing in millimeters, matching (X, Y, Z).
+    sigma_mm:
+        Optional Gaussian smoothing in millimeters to reduce noise before
+        gradient computation. Use 0 to disable.
+    band_iters:
+        Band thickness in voxels (morphological iterations).
+    summary:
+        Which single-number summary to return as `sharpness`.
+        One of: "median", "mean", "p90", "p95", "max", "trimmed_mean".
+
+    Returns
+    -------
+    Dict[str, float]
+        Contains descriptive stats plus a single scalar `sharpness`.
     """
     if image.ndim != 3 or mask.ndim != 3:
         raise ValueError("image and mask must be 3D arrays")
 
-    image = image.astype(np.float32)
-    mask = mask.astype(bool)
+    if len(spacing) != 3:
+        raise ValueError("spacing must be a length-3 tuple (sx, sy, sz)")
+    if any(float(s) <= 0 for s in spacing):
+        raise ValueError(f"spacing must be positive, got {spacing}")
+
+    image_f = image.astype(np.float32, copy=False)
+    mask_b = mask.astype(bool, copy=False)
 
     if band_iters < 1:
         raise ValueError("band_iters must be >= 1")
@@ -472,35 +507,246 @@ def boundary_band_gradient_sharpness(
     structure = np.ones((3, 3, 3), dtype=bool)  # 26-connectivity
 
     # Inner boundary band: mask \ erode(mask)
-    eroded = binary_erosion(mask, structure=structure, iterations=band_iters)
-    inner_band = mask & (~eroded)
+    eroded = binary_erosion(mask_b, structure=structure,
+                            iterations=band_iters)
+    inner_band = mask_b & (~eroded)
 
     # Outer neighbor band: dilate(mask) \ mask
-    dilated = binary_dilation(mask, structure=structure, iterations=band_iters)
-    outer_band = dilated & (~mask)
+    dilated = binary_dilation(mask_b, structure=structure,
+                              iterations=band_iters)
+    outer_band = dilated & (~mask_b)
 
     band = inner_band | outer_band
-    if band.sum() == 0:
+    if int(band.sum()) == 0:
         raise ValueError("Band is empty. Check mask or band_iters.")
 
-    if sigma > 0:
-        image = gaussian_filter(image, sigma=sigma)
+    # Gaussian smoothing: convert millimeters -> voxel sigmas per axis.
+    if sigma_mm and float(sigma_mm) > 0:
+        sigmas = tuple(float(sigma_mm) / float(sp) for sp in spacing)
+        image_f = gaussian_filter(image_f, sigma=sigmas)
 
-    gz = sobel(image, axis=0) / float(spacing[0])
-    gy = sobel(image, axis=1) / float(spacing[1])
-    gx = sobel(image, axis=2) / float(spacing[2])
+    # Gradients along (X, Y, Z) with spacing normalization.
+    gx = sobel(image_f, axis=0) / float(spacing[0])
+    gy = sobel(image_f, axis=1) / float(spacing[1])
+    gz = sobel(image_f, axis=2) / float(spacing[2])
 
-    grad_mag = np.sqrt(gz * gz + gy * gy + gx * gx)
+    grad_mag = np.sqrt(gx * gx + gy * gy + gz * gz)
     values = grad_mag[band]
+
+    if values.size == 0:
+        raise ValueError("No gradient values found in band.")
+
+    p10 = float(np.percentile(values, 10))
+    p90 = float(np.percentile(values, 90))
+    p95 = float(np.percentile(values, 95))
+
+    # A single robust scalar for downstream grouping/comparison.
+    if summary == "median":
+        sharpness = float(np.median(values))
+    elif summary == "mean":
+        sharpness = float(values.mean())
+    elif summary == "p90":
+        sharpness = p90
+    elif summary == "p95":
+        sharpness = p95
+    elif summary == "max":
+        sharpness = float(values.max())
+    elif summary == "trimmed_mean":
+        # Mean of the upper tail: focuses on strongest edge voxels.
+        sharpness = float(values[values >= p90].mean())
+    else:
+        raise ValueError(
+            "summary must be one of: 'median', 'mean', 'p90', 'p95', "
+            "'max', 'trimmed_mean'"
+        )
 
     stats = {
         "n_band_voxels": int(values.size),
+        "sharpness": sharpness,
         "mean": float(values.mean()),
         "median": float(np.median(values)),
         "std": float(values.std(ddof=0)),
-        "p10": float(np.percentile(values, 10)),
-        "p90": float(np.percentile(values, 90)),
+        "p10": p10,
+        "p90": p90,
+        "p95": p95,
         "max": float(values.max()),
     }
     return stats
+
+
+# Helper: scalar-only wrapper
+def boundary_sharpness_scalar(
+    image: np.ndarray,
+    lesion_mask: np.ndarray,
+    spacing: Tuple[float, float, float] = (1.0, 1.0, 1.0),
+    sigma_mm: float = 1.0,
+    band_iters: int = 1,
+    summary: str = "median",
+) -> float:
+    """Convenience wrapper that returns only the scalar sharpness."""
+    stats = boundary_band_gradient_sharpness(
+        image=image,
+        mask=lesion_mask,
+        spacing=spacing,
+        sigma_mm=sigma_mm,
+        band_iters=band_iters,
+        summary=summary,
+    )
+    return float(stats["sharpness"])
+
+
+def visualize_boundary_sharpness(
+    image: np.ndarray,
+    lesion_mask: np.ndarray,
+    spacing: Tuple[float, float, float] = (1.0, 1.0, 1.0),
+    sigma_mm: float = 1.0,
+    band_iters: int = 1,
+    summary: str = "median",
+    margin: int = 3,
+    show_full_context: bool = False,
+    alpha: float = 0.55,
+    vmax_percentile: float = 99.0,
+    show_hist: bool = True,
+) -> None:
+    """Visualize lesion boundary sharpness as a band-limited heatmap.
+
+    This visualization matches `boundary_band_gradient_sharpness`:
+    - builds a boundary band (inside + outside)
+    - computes gradient magnitude (optionally after mm-based smoothing)
+    - overlays gradient magnitude in the band as a heatmap
+    - draws the lesion contour in red and band contour in yellow
+
+    Notes
+    -----
+    - Arrays are assumed to be in (X, Y, Z) order.
+    - `lesion_mask` should contain only ONE lesion.
+    """
+    if image.shape != lesion_mask.shape:
+        raise ValueError(
+            "image and lesion_mask must have the same shape, "
+            f"got {image.shape} vs {lesion_mask.shape}"
+        )
+
+    lesion_b = lesion_mask.astype(bool, copy=False)
+    if int(lesion_b.sum()) == 0:
+        raise ValueError("lesion_mask is empty")
+
+    # Compute scalar stats (keeps metric + viz consistent).
+    stats = boundary_band_gradient_sharpness(
+        image=image,
+        mask=lesion_b,
+        spacing=spacing,
+        sigma_mm=sigma_mm,
+        band_iters=band_iters,
+        summary=summary,
+    )
+
+    # Recompute band + grad magnitude for visualization.
+    structure = np.ones((3, 3, 3), dtype=bool)  # 26-connectivity
+    eroded = binary_erosion(lesion_b, structure=structure,
+                            iterations=band_iters)
+    inner_band = lesion_b & (~eroded)
+    dilated = binary_dilation(lesion_b, structure=structure,
+                              iterations=band_iters)
+    outer_band = dilated & (~lesion_b)
+    band = inner_band | outer_band
+
+    image_f = image.astype(np.float32, copy=False)
+    if sigma_mm and float(sigma_mm) > 0:
+        sigmas = tuple(float(sigma_mm) / float(sp) for sp in spacing)
+        image_f = gaussian_filter(image_f, sigma=sigmas)
+
+    gx = sobel(image_f, axis=0) / float(spacing[0])
+    gy = sobel(image_f, axis=1) / float(spacing[1])
+    gz = sobel(image_f, axis=2) / float(spacing[2])
+    grad_mag = np.sqrt(gx * gx + gy * gy + gz * gz)
+
+    # Crop around lesion for readability.
+    bbox = _get_bbox(lesion_b.astype(np.uint8), margin=margin)
+    if bbox is None:
+        raise ValueError("Could not compute bounding box for lesion")
+
+    img_crop = image_f[bbox]
+    msk_crop = lesion_b[bbox]
+    band_crop = band[bbox]
+    grad_crop = grad_mag[bbox]
+
+    # Optional full-FOV axial context for ID sanity checks.
+    if show_full_context:
+        coords = np.where(lesion_b)
+        zc = int(np.round(coords[2].mean()))
+        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+        ax.imshow(image[:, :, zc].T, cmap="gray", origin="lower")
+        ax.contour(lesion_b[:, :, zc].T, colors="red", linewidths=1)
+        ax.set_title(f"Full FOV axial (z={zc}, axis=2)")
+        ax.axis("off")
+        plt.tight_layout()
+        plt.show()
+
+    # Choose consistent orthogonal slices through lesion centroid.
+    coords_c = np.where(msk_crop)
+    center = np.array(coords_c).mean(axis=1).astype(int)
+    x, y, z = int(center[0]), int(center[1]), int(center[2])
+
+    views = [
+        (img_crop[x, :, :], msk_crop[x, :, :], band_crop[x, :, :],
+         grad_crop[x, :, :], "Sagittal (x, axis=0)"),
+        (img_crop[:, y, :], msk_crop[:, y, :], band_crop[:, y, :],
+         grad_crop[:, y, :], "Coronal (y, axis=1)"),
+        (img_crop[:, :, z], msk_crop[:, :, z], band_crop[:, :, z],
+         grad_crop[:, :, z], "Axial (z, axis=2)"),
+    ]
+
+    # Scale heatmap for readability.
+    band_vals = grad_crop[band_crop]
+    if band_vals.size == 0:
+        raise ValueError("Band is empty after cropping")
+
+    vmax = float(np.percentile(band_vals, vmax_percentile))
+    if vmax <= 0:
+        vmax = float(band_vals.max())
+
+    title = (
+        f"Boundary sharpness ({summary}) = {stats['sharpness']:.3f} | "
+        f"n_band={stats['n_band_voxels']} | sigma_mm={sigma_mm} | "
+        f"band_iters={band_iters}"
+    )
+
+    fig, axes = plt.subplots(1, 3, figsize=(13, 4))
+    fig.suptitle(title)
+
+    for ax, (img2d, msk2d, band2d, g2d, name) in zip(axes, views):
+        ax.imshow(img2d.T, cmap="gray", origin="lower")
+
+        # Heatmap only in the band (else transparent).
+        heat = np.full_like(g2d, np.nan, dtype=np.float32)
+        heat[band2d] = g2d[band2d].astype(np.float32, copy=False)
+        ax.imshow(
+            heat.T,
+            cmap="magma",
+            origin="lower",
+            alpha=alpha,
+            vmin=0.0,
+            vmax=vmax,
+        )
+
+        if np.any(msk2d):
+            ax.contour(msk2d.T, colors="red", linewidths=1)
+        if np.any(band2d):
+            ax.contour(band2d.T, colors="yellow", linewidths=1)
+
+        ax.set_title(name)
+        ax.axis("off")
+
+    plt.tight_layout()
+    plt.show()
+
+    if show_hist:
+        fig, ax = plt.subplots(1, 1, figsize=(5, 3))
+        ax.hist(band_vals.astype(np.float32), bins=40)
+        ax.set_title("Gradient magnitude in boundary band")
+        ax.set_xlabel("|∇I| (a.u.)")
+        ax.set_ylabel("Count")
+        plt.tight_layout()
+        plt.show()
 
