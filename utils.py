@@ -172,23 +172,48 @@ def lesion_background_ring(
 ) -> np.ndarray:
     """
     Create a perilesional background ring mask.
+
+    Notes
+    -----
+    The previous dilation-based implementation used `iterations=max(rad)` which
+    can over/under-grow the ring when voxel spacing is anisotropic and can make
+    the ring size depend on lesion size in voxel space.
+
+    This implementation uses an exact Euclidean distance transform in
+    millimeters (via `sampling=spacing_mm`) to create a ring of thickness
+    `ring_mm` around the lesion.
+
+    The ring is defined as voxels that are:
+    - outside the lesion, and
+    - within `ring_mm` of the lesion boundary, and
+    - optionally inside `brain_mask`.
     """
-    rad = [
-        max(1, int(np.ceil(ring_mm / float(sp))))
-        for sp in spacing_mm
-    ]
+    if lesion_mask.ndim != 3:
+        raise ValueError(
+            f"lesion_mask must be 3D, got shape {lesion_mask.shape}"
+        )
 
-    struct = ndi.generate_binary_structure(rank=3, connectivity=1)
-    dilated = ndi.binary_dilation(
-        lesion_mask,
-        structure=struct,
-        iterations=max(rad),
-    )
+    lesion_b = lesion_mask.astype(bool, copy=False)
+    if int(lesion_b.sum()) == 0:
+        return np.zeros_like(lesion_b, dtype=bool)
 
-    ring = np.logical_and(dilated, np.logical_not(lesion_mask))
+    if len(spacing_mm) != 3:
+        raise ValueError(
+            "spacing_mm must be a length-3 tuple (sx, sy, sz)"
+        )
+    if any(float(sp) <= 0 for sp in spacing_mm):
+        raise ValueError(f"spacing_mm must be positive, got {spacing_mm}")
+
+    if float(ring_mm) <= 0:
+        raise ValueError(f"ring_mm must be > 0, got {ring_mm}")
+
+    # Distance (in mm) to the nearest lesion voxel.
+    dist_mm = ndi.distance_transform_edt(~lesion_b, sampling=spacing_mm)
+
+    ring = (dist_mm > 0.0) & (dist_mm <= float(ring_mm))
 
     if brain_mask is not None:
-        ring = np.logical_and(ring, brain_mask)
+        ring = ring & brain_mask.astype(bool, copy=False)
 
     return ring
 
@@ -204,6 +229,11 @@ def local_robust_cnr(
     """
     I_L = image_norm[lesion_mask > 0]
     I_B = image_norm[ring_mask > 0]
+
+    # For tiny lesions/rings, medians and MAD can be unstable.
+    # Return NaN to avoid interpreting noise as low/high contrast.
+    if I_L.size < 10 or I_B.size < 50:
+        return float("nan")
 
     if I_L.size == 0 or I_B.size == 0:
         return float("nan")
@@ -440,7 +470,7 @@ def visualize_lesion_contrast(
             img_crop,
             mask_crop,
             title=(
-                f"Lesion {lid} | Contrast = {val:.3f} | Volume={int(mask_crop.sum())}"
+                f"Lesion {lid} | Contrast = {val:.3f} | Voxels={int(mask_crop.sum())}"
             ),
             ring_mask=ring_crop,
         )
