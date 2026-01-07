@@ -1,9 +1,17 @@
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional, Callable, Sequence
 from dataclasses import dataclass
 from typing import Iterable
 
+import csv
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
+
+try:
+    import nibabel as nib
+except Exception:  # pragma: no cover
+    nib = None
 
 from scipy import ndimage as ndi
 from scipy.ndimage import (
@@ -781,4 +789,198 @@ def visualize_boundary_sharpness(
         ax.set_ylabel("Count")
         plt.tight_layout()
         plt.show()
+
+
+# -------------------------------------------
+# End-to-end lesion table + CSV export
+# -------------------------------------------
+
+def _load_nifti_array_and_spacing(
+    path: str | Path,
+) -> tuple[np.ndarray, tuple[float, float, float]]:
+    """Load a NIfTI file and return (data, spacing_mm).
+
+    Notes
+    -----
+    - Requires nibabel. If nibabel is not installed, this raises an error.
+    - Returns arrays in the file's stored axis order. This code assumes your
+      volumes are already aligned to the (X, Y, Z) convention used elsewhere
+      in this module.
+    """
+    if nib is None:
+        raise ImportError(
+            "nibabel is required to load NIfTI files. Install with: "
+            "pip install nibabel"
+        )
+
+    img = nib.load(str(path))
+    data = np.asarray(img.get_fdata())
+
+    zooms = img.header.get_zooms()
+    if len(zooms) < 3:
+        raise ValueError(
+            f"Expected at least 3 zoom values, got {zooms} for {path}"
+        )
+
+    spacing_mm = (float(zooms[0]), float(zooms[1]), float(zooms[2]))
+    return data, spacing_mm
+
+
+def lesion_metrics_to_csv(
+    image_path: str | Path,
+    mask_path: str | Path,
+    out_csv: str | Path,
+    brain_mask_path: str | Path | None = None,
+    *,
+    connectivity: int = 3,
+    ring_mm: float = 3.0,
+    cnr_eps: float = 1e-8,
+    sigma_mm: float = 1.0,
+    band_iters: int = 1,
+    sharpness_summary: str = "median",
+    normalize: bool = True,
+) -> list[dict[str, float]]:
+    """Compute per-lesion metrics (volume, contrast, sharpness) and write a CSV.
+
+    Steps
+    -----
+    1) Load image + lesion mask (NIfTI)
+    2) Connected components on the binary lesion mask -> lesion IDs (1..N)
+    3) For each lesion:
+       - volume (mm^3)
+       - local robust contrast (LCNR) using a perilesional ring
+       - boundary sharpness via gradient magnitude in a thin boundary band
+
+    CSV columns
+    -----------
+    lesion_id, volume_mm3, contrast, sharpness
+
+    Notes
+    -----
+    - Contrast/sharpness are computed on `image_norm` (brain/foreground z-score).
+    - Small lesions or rings may return NaN for contrast (see `local_robust_cnr`).
+    """
+    image, spacing_mm = _load_nifti_array_and_spacing(image_path)
+    mask, _ = _load_nifti_array_and_spacing(mask_path)
+
+    if image.shape != mask.shape:
+        raise ValueError(
+            "image and mask must have the same shape, "
+            f"got {image.shape} vs {mask.shape}"
+        )
+
+    # Binary lesion mask (0 = background, 1 = lesion). This is what we label.
+    lesion_mask_bin = (mask > 0).astype(np.uint8)
+
+    if int(lesion_mask_bin.sum()) == 0:
+        # No lesions -> write an empty CSV with header and return.
+        out_path = Path(out_csv)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        with out_path.open("w", newline="") as f:
+            writer = csv.DictWriter(
+                f,
+                fieldnames=["lesion_id", "volume_mm3", "contrast", "sharpness"],
+            )
+            writer.writeheader()
+        return []
+
+    # Brain/foreground mask used for normalization and for restricting the
+    # perilesional background ring. If not provided, we derive it with fallbacks.
+    brain_mask_bin: np.ndarray | None = None
+    if brain_mask_path is not None:
+        brain_mask_bin, _ = _load_nifti_array_and_spacing(brain_mask_path)
+        if brain_mask_bin.shape != image.shape:
+            raise ValueError(
+                "brain_mask must have the same shape as image, "
+                f"got {brain_mask_bin.shape} vs {image.shape}"
+            )
+        brain_mask_bin = (brain_mask_bin > 0).astype(np.uint8)
+
+    # Normalize intensities for more comparable contrast/sharpness.
+    # We normalize *within brain/foreground* so background does not dominate.
+    if normalize:
+        if brain_mask_bin is None:
+            # Preferred heuristic (fast): background is exactly 0.
+            brain_mask_bin = (image > 0).astype(np.uint8)
+
+        # Rollbacks / safety checks (avoid empty mask -> NaNs).
+        if int(brain_mask_bin.sum()) == 0:
+            # Some pipelines can produce non-positive foreground; use non-zero.
+            brain_mask_bin = (image != 0).astype(np.uint8)
+
+        if int(brain_mask_bin.sum()) == 0:
+            # As a last resort, normalize over full FOV (not ideal).
+            brain_mask_bin = np.ones_like(lesion_mask_bin, dtype=np.uint8)
+
+        image_norm = zscore_normalize(image, brain_mask_bin)
+    else:
+        image_norm = image.astype(np.float32, copy=False)
+
+    lesion_label_map, num_lesions = connected_components(
+        lesion_mask_bin,
+        rank=3,
+        connectivity=connectivity,
+    )
+
+    rows: list[dict[str, float]] = []
+
+    for lesion_id in range(1, int(num_lesions) + 1):
+        lesion_mask = (lesion_label_map == lesion_id)
+
+        # Volume
+        volume_mm3 = compute_lesion_volume(
+            lesion_mask.astype(np.uint8),
+            zoom=spacing_mm,
+            unit="mm3",
+        )
+
+        # Local robust CNR (LCNR)
+        ring_mask = lesion_background_ring(
+            lesion_mask=lesion_mask.astype(np.uint8),
+            ring_mm=ring_mm,
+            spacing_mm=spacing_mm,
+            brain_mask=brain_mask_bin,
+        )
+        contrast = local_robust_cnr(
+            image_norm=image_norm,
+            lesion_mask=lesion_mask,
+            ring_mask=ring_mask,
+            eps=cnr_eps,
+        )
+
+        # Boundary sharpness
+        try:
+            sharpness = boundary_sharpness_scalar(
+                image=image_norm,
+                lesion_mask=lesion_mask,
+                spacing=spacing_mm,
+                sigma_mm=sigma_mm,
+                band_iters=band_iters,
+                summary=sharpness_summary,
+            )
+        except ValueError:
+            sharpness = float("nan")
+
+        rows.append(
+            {
+                "lesion_id": float(lesion_id),
+                "volume_mm3": float(volume_mm3),
+                "contrast": float(contrast),
+                "sharpness": float(sharpness),
+            }
+        )
+
+    out_path = Path(out_csv)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with out_path.open("w", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["lesion_id", "volume_mm3", "contrast", "sharpness"],
+        )
+        writer.writeheader()
+        for r in rows:
+            writer.writerow(r)
+
+    return rows
 
