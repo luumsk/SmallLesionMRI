@@ -26,7 +26,7 @@ class nnUNetTrainer_TverskyBCE(nnUNetTrainer):
         super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
         
         self.initial_lr = 1e-2
-        self.num_epochs = 100
+        self.num_epochs = 150
         self.save_every = 5
         self.disable_checkpointing = False
     
