@@ -6,8 +6,6 @@ import torch.nn as nn
 
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 
-
-
 def _safe_squeeze_target(target: torch.Tensor) -> torch.Tensor:
     """Normalize nnUNet targets to integer label maps.
 
@@ -182,6 +180,14 @@ class nnUNetTrainerCAT(nnUNetTrainer):
     CPU SciPy call for simplicity.
     """
 
+    # NOTE:
+    # nnUNet v2 stores trainer constructor arguments in `self.my_init_kwargs`.
+    # The base `nnUNetTrainer.__init__` populates that dict from *its own*
+    # `locals()`. If this subclass adds extra `__init__` parameters (e.g.,
+    # alpha/beta), the base class will attempt to read them and crash with a
+    # KeyError. Therefore, keep the same signature as the base trainer and
+    # store CAT hyperparameters as attributes.
+
     def __init__(
         self,
         plans: dict,
@@ -190,13 +196,6 @@ class nnUNetTrainerCAT(nnUNetTrainer):
         dataset_json: dict,
         unpack_dataset: bool = True,
         device: torch.device = torch.device('cuda'),
-        alpha: float = 0.3,
-        beta: float = 0.7,
-        gamma: float = 1.0,
-        eps_cc: float = 5.0,
-        w_bg: float = 0.1,
-        lambda_cat: float = 0.3,
-        connectivity: int = 1,
     ) -> None:
         super().__init__(
             plans=plans,
@@ -206,6 +205,16 @@ class nnUNetTrainerCAT(nnUNetTrainer):
             unpack_dataset=unpack_dataset,
             device=device,
         )
+
+        # CAT hyperparameters
+        alpha = 0.3
+        beta = 0.7
+        gamma = 1.0
+        eps_cc = 5.0
+        w_bg = 0.1
+        connectivity = 1
+        lambda_cat = 0.3
+
         self._cat_params = {
             'alpha': float(alpha),
             'beta': float(beta),

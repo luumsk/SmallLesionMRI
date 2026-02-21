@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
 import torch
 import torch.nn as nn
 
-from nnunetv2.training.loss.deep_supervision import DeepSupervisionWrapper
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainerCAT import (
     ComponentAdaptiveTverskyLoss,
@@ -79,6 +77,14 @@ class nnUNetTrainerCATMIL(nnUNetTrainer):
     transfers inside the loss.
     """
 
+    # NOTE:
+    # nnUNet v2 stores trainer constructor arguments in `self.my_init_kwargs`.
+    # The base `nnUNetTrainer.__init__` populates that dict from *its own*
+    # `locals()`. If this subclass adds extra `__init__` parameters (e.g.,
+    # alpha/beta/lambda_*), the base class may attempt to read them and crash
+    # with a KeyError. Therefore, keep the same signature as the base trainer
+    # and store CAT/MIL hyperparameters as attributes.
+
     def __init__(
         self,
         plans: dict,
@@ -87,14 +93,6 @@ class nnUNetTrainerCATMIL(nnUNetTrainer):
         dataset_json: dict,
         unpack_dataset: bool = True,
         device: torch.device = torch.device('cuda'),
-        alpha: float = 0.3,
-        beta: float = 0.7,
-        gamma: float = 1.0,
-        eps_cc: float = 5.0,
-        w_bg: float = 0.1,
-        lambda_cat: float = 0.3,
-        lambda_mil: float = 0.2,
-        connectivity: int = 1,
     ) -> None:
         super().__init__(
             plans=plans,
@@ -104,6 +102,17 @@ class nnUNetTrainerCATMIL(nnUNetTrainer):
             unpack_dataset=unpack_dataset,
             device=device,
         )
+
+        # CAT + MIL hyperparameters
+        alpha = 0.3
+        beta = 0.7
+        gamma = 1.0
+        eps_cc = 5.0
+        w_bg = 0.1
+        lambda_cat = 0.3
+        lambda_mil = 0.2
+        connectivity = 1
+
         self.lambda_cat = float(lambda_cat)
         self._catmil_params = {
             'alpha': float(alpha),

@@ -7,7 +7,6 @@ import torch.nn as nn
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 
 
-
 def _safe_squeeze_target(target: torch.Tensor) -> torch.Tensor:
     """Normalize nnUNet targets to integer label maps.
 
@@ -150,6 +149,14 @@ class nnUNetTrainerMIL(nnUNetTrainer):
     the CPU data pipeline to avoid GPU->CPU transfers.
     """
 
+    # NOTE:
+    # nnUNet v2 stores trainer constructor arguments in `self.my_init_kwargs`.
+    # The base `nnUNetTrainer.__init__` populates that dict from *its own*
+    # `locals()`. If this subclass adds extra `__init__` parameters (e.g.,
+    # lambda_mil/connectivity), the base class may attempt to read them and
+    # crash with a KeyError. Therefore, keep the same signature as the base
+    # trainer and store MIL hyperparameters as attributes.
+
     def __init__(
         self,
         plans: dict,
@@ -158,8 +165,6 @@ class nnUNetTrainerMIL(nnUNetTrainer):
         dataset_json: dict,
         unpack_dataset: bool = True,
         device: torch.device = torch.device('cuda'),
-        lambda_mil: float = 0.2,
-        connectivity: int = 1,
     ) -> None:
         super().__init__(
             plans=plans,
@@ -169,6 +174,11 @@ class nnUNetTrainerMIL(nnUNetTrainer):
             unpack_dataset=unpack_dataset,
             device=device,
         )
+
+        # MIL hyperparameters
+        lambda_mil = 0.2
+        connectivity = 1
+
         self.lambda_mil = float(lambda_mil)
         self.connectivity = int(connectivity)
 
