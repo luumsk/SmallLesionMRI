@@ -1,0 +1,584 @@
+
+
+"""Multiscale evaluation for small-lesion segmentation.
+
+This script matches ground-truth masks (*.nii.gz) with model predictions
+(predicted mask *.nii.gz and probability *.npz), computes per-case metrics,
+then saves results to a CSV.
+
+Assumptions
+-----------
+- Ground-truth masks are binary (0/1) in NIfTI format.
+- Predicted masks are binary (0/1) in NIfTI format.
+- Probability files are *.npz and contain either:
+    - key "probabilities" (shape: [C, X, Y, Z] or [X, Y, Z])
+    - key "softmax" (shape: [C, X, Y, Z])
+    - a single unnamed array (first key) with the above shapes
+  For binary segmentation, if C=2, foreground probability is channel 1.
+
+Metrics
+-------
+- Dice (voxel overlap)
+- HD95 (95th percentile Hausdorff distance, surface-to-surface)
+- ASSD (average symmetric surface distance)
+- Lesion-wise precision/recall/F1 (connected components)
+- Small-lesion recall (lesions with volume <= threshold)
+- Uncertainty (mean entropy within GT lesions)
+- Calibration (Brier score, ECE within union ROI)
+
+Run
+---
+python multiscale_eval.py \
+  --gt_dir /path/to/gt \
+  --pred_mask_dir /path/to/pred_masks \
+  --pred_prob_dir /path/to/pred_probs \
+  --out_csv results.csv
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import math
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional, Tuple
+
+import nibabel as nib
+import numpy as np
+import pandas as pd
+from scipy import ndimage
+
+
+EPS = 1e-8
+
+
+@dataclass(frozen=True)
+class CasePaths:
+    """Paths for a single case."""
+
+    case_id: str
+    gt_path: Path
+    pred_mask_path: Path
+    pred_prob_path: Optional[Path]
+
+
+def _stem_niigz(path: Path) -> str:
+    """Return filename stem for .nii.gz (case id)."""
+
+    name = path.name
+    if name.endswith(".nii.gz"):
+        return name[: -len(".nii.gz")]
+    return path.stem
+
+
+def _list_niigz(folder: Path) -> List[Path]:
+    return sorted([p for p in folder.glob("*.nii.gz") if p.is_file()])
+
+
+def _list_npz(folder: Path) -> List[Path]:
+    return sorted([p for p in folder.glob("*.npz") if p.is_file()])
+
+
+def build_case_table(
+    gt_dir: Path,
+    pred_mask_dir: Path,
+    pred_prob_dir: Optional[Path],
+    allow_missing_prob: bool,
+) -> List[CasePaths]:
+    """Match GT masks with predicted masks and optional probability files."""
+
+    gt_paths = _list_niigz(gt_dir)
+    pred_paths = _list_niigz(pred_mask_dir)
+
+    gt_map = {_stem_niigz(p): p for p in gt_paths}
+    pred_map = {_stem_niigz(p): p for p in pred_paths}
+
+    prob_map: Dict[str, Path] = {}
+    if pred_prob_dir is not None:
+        for p in _list_npz(pred_prob_dir):
+            prob_map[p.stem] = p
+
+    shared = sorted(set(gt_map.keys()) & set(pred_map.keys()))
+    if not shared:
+        raise ValueError(
+            "No matching case ids found between GT and prediction masks. "
+            "Check filenames and extensions (.nii.gz)."
+        )
+
+    cases: List[CasePaths] = []
+    for case_id in shared:
+        prob_path = prob_map.get(case_id)
+        if prob_path is None and not allow_missing_prob:
+            raise FileNotFoundError(
+                f"Missing probability .npz for case '{case_id}'."
+            )
+        cases.append(
+            CasePaths(
+                case_id=case_id,
+                gt_path=gt_map[case_id],
+                pred_mask_path=pred_map[case_id],
+                pred_prob_path=prob_path,
+            )
+        )
+
+    return cases
+
+
+def load_nii_mask(path: Path) -> Tuple[np.ndarray, Tuple[float, float, float]]:
+    """Load NIfTI as a boolean mask and return voxel spacing (mm)."""
+
+    img = nib.load(str(path))
+    data = np.asanyarray(img.dataobj)
+    mask = data.astype(np.float32) > 0.5
+
+    hdr = img.header
+    zooms = hdr.get_zooms()
+    if len(zooms) < 3:
+        raise ValueError(f"Invalid zooms for 3D image: {path}")
+
+    spacing = (float(zooms[0]), float(zooms[1]), float(zooms[2]))
+    return mask, spacing
+
+
+def load_npz_probability(path: Path) -> np.ndarray:
+    """Load foreground probability volume from a .npz file."""
+
+    obj = np.load(str(path))
+    keys = list(obj.keys())
+    if not keys:
+        raise ValueError(f"Empty npz file: {path}")
+
+    if "probabilities" in obj:
+        arr = obj["probabilities"]
+    elif "softmax" in obj:
+        arr = obj["softmax"]
+    else:
+        arr = obj[keys[0]]
+
+    arr = np.asarray(arr)
+
+    if arr.ndim == 3:
+        fg = arr
+    elif arr.ndim == 4:
+        # Expect [C, X, Y, Z]
+        if arr.shape[0] == 1:
+            fg = arr[0]
+        elif arr.shape[0] >= 2:
+            fg = arr[1]
+        else:
+            raise ValueError(f"Unexpected probability shape: {arr.shape}")
+    else:
+        raise ValueError(f"Unexpected probability array ndim: {arr.ndim}")
+
+    fg = np.clip(fg.astype(np.float32), 0.0, 1.0)
+    return fg
+
+
+def dice_score(gt: np.ndarray, pred: np.ndarray) -> float:
+    """Dice for binary masks."""
+
+    gt_sum = float(gt.sum())
+    pr_sum = float(pred.sum())
+    if gt_sum + pr_sum == 0.0:
+        return 1.0
+    inter = float(np.logical_and(gt, pred).sum())
+    return (2.0 * inter) / (gt_sum + pr_sum + EPS)
+
+
+def _surface_voxels(mask: np.ndarray) -> np.ndarray:
+    """Return a boolean mask of surface voxels for a binary object."""
+
+    if mask.sum() == 0:
+        return np.zeros_like(mask, dtype=bool)
+
+    struct = ndimage.generate_binary_structure(rank=3, connectivity=1)
+    eroded = ndimage.binary_erosion(mask, structure=struct, iterations=1)
+    surface = np.logical_and(mask, np.logical_not(eroded))
+    return surface
+
+
+def _surface_distances_mm(
+    src_surface: np.ndarray,
+    dst_mask: np.ndarray,
+    spacing: Tuple[float, float, float],
+) -> np.ndarray:
+    """Distances (mm) from each src surface voxel to nearest dst surface."""
+
+    if src_surface.sum() == 0 or dst_mask.sum() == 0:
+        return np.array([], dtype=np.float32)
+
+    dst_surface = _surface_voxels(dst_mask)
+    if dst_surface.sum() == 0:
+        return np.array([], dtype=np.float32)
+
+    # Distance transform on the complement of dst surface.
+    dt = ndimage.distance_transform_edt(
+        np.logical_not(dst_surface), sampling=spacing
+    )
+    dists = dt[src_surface]
+    return dists.astype(np.float32)
+
+
+def hd95_mm(
+    gt: np.ndarray,
+    pred: np.ndarray,
+    spacing: Tuple[float, float, float],
+) -> float:
+    """HD95 in mm using symmetric surface distances."""
+
+    if gt.sum() == 0 and pred.sum() == 0:
+        return 0.0
+    if gt.sum() == 0 or pred.sum() == 0:
+        return float("inf")
+
+    s_gt = _surface_voxels(gt)
+    s_pr = _surface_voxels(pred)
+    d1 = _surface_distances_mm(s_gt, pred, spacing)
+    d2 = _surface_distances_mm(s_pr, gt, spacing)
+    if d1.size == 0 or d2.size == 0:
+        return float("inf")
+
+    all_d = np.concatenate([d1, d2], axis=0)
+    return float(np.percentile(all_d, 95))
+
+
+def assd_mm(
+    gt: np.ndarray,
+    pred: np.ndarray,
+    spacing: Tuple[float, float, float],
+) -> float:
+    """ASSD in mm using symmetric surface distances."""
+
+    if gt.sum() == 0 and pred.sum() == 0:
+        return 0.0
+    if gt.sum() == 0 or pred.sum() == 0:
+        return float("inf")
+
+    s_gt = _surface_voxels(gt)
+    s_pr = _surface_voxels(pred)
+    d1 = _surface_distances_mm(s_gt, pred, spacing)
+    d2 = _surface_distances_mm(s_pr, gt, spacing)
+    if d1.size == 0 or d2.size == 0:
+        return float("inf")
+
+    return float((d1.mean() + d2.mean()) / 2.0)
+
+
+def _label_cc(mask: np.ndarray) -> Tuple[np.ndarray, int]:
+    struct = ndimage.generate_binary_structure(rank=3, connectivity=2)
+    lab, n = ndimage.label(mask, structure=struct)
+    return lab.astype(np.int32), int(n)
+
+
+def lesion_detection_metrics(
+    gt: np.ndarray,
+    pred: np.ndarray,
+    small_voxels_thresh: int,
+) -> Dict[str, float]:
+    """Lesion-wise metrics using connected components.
+
+    A predicted lesion is a TP if it overlaps any GT lesion (>=1 voxel).
+
+    Returns
+    -------
+    - lesion_precision, lesion_recall, lesion_f1
+    - gt_lesion_count, pred_lesion_count
+    - small_lesion_recall (GT lesions <= small_voxels_thresh)
+    """
+
+    gt_lab, gt_n = _label_cc(gt)
+    pr_lab, pr_n = _label_cc(pred)
+
+    gt_sizes = np.bincount(gt_lab.ravel())
+    pr_sizes = np.bincount(pr_lab.ravel())
+
+    # Skip background label 0
+    gt_ids = list(range(1, gt_n + 1))
+    pr_ids = list(range(1, pr_n + 1))
+
+    gt_hit = set()
+    pr_hit = set()
+
+    if gt_n > 0 and pr_n > 0:
+        overlap_pairs = np.unique(
+            np.stack([gt_lab[gt], pr_lab[gt]], axis=1), axis=0
+        )
+        # overlap_pairs rows are [gt_id, pr_id] for voxels where gt==1.
+        for gt_id, pr_id in overlap_pairs:
+            if gt_id == 0 or pr_id == 0:
+                continue
+            gt_hit.add(int(gt_id))
+            pr_hit.add(int(pr_id))
+
+    tp_gt = len(gt_hit)
+    tp_pr = len(pr_hit)
+
+    recall = tp_gt / (gt_n + EPS)
+    precision = tp_pr / (pr_n + EPS)
+    f1 = (2.0 * precision * recall) / (precision + recall + EPS)
+
+    # Small-lesion recall (GT lesions with volume <= threshold)
+    small_gt_ids = [
+        i for i in gt_ids if int(gt_sizes[i]) <= int(small_voxels_thresh)
+    ]
+    if len(small_gt_ids) == 0:
+        small_recall = float("nan")
+    else:
+        small_hit = sum([1 for i in small_gt_ids if i in gt_hit])
+        small_recall = small_hit / (len(small_gt_ids) + EPS)
+
+    return {
+        "gt_lesion_count": float(gt_n),
+        "pred_lesion_count": float(pr_n),
+        "lesion_precision": float(precision),
+        "lesion_recall": float(recall),
+        "lesion_f1": float(f1),
+        "small_lesion_recall": float(small_recall),
+    }
+
+
+def mean_entropy_in_mask(prob: np.ndarray, mask: np.ndarray) -> float:
+    """Mean Bernoulli entropy inside a mask (numerically stable).
+
+    Notes
+    -----
+    - Handles NaN/Inf values in `prob`.
+    - Avoids log(0) and the resulting 0 * -inf -> NaN.
+    """
+
+    if mask.sum() == 0:
+        return float("nan")
+
+    p = prob[mask].astype(np.float32)
+    p = p[np.isfinite(p)]
+    if p.size == 0:
+        return float("nan")
+
+    p = np.clip(p, EPS, 1.0 - EPS)
+    ent = -(p * np.log(p) + (1.0 - p) * np.log(1.0 - p))
+    return float(np.mean(ent))
+
+
+def brier_score(prob: np.ndarray, gt: np.ndarray, roi: np.ndarray) -> float:
+    if roi.sum() == 0:
+        return float("nan")
+    p = prob[roi].astype(np.float32)
+    y = gt[roi].astype(np.float32)
+    return float(np.mean((p - y) ** 2))
+
+
+def expected_calibration_error(
+    prob: np.ndarray,
+    gt: np.ndarray,
+    roi: np.ndarray,
+    n_bins: int,
+    max_points: int,
+    seed: int,
+) -> float:
+    """ECE for binary classification within ROI.
+
+    This subsamples points to keep runtime reasonable.
+    """
+
+    idx = np.flatnonzero(roi.ravel())
+    if idx.size == 0:
+        return float("nan")
+
+    rng = np.random.default_rng(seed)
+    if idx.size > max_points:
+        idx = rng.choice(idx, size=max_points, replace=False)
+
+    p = prob.ravel()[idx].astype(np.float32)
+    y = gt.ravel()[idx].astype(np.float32)
+
+    bins = np.linspace(0.0, 1.0, n_bins + 1)
+    ece = 0.0
+    for i in range(n_bins):
+        lo, hi = float(bins[i]), float(bins[i + 1])
+        in_bin = (p >= lo) & (p < hi) if i < n_bins - 1 else (p >= lo)
+        if not np.any(in_bin):
+            continue
+        conf = float(np.mean(p[in_bin]))
+        acc = float(np.mean(y[in_bin]))
+        w = float(np.mean(in_bin))
+        ece += w * abs(acc - conf)
+
+    return float(ece)
+
+
+def compute_case_metrics(
+    gt: np.ndarray,
+    pred: np.ndarray,
+    spacing: Tuple[float, float, float],
+    prob: Optional[np.ndarray],
+    small_voxels_thresh: int,
+    ece_bins: int,
+    ece_max_points: int,
+    ece_seed: int,
+) -> Dict[str, float]:
+    metrics: Dict[str, float] = {}
+
+    metrics["dice"] = dice_score(gt, pred)
+    metrics["hd95_mm"] = hd95_mm(gt, pred, spacing)
+    metrics["assd_mm"] = assd_mm(gt, pred, spacing)
+
+    metrics.update(
+        lesion_detection_metrics(
+            gt=gt,
+            pred=pred,
+            small_voxels_thresh=small_voxels_thresh,
+        )
+    )
+
+    if prob is None:
+        metrics["mean_entropy_gt"] = float("nan")
+        metrics["brier_union"] = float("nan")
+        metrics["ece_union"] = float("nan")
+        return metrics
+
+    # ROI: union of GT and prediction to focus on relevant voxels.
+    roi = np.logical_or(gt, pred)
+
+    metrics["mean_entropy_gt"] = mean_entropy_in_mask(prob, gt)
+    metrics["brier_union"] = brier_score(prob, gt, roi)
+    metrics["ece_union"] = expected_calibration_error(
+        prob=prob,
+        gt=gt,
+        roi=roi,
+        n_bins=ece_bins,
+        max_points=ece_max_points,
+        seed=ece_seed,
+    )
+    return metrics
+
+
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(
+        description="Compute multiscale segmentation metrics and save CSV."
+    )
+    p.add_argument(
+        "--gt_dir",
+        type=str,
+        required=True,
+        help="Folder with ground-truth masks (*.nii.gz).",
+    )
+    p.add_argument(
+        "--pred_mask_dir",
+        type=str,
+        required=True,
+        help="Folder with predicted masks (*.nii.gz).",
+    )
+    p.add_argument(
+        "--pred_prob_dir",
+        type=str,
+        default=None,
+        help="Folder with predicted probabilities (*.npz). Optional.",
+    )
+    p.add_argument(
+        "--out_csv",
+        type=str,
+        required=True,
+        help="Output CSV path.",
+    )
+    p.add_argument(
+        "--allow_missing_prob",
+        action="store_true",
+        help="Allow missing npz probabilities (fills NaN columns).",
+    )
+    p.add_argument(
+        "--small_voxels_thresh",
+        type=int,
+        default=50,
+        help="Threshold (in voxels) to define small GT lesions.",
+    )
+    p.add_argument(
+        "--ece_bins",
+        type=int,
+        default=15,
+        help="Number of bins for ECE.",
+    )
+    p.add_argument(
+        "--ece_max_points",
+        type=int,
+        default=200000,
+        help="Max voxels sampled for ECE to control runtime.",
+    )
+    p.add_argument(
+        "--ece_seed",
+        type=int,
+        default=123,
+        help="Random seed used for ECE subsampling.",
+    )
+    return p.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+
+    gt_dir = Path(args.gt_dir)
+    pred_mask_dir = Path(args.pred_mask_dir)
+    pred_prob_dir = Path(args.pred_prob_dir) if args.pred_prob_dir else None
+
+    cases = build_case_table(
+        gt_dir=gt_dir,
+        pred_mask_dir=pred_mask_dir,
+        pred_prob_dir=pred_prob_dir,
+        allow_missing_prob=bool(args.allow_missing_prob),
+    )
+
+    rows: List[Dict[str, float]] = []
+    for case in cases:
+        gt, spacing = load_nii_mask(case.gt_path)
+        pred, _ = load_nii_mask(case.pred_mask_path)
+
+        if gt.shape != pred.shape:
+            raise ValueError(
+                f"Shape mismatch for case '{case.case_id}': "
+                f"gt={gt.shape} pred={pred.shape}"
+            )
+
+        prob: Optional[np.ndarray] = None
+        if case.pred_prob_path is not None:
+            prob = load_npz_probability(case.pred_prob_path)
+            if prob.shape != gt.shape:
+                raise ValueError(
+                    f"Probability shape mismatch for case '{case.case_id}': "
+                    f"prob={prob.shape} gt={gt.shape}"
+                )
+
+        metrics = compute_case_metrics(
+            gt=gt,
+            pred=pred,
+            spacing=spacing,
+            prob=prob,
+            small_voxels_thresh=int(args.small_voxels_thresh),
+            ece_bins=int(args.ece_bins),
+            ece_max_points=int(args.ece_max_points),
+            ece_seed=int(args.ece_seed),
+        )
+
+        row: Dict[str, float] = {"case_id": case.case_id}
+        row.update(metrics)
+        rows.append(row)
+
+    df = pd.DataFrame(rows)
+    out_path = Path(args.out_csv)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(out_path, index=False, quoting=csv.QUOTE_MINIMAL)
+
+    # Also print a quick summary.
+    numeric_cols = [c for c in df.columns if c != "case_id"]
+    summary = df[numeric_cols].mean(numeric_only=True)
+    print(f"Saved per-case metrics to: {out_path}")
+    print("Mean metrics (over cases):")
+    for k, v in summary.to_dict().items():
+        if isinstance(v, float) and math.isfinite(v):
+            print(f"  {k}: {v:.5f}")
+        else:
+            print(f"  {k}: {v}")
+
+
+if __name__ == "__main__":
+    main()
