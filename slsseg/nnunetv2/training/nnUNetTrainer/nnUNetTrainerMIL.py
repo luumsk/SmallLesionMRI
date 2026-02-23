@@ -106,33 +106,43 @@ class SmallLesionMILLoss(nn.Module):
             # No foreground in this patch: no lesion-level MIL signal.
             return fg_prob.new_tensor(0.0)
 
+        # Connected components are computed from GT on CPU (constant wrt model),
+        # but the MIL score (max prob inside each component) must be computed
+        # on the *non-detached* probability map to keep gradients.
         gt_cpu = gt_fg.detach().cpu().numpy().astype(np.uint8)
-        p_cpu = fg_prob.detach().cpu().numpy().astype(np.float32)[:, 0]
 
         if gt_cpu.ndim == 3:
             gt_cpu = gt_cpu[None]
-            p_cpu = p_cpu[None]
 
-        losses = []
+        losses_t = []
         for b in range(gt_cpu.shape[0]):
             struct = ndi.generate_binary_structure(
                 gt_cpu[b].ndim,
                 self.connectivity,
             )
-            lab, num = ndi.label(gt_cpu[b], structure=struct)
+            lab_np, num = ndi.label(gt_cpu[b], structure=struct)
             if num == 0:
                 continue
+
+            lab = torch.from_numpy(lab_np).to(
+                device=fg_prob.device,
+                dtype=torch.int64,
+            )
+
             for k in range(1, num + 1):
                 mask = lab == k
-                if not np.any(mask):
+                if not bool(mask.any()):
                     continue
-                m = float(p_cpu[b][mask].max())
-                losses.append(-np.log(max(m, self.eps)))
 
-        if len(losses) == 0:
+                # Differentiable max over the component.
+                m = fg_prob[b, 0][mask].max()
+                m = torch.clamp(m, min=self.eps)
+                losses_t.append(-torch.log(m))
+
+        if len(losses_t) == 0:
             return fg_prob.new_tensor(0.0)
 
-        return fg_prob.new_tensor(float(np.mean(losses)))
+        return torch.stack(losses_t, dim=0).mean()
 
 
 class nnUNetTrainerMIL(nnUNetTrainer):

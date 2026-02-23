@@ -10,60 +10,6 @@ from nnunetv2.training.nnUNetTrainer.nnUNetTrainerCAT import (
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainerMIL import SmallLesionMILLoss
 
 
-
-class CATAndMILLoss(nn.Module):
-    """Combined CAT + MIL loss for small lesion sensitivity.
-
-    This combines:
-    - ComponentAdaptiveTverskyLoss (CAT): lesion-balanced overlap objective
-    - SmallLesionMILLoss (MIL): lesion-level detection surrogate
-
-    Notes
-    -----
-    - The underlying CAT and MIL implementations rely on SciPy connected
-      components inside their loss computations (CPU). This is intended as a
-      simplest/ablation implementation. After validation, you can optimize by
-      computing component information in the CPU data pipeline.
-    """
-
-    def __init__(
-        self,
-        alpha: float = 0.3,
-        beta: float = 0.7,
-        gamma: float = 1.0,
-        eps_cc: float = 5.0,
-        w_bg: float = 0.1,
-        smooth: float = 1e-5,
-        lambda_mil: float = 0.2,
-        connectivity: int = 1,
-    ) -> None:
-        super().__init__()
-        self.cat = ComponentAdaptiveTverskyLoss(
-            alpha=alpha,
-            beta=beta,
-            gamma=gamma,
-            eps_cc=eps_cc,
-            w_bg=w_bg,
-            smooth=smooth,
-            connectivity=connectivity,
-        )
-        self.mil = SmallLesionMILLoss(
-            eps=1e-6,
-            connectivity=connectivity,
-        )
-        self.lambda_mil = float(lambda_mil)
-
-    def forward(
-        self,
-        net_output: torch.Tensor,
-        target: torch.Tensor,
-    ) -> torch.Tensor:
-        return (
-            self.cat(net_output, target)
-            + self.lambda_mil * self.mil(net_output, target)
-        )
-
-
 class nnUNetTrainerCATMIL(nnUNetTrainer):
     """nnUNet trainer variant using combined CAT + MIL loss.
 
@@ -108,12 +54,16 @@ class nnUNetTrainerCATMIL(nnUNetTrainer):
         beta = 0.7
         gamma = 1.0
         eps_cc = 5.0
-        w_bg = 0.1
-        lambda_cat = 0.3
+        w_bg = 0.01
+        lambda_cat = 0.1
         lambda_mil = 0.2
         connectivity = 1
 
         self.lambda_cat = float(lambda_cat)
+        self.lambda_cat_final = float(lambda_cat)
+        self.lambda_cat_warmup_epochs = 50
+        self.lambda_cat = 0.0
+
         self._catmil_params = {
             'alpha': float(alpha),
             'beta': float(beta),
@@ -124,6 +74,18 @@ class nnUNetTrainerCATMIL(nnUNetTrainer):
             'lambda_mil': float(lambda_mil),
             'connectivity': int(connectivity),
         }
+
+    def on_train_epoch_start(self) -> None:
+        super().on_train_epoch_start()
+
+        warmup = int(self.lambda_cat_warmup_epochs)
+        if warmup <= 0:
+            self.lambda_cat = float(self.lambda_cat_final)
+            return
+
+        # nnUNet uses 0-based epochs.
+        t = min(max(self.current_epoch, 0), warmup) / float(warmup)
+        self.lambda_cat = float(t * self.lambda_cat_final)
 
     def _build_loss(self) -> nn.Module:
         base = super()._build_loss()
@@ -140,7 +102,6 @@ class nnUNetTrainerCATMIL(nnUNetTrainer):
             eps=1e-6,
             connectivity=self._catmil_params['connectivity'],
         )
-        lambda_cat = float(self._catmil_params['lambda_cat'])
         lambda_mil = float(self._catmil_params['lambda_mil'])
 
         class _CATMILWrappedLoss(nn.Module):
@@ -149,14 +110,14 @@ class nnUNetTrainerCATMIL(nnUNetTrainer):
                 base_loss: nn.Module,
                 cat_loss: nn.Module,
                 mil_loss: nn.Module,
-                lambda_cat_: float,
+                trainer_ref: nnUNetTrainer,
                 lambda_mil_: float,
             ) -> None:
                 super().__init__()
                 self.base_loss = base_loss
                 self.cat_loss = cat_loss
                 self.mil_loss = mil_loss
-                self.lambda_cat = float(lambda_cat_)
+                self.trainer = trainer_ref
                 self.lambda_mil = float(lambda_mil_)
 
             def forward(self, net_output, target) -> torch.Tensor:
@@ -172,7 +133,7 @@ class nnUNetTrainerCATMIL(nnUNetTrainer):
 
                 return (
                     self.base_loss(net_output, target)
-                    + self.lambda_cat * self.cat_loss(out, tgt)
+                    + float(self.trainer.lambda_cat) * self.cat_loss(out, tgt)
                     + self.lambda_mil * self.mil_loss(out, tgt)
                 )
 
@@ -180,6 +141,6 @@ class nnUNetTrainerCATMIL(nnUNetTrainer):
             base,
             cat,
             mil,
-            lambda_cat,
+            self,
             lambda_mil,
         )

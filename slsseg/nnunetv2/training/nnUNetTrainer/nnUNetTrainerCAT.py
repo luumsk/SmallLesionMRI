@@ -158,9 +158,10 @@ class ComponentAdaptiveTverskyLoss(nn.Module):
         w = w.unsqueeze(1)
 
         spatial_dims = list(range(2, fg_prob.ndim))
-        tp = (w * fg_prob * gt_fg.unsqueeze(1)).sum(dim=spatial_dims)
-        fp = (w * fg_prob * (1.0 - gt_fg.unsqueeze(1))).sum(dim=spatial_dims)
-        fn = (w * (1.0 - fg_prob) * gt_fg.unsqueeze(1)).sum(dim=spatial_dims)
+        gt = gt_fg.unsqueeze(1)
+        tp = (w * fg_prob * gt).sum(dim=spatial_dims)
+        fp = (w * fg_prob * (1.0 - gt)).sum(dim=spatial_dims)
+        fn = (w * (1.0 - fg_prob) * gt).sum(dim=spatial_dims)
 
         num = tp + self.smooth
         den = tp + self.alpha * fp + self.beta * fn + self.smooth
@@ -211,9 +212,9 @@ class nnUNetTrainerCAT(nnUNetTrainer):
         beta = 0.7
         gamma = 1.0
         eps_cc = 5.0
-        w_bg = 0.1
+        w_bg = 0.01
         connectivity = 1
-        lambda_cat = 0.3
+        lambda_cat = 0.1
 
         self._cat_params = {
             'alpha': float(alpha),
@@ -224,6 +225,21 @@ class nnUNetTrainerCAT(nnUNetTrainer):
             'connectivity': int(connectivity),
         }
         self.lambda_cat = float(lambda_cat)
+        self.lambda_cat_final = float(lambda_cat)
+        self.lambda_cat_warmup_epochs = 50
+        self.lambda_cat = 0.0
+
+    def on_train_epoch_start(self) -> None:
+        super().on_train_epoch_start()
+
+        warmup = int(self.lambda_cat_warmup_epochs)
+        if warmup <= 0:
+            self.lambda_cat = float(self.lambda_cat_final)
+            return
+
+        # nnUNet uses 0-based epochs.
+        t = min(max(self.current_epoch, 0), warmup) / float(warmup)
+        self.lambda_cat = float(t * self.lambda_cat_final)
 
     def _build_loss(self) -> nn.Module:
         base = super()._build_loss()
@@ -234,12 +250,12 @@ class nnUNetTrainerCAT(nnUNetTrainer):
                 self,
                 base_loss: nn.Module,
                 cat_loss: nn.Module,
-                lambda_cat_: float,
+                trainer_ref: nnUNetTrainer,
             ) -> None:
                 super().__init__()
                 self.base_loss = base_loss
                 self.cat_loss = cat_loss
-                self.lambda_cat = float(lambda_cat_)
+                self.trainer = trainer_ref
 
             def forward(self, net_output, target) -> torch.Tensor:
                 if isinstance(net_output, (list, tuple)):
@@ -254,7 +270,7 @@ class nnUNetTrainerCAT(nnUNetTrainer):
 
                 return (
                     self.base_loss(net_output, target)
-                    + self.lambda_cat * self.cat_loss(out, tgt)
+                    + float(self.trainer.lambda_cat) * self.cat_loss(out, tgt)
                 )
 
-        return _CATWrappedLoss(base, cat, self.lambda_cat)
+        return _CATWrappedLoss(base, cat, self)
