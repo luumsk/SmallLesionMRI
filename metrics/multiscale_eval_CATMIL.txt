@@ -1,0 +1,14 @@
+per_case_csv: metrics/multiscale_eval_CATMIL.csv
+mean_metrics:
+  dice: 0.76409
+  hd95_mm: 9.23799
+  assd_mm: 1.83946
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 34.00000
+  lesion_precision: 0.88173
+  lesion_recall: 0.86018
+  lesion_f1: 0.86620
+  small_lesion_recall: 0.81362
+  mean_entropy_gt: 0.00002
+  brier_union: 0.87367
+  ece_union: 0.87386

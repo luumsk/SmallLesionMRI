@@ -1,0 +1,14 @@
+per_case_csv: metrics/multiscale_eval_SwinUNETR.csv
+mean_metrics:
+  dice: 0.77765
+  hd95_mm: 11.19286
+  assd_mm: 2.24447
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 37.16667
+  lesion_precision: 0.77354
+  lesion_recall: 0.84779
+  lesion_f1: 0.80070
+  small_lesion_recall: 0.77137
+  mean_entropy_gt: 0.00055
+  brier_union: 0.82163
+  ece_union: 0.82187

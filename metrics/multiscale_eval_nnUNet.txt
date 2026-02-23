@@ -1,0 +1,14 @@
+per_case_csv: metrics/multiscale_eval_nnUNet.csv
+mean_metrics:
+  dice: 0.78954
+  hd95_mm: 6.39752
+  assd_mm: 1.41904
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 31.25000
+  lesion_precision: 0.87173
+  lesion_recall: 0.83906
+  lesion_f1: 0.85089
+  small_lesion_recall: 0.77872
+  mean_entropy_gt: 0.00140
+  brier_union: 0.83746
+  ece_union: 0.83767

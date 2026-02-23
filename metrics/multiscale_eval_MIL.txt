@@ -1,0 +1,14 @@
+per_case_csv: metrics/multiscale_eval_MIL.csv
+mean_metrics:
+  dice: 0.79436
+  hd95_mm: 7.48634
+  assd_mm: 1.60021
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 31.91667
+  lesion_precision: 0.86240
+  lesion_recall: 0.85163
+  lesion_f1: 0.85349
+  small_lesion_recall: 0.79318
+  mean_entropy_gt: 0.00120
+  brier_union: 0.83670
+  ece_union: 0.83688

@@ -267,7 +267,7 @@ def assd_mm(
 
 
 def _label_cc(mask: np.ndarray) -> Tuple[np.ndarray, int]:
-    struct = ndimage.generate_binary_structure(rank=3, connectivity=2)
+    struct = ndimage.generate_binary_structure(rank=3, connectivity=1)
     lab, n = ndimage.label(mask, structure=struct)
     return lab.astype(np.int32), int(n)
 
@@ -483,6 +483,14 @@ def parse_args() -> argparse.Namespace:
         help="Output CSV path.",
     )
     p.add_argument(
+        "--out_txt",
+        type=str,
+        default=None,
+        help=(
+            "Optional output TXT file to store mean metrics over cases."
+        ),
+    )
+    p.add_argument(
         "--allow_missing_prob",
         action="store_true",
         help="Allow missing npz probabilities (fills NaN columns).",
@@ -568,16 +576,27 @@ def main() -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_path, index=False, quoting=csv.QUOTE_MINIMAL)
 
-    # Also print a quick summary.
+    # Compute and optionally persist a quick summary.
     numeric_cols = [c for c in df.columns if c != "case_id"]
     summary = df[numeric_cols].mean(numeric_only=True)
+
     print(f"Saved per-case metrics to: {out_path}")
-    print("Mean metrics (over cases):")
-    for k, v in summary.to_dict().items():
-        if isinstance(v, float) and math.isfinite(v):
-            print(f"  {k}: {v:.5f}")
-        else:
-            print(f"  {k}: {v}")
+
+    if args.out_txt:
+        txt_path = Path(args.out_txt)
+        txt_path.parent.mkdir(parents=True, exist_ok=True)
+
+        lines: List[str] = []
+        lines.append(f"per_case_csv: {out_path}")
+        lines.append("mean_metrics:")
+
+        for k, v in summary.to_dict().items():
+            if isinstance(v, float) and math.isfinite(v):
+                lines.append(f"  {k}: {v:.5f}")
+            else:
+                lines.append(f"  {k}: {v}")
+
+        txt_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

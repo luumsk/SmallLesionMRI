@@ -1,0 +1,14 @@
+per_case_csv: metrics/multiscale_eval_SegResNet.csv
+mean_metrics:
+  dice: 0.76971
+  hd95_mm: 10.74630
+  assd_mm: 2.18512
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 34.00000
+  lesion_precision: 0.82128
+  lesion_recall: 0.85130
+  lesion_f1: 0.83203
+  small_lesion_recall: 0.79738
+  mean_entropy_gt: 0.00169
+  brier_union: 0.78733
+  ece_union: 0.78756

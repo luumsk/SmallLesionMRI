@@ -1,0 +1,14 @@
+per_case_csv: metrics/multiscale_eval_UMambaEnc.csv
+mean_metrics:
+  dice: 0.78280
+  hd95_mm: 10.62339
+  assd_mm: 1.73574
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 32.08333
+  lesion_precision: 0.84584
+  lesion_recall: 0.84925
+  lesion_f1: 0.83887
+  small_lesion_recall: 0.77628
+  mean_entropy_gt: 0.00139
+  brier_union: 0.81325
+  ece_union: 0.81355
