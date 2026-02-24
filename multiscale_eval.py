@@ -339,6 +339,134 @@ def lesion_detection_metrics(
     }
 
 
+# --- FP error profile helpers ---
+
+def _voxel_volume_mm3(spacing: Tuple[float, float, float]) -> float:
+    return float(spacing[0] * spacing[1] * spacing[2])
+
+
+def _nan_percentile(values: np.ndarray, q: float) -> float:
+    if values.size == 0:
+        return float("nan")
+    return float(np.percentile(values, q))
+
+
+def fp_error_profile(
+    gt: np.ndarray,
+    pred: np.ndarray,
+    spacing: Tuple[float, float, float],
+    near_mm: float,
+    far_mm: float,
+) -> Dict[str, float]:
+    """Characterize FP errors as boundary extensions vs detached blobs.
+
+    Definitions
+    -----------
+    - FP voxels: pred==1 and gt==0.
+    - Boundary-extension FP: FP components whose minimum distance to any
+      GT voxel is <= `near_mm`.
+    - Blob FP: FP components whose minimum distance to any GT voxel is
+      > `near_mm`.
+
+    Additionally reports voxel-level FP proximity statistics using distance
+    to the nearest GT voxel.
+    """
+
+    fp = np.logical_and(pred, np.logical_not(gt))
+    fp_vox = int(fp.sum())
+
+    out: Dict[str, float] = {
+        "fp_voxels": float(fp_vox),
+        "fp_volume_mm3": float(fp_vox) * _voxel_volume_mm3(spacing),
+        "fp_near_voxels_frac": float("nan"),
+        "fp_far_voxels_frac": float("nan"),
+        "fp_dist_median_mm": float("nan"),
+        "fp_dist_p95_mm": float("nan"),
+        "fp_boundary_cc": float("nan"),
+        "fp_blob_cc": float("nan"),
+        "fp_boundary_volume_mm3": float("nan"),
+        "fp_blob_volume_mm3": float("nan"),
+        "fp_blob_cc_frac": float("nan"),
+        "fp_blob_volume_frac": float("nan"),
+    }
+
+    if fp_vox == 0:
+        out.update(
+            {
+                "fp_near_voxels_frac": 0.0,
+                "fp_far_voxels_frac": 0.0,
+                "fp_dist_median_mm": 0.0,
+                "fp_dist_p95_mm": 0.0,
+                "fp_boundary_cc": 0.0,
+                "fp_blob_cc": 0.0,
+                "fp_boundary_volume_mm3": 0.0,
+                "fp_blob_volume_mm3": 0.0,
+                "fp_blob_cc_frac": 0.0,
+                "fp_blob_volume_frac": 0.0,
+            }
+        )
+        return out
+
+    # Distance (mm) from every voxel to the nearest GT voxel.
+    # If GT is empty, FP distances are undefined for boundary vs blob.
+    if gt.sum() == 0:
+        return out
+
+    dist_to_gt = ndimage.distance_transform_edt(
+        np.logical_not(gt), sampling=spacing
+    ).astype(np.float32)
+
+    fp_dist = dist_to_gt[fp]
+    out["fp_dist_median_mm"] = float(np.median(fp_dist))
+    out["fp_dist_p95_mm"] = _nan_percentile(fp_dist, 95.0)
+
+    out["fp_near_voxels_frac"] = float(
+        np.mean(fp_dist <= float(near_mm))
+    )
+    out["fp_far_voxels_frac"] = float(
+        np.mean(fp_dist > float(far_mm))
+    )
+
+    # Component-level: blobs vs boundary extensions.
+    fp_lab, fp_n = _label_cc(fp)
+    vox_vol = _voxel_volume_mm3(spacing)
+
+    boundary_cc = 0
+    blob_cc = 0
+    boundary_vol = 0.0
+    blob_vol = 0.0
+
+    for cc_id in range(1, fp_n + 1):
+        cc_mask = fp_lab == cc_id
+        if not np.any(cc_mask):
+            continue
+
+        cc_min_dist = float(np.min(dist_to_gt[cc_mask]))
+        cc_vol = float(int(cc_mask.sum())) * vox_vol
+
+        if cc_min_dist <= float(near_mm):
+            boundary_cc += 1
+            boundary_vol += cc_vol
+        else:
+            blob_cc += 1
+            blob_vol += cc_vol
+
+    total_cc = float(boundary_cc + blob_cc)
+    total_vol = float(boundary_vol + blob_vol)
+
+    out["fp_boundary_cc"] = float(boundary_cc)
+    out["fp_blob_cc"] = float(blob_cc)
+    out["fp_boundary_volume_mm3"] = float(boundary_vol)
+    out["fp_blob_volume_mm3"] = float(blob_vol)
+
+    if total_cc > 0.0:
+        out["fp_blob_cc_frac"] = float(blob_cc) / (total_cc + EPS)
+    if total_vol > 0.0:
+        out["fp_blob_volume_frac"] = float(blob_vol) / (total_vol + EPS)
+
+    return out
+
+
 def mean_entropy_in_mask(prob: np.ndarray, mask: np.ndarray) -> float:
     """Mean Bernoulli entropy inside a mask (numerically stable).
 
@@ -417,6 +545,8 @@ def compute_case_metrics(
     ece_bins: int,
     ece_max_points: int,
     ece_seed: int,
+    fp_near_mm: float,
+    fp_far_mm: float,
 ) -> Dict[str, float]:
     metrics: Dict[str, float] = {}
 
@@ -429,6 +559,16 @@ def compute_case_metrics(
             gt=gt,
             pred=pred,
             small_voxels_thresh=small_voxels_thresh,
+        )
+    )
+
+    metrics.update(
+        fp_error_profile(
+            gt=gt,
+            pred=pred,
+            spacing=spacing,
+            near_mm=float(fp_near_mm),
+            far_mm=float(fp_far_mm),
         )
     )
 
@@ -502,6 +642,24 @@ def parse_args() -> argparse.Namespace:
         help="Threshold (in voxels) to define small GT lesions.",
     )
     p.add_argument(
+        "--fp_near_mm",
+        type=float,
+        default=2.0,
+        help=(
+            "FP components with min distance to GT <= this threshold "
+            "(mm) are counted as boundary extensions."
+        ),
+    )
+    p.add_argument(
+        "--fp_far_mm",
+        type=float,
+        default=5.0,
+        help=(
+            "FP voxels with distance to GT > this threshold (mm) are "
+            "counted as far (detached) FP."
+        ),
+    )
+    p.add_argument(
         "--ece_bins",
         type=int,
         default=15,
@@ -565,6 +723,8 @@ def main() -> None:
             ece_bins=int(args.ece_bins),
             ece_max_points=int(args.ece_max_points),
             ece_seed=int(args.ece_seed),
+            fp_near_mm=float(args.fp_near_mm),
+            fp_far_mm=float(args.fp_far_mm),
         )
 
         row: Dict[str, float] = {"case_id": case.case_id}
@@ -595,6 +755,28 @@ def main() -> None:
                 lines.append(f"  {k}: {v:.5f}")
             else:
                 lines.append(f"  {k}: {v}")
+
+        # Extra FP summary: single scalar for blobs vs boundary.
+        # 0.0 => mostly boundary extension, 1.0 => mostly detached blobs.
+        if "fp_blob_volume_frac" in df.columns:
+            blob_fp_index = float(summary.get("fp_blob_volume_frac", float("nan")))
+            lines.append("")
+            lines.append("fp_blob_index_mean:")
+            if math.isfinite(blob_fp_index):
+                lines.append(f"  fp_blob_volume_frac: {blob_fp_index:.5f}")
+            else:
+                lines.append(f"  fp_blob_volume_frac: {blob_fp_index}")
+        elif "fp_near_voxels_frac" in df.columns:
+            # Fallback if blob volume fraction is not available.
+            # Convert 'near fraction' to a blob-like index for consistency.
+            near_frac = float(summary.get("fp_near_voxels_frac", float("nan")))
+            blob_fp_index = 1.0 - near_frac if math.isfinite(near_frac) else near_frac
+            lines.append("")
+            lines.append("fp_blob_index_mean:")
+            if math.isfinite(blob_fp_index):
+                lines.append(f"  fp_blob_like_index: {blob_fp_index:.5f}")
+            else:
+                lines.append(f"  fp_blob_like_index: {blob_fp_index}")
 
         txt_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

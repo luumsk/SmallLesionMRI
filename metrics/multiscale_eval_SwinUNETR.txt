@@ -9,6 +9,21 @@ mean_metrics:
   lesion_recall: 0.84779
   lesion_f1: 0.80070
   small_lesion_recall: 0.77137
+  fp_voxels: 1461.00000
+  fp_volume_mm3: 1461.00000
+  fp_near_voxels_frac: 0.72758
+  fp_far_voxels_frac: 0.25013
+  fp_dist_median_mm: 6.75231
+  fp_dist_p95_mm: 19.82712
+  fp_boundary_cc: 360.83333
+  fp_blob_cc: 8.91667
+  fp_boundary_volume_mm3: 1135.41667
+  fp_blob_volume_mm3: 325.58333
+  fp_blob_cc_frac: 0.03554
+  fp_blob_volume_frac: 0.24995
   mean_entropy_gt: 0.00055
   brier_union: 0.82163
   ece_union: 0.82187
+
+fp_blob_index_mean:
+  fp_blob_volume_frac: 0.24995

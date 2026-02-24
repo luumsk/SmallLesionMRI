@@ -1,14 +1,29 @@
 per_case_csv: metrics/multiscale_eval_CAT.csv
 mean_metrics:
-  dice: 0.76012
-  hd95_mm: 9.72107
-  assd_mm: 2.14394
+  dice: 0.79218
+  hd95_mm: 6.27527
+  assd_mm: 1.31144
   gt_lesion_count: 30.08333
-  pred_lesion_count: 35.33333
-  lesion_precision: 0.85213
-  lesion_recall: 0.86485
-  lesion_f1: 0.85205
-  small_lesion_recall: 0.83334
-  mean_entropy_gt: 0.00006
-  brier_union: 0.86231
-  ece_union: 0.86254
+  pred_lesion_count: 35.16667
+  lesion_precision: 0.82627
+  lesion_recall: 0.88576
+  lesion_f1: 0.84822
+  small_lesion_recall: 0.85015
+  fp_voxels: 1314.91667
+  fp_volume_mm3: 1314.91667
+  fp_near_voxels_frac: 0.79754
+  fp_far_voxels_frac: 0.14758
+  fp_dist_median_mm: 3.48607
+  fp_dist_p95_mm: 12.67977
+  fp_boundary_cc: 344.66667
+  fp_blob_cc: 7.25000
+  fp_boundary_volume_mm3: 1117.66667
+  fp_blob_volume_mm3: 197.25000
+  fp_blob_cc_frac: 0.02031
+  fp_blob_volume_frac: 0.13704
+  mean_entropy_gt: 0.00088
+  brier_union: 0.83812
+  ece_union: 0.83835
+
+fp_blob_index_mean:
+  fp_blob_volume_frac: 0.13704
