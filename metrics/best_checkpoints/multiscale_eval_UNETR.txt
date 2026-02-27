@@ -1,0 +1,29 @@
+per_case_csv: metrics/best_checkpoints/multiscale_eval_UNETR.csv
+mean_metrics:
+  dice: 0.74742
+  hd95_mm: 17.86220
+  assd_mm: 3.20618
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 34.08333
+  lesion_precision: 0.76908
+  lesion_recall: 0.79172
+  lesion_f1: 0.76794
+  small_lesion_recall: 0.70994
+  fp_voxels: 1375.41667
+  fp_volume_mm3: 1375.41667
+  fp_near_voxels_frac: 0.68347
+  fp_far_voxels_frac: 0.29589
+  fp_dist_median_mm: 12.15980
+  fp_dist_p95_mm: 25.21611
+  fp_boundary_cc: 311.41667
+  fp_blob_cc: 8.00000
+  fp_boundary_volume_mm3: 892.58333
+  fp_blob_volume_mm3: 482.83333
+  fp_blob_cc_frac: 0.03772
+  fp_blob_volume_frac: 0.29631
+  mean_entropy_gt: 0.00119
+  brier_union: 0.83828
+  ece_union: 0.83865
+
+fp_blob_index_mean:
+  fp_blob_volume_frac: 0.29631

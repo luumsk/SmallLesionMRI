@@ -1,0 +1,29 @@
+per_case_csv: metrics/best_checkpoints/multiscale_eval_UMambaEnc.csv
+mean_metrics:
+  dice: 0.78280
+  hd95_mm: 10.62339
+  assd_mm: 1.73574
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 32.08333
+  lesion_precision: 0.84584
+  lesion_recall: 0.84925
+  lesion_f1: 0.83887
+  small_lesion_recall: 0.77628
+  fp_voxels: 1540.33333
+  fp_volume_mm3: 1540.33333
+  fp_near_voxels_frac: 0.81241
+  fp_far_voxels_frac: 0.15626
+  fp_dist_median_mm: 5.62900
+  fp_dist_p95_mm: 15.78248
+  fp_boundary_cc: 364.41667
+  fp_blob_cc: 5.50000
+  fp_boundary_volume_mm3: 1205.25000
+  fp_blob_volume_mm3: 335.08333
+  fp_blob_cc_frac: 0.01767
+  fp_blob_volume_frac: 0.15489
+  mean_entropy_gt: 0.00139
+  brier_union: 0.81325
+  ece_union: 0.81355
+
+fp_blob_index_mean:
+  fp_blob_volume_frac: 0.15489

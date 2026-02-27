@@ -15,8 +15,8 @@
 
 
 GT_DIR="/Volumes/BACH2TB/Projects/SmallLesionMRI/labelsTs"
-BASE_DIR="/Volumes/BACH2TB/Projects/SmallLesionMRI/MSLesSeg"
-OUT_DIR="metrics"
+BASE_DIR="/Volumes/BACH2TB/Projects/SmallLesionMRI/MSLesSeg/latest_checkpoints"
+OUT_DIR="metrics/latest_checkpoints"
 
 MODELS=(
   MIL

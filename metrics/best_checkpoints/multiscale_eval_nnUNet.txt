@@ -1,0 +1,29 @@
+per_case_csv: metrics/best_checkpoints/multiscale_eval_nnUNet.csv
+mean_metrics:
+  dice: 0.78954
+  hd95_mm: 6.39752
+  assd_mm: 1.41904
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 31.25000
+  lesion_precision: 0.87173
+  lesion_recall: 0.83906
+  lesion_f1: 0.85089
+  small_lesion_recall: 0.77872
+  fp_voxels: 1294.08333
+  fp_volume_mm3: 1294.08333
+  fp_near_voxels_frac: 0.81922
+  fp_far_voxels_frac: 0.13035
+  fp_dist_median_mm: 3.56259
+  fp_dist_p95_mm: 12.51425
+  fp_boundary_cc: 345.00000
+  fp_blob_cc: 4.41667
+  fp_boundary_volume_mm3: 1149.58333
+  fp_blob_volume_mm3: 144.50000
+  fp_blob_cc_frac: 0.01417
+  fp_blob_volume_frac: 0.12171
+  mean_entropy_gt: 0.00140
+  brier_union: 0.83746
+  ece_union: 0.83767
+
+fp_blob_index_mean:
+  fp_blob_volume_frac: 0.12171

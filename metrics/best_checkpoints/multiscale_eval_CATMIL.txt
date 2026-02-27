@@ -1,0 +1,29 @@
+per_case_csv: metrics/best_checkpoints/multiscale_eval_CATMIL.csv
+mean_metrics:
+  dice: 0.79535
+  hd95_mm: 5.97709
+  assd_mm: 1.42645
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 51.41667
+  lesion_precision: 0.66220
+  lesion_recall: 0.90974
+  lesion_f1: 0.74524
+  small_lesion_recall: 0.87106
+  fp_voxels: 1345.83333
+  fp_volume_mm3: 1345.83333
+  fp_near_voxels_frac: 0.75558
+  fp_far_voxels_frac: 0.18335
+  fp_dist_median_mm: 3.75252
+  fp_dist_p95_mm: 15.78129
+  fp_boundary_cc: 346.58333
+  fp_blob_cc: 19.75000
+  fp_boundary_volume_mm3: 1093.58333
+  fp_blob_volume_mm3: 252.25000
+  fp_blob_cc_frac: 0.05795
+  fp_blob_volume_frac: 0.18355
+  mean_entropy_gt: 0.00139
+  brier_union: 0.82482
+  ece_union: 0.82509
+
+fp_blob_index_mean:
+  fp_blob_volume_frac: 0.18355

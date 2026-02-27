@@ -1,0 +1,29 @@
+per_case_csv: metrics/best_checkpoints/multiscale_eval_MIL.csv
+mean_metrics:
+  dice: 0.78174
+  hd95_mm: 9.19131
+  assd_mm: 1.91030
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 59.08333
+  lesion_precision: 0.62176
+  lesion_recall: 0.90617
+  lesion_f1: 0.72167
+  small_lesion_recall: 0.87907
+  fp_voxels: 1670.08333
+  fp_volume_mm3: 1670.08333
+  fp_near_voxels_frac: 0.74413
+  fp_far_voxels_frac: 0.20728
+  fp_dist_median_mm: 6.10668
+  fp_dist_p95_mm: 17.31169
+  fp_boundary_cc: 350.50000
+  fp_blob_cc: 25.41667
+  fp_boundary_volume_mm3: 1177.00000
+  fp_blob_volume_mm3: 493.08333
+  fp_blob_cc_frac: 0.06939
+  fp_blob_volume_frac: 0.21037
+  mean_entropy_gt: 0.00215
+  brier_union: 0.81028
+  ece_union: 0.81052
+
+fp_blob_index_mean:
+  fp_blob_volume_frac: 0.21037

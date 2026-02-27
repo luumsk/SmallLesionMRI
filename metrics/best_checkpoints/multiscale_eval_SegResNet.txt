@@ -1,0 +1,29 @@
+per_case_csv: metrics/best_checkpoints/multiscale_eval_SegResNet.csv
+mean_metrics:
+  dice: 0.76971
+  hd95_mm: 10.74630
+  assd_mm: 2.18512
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 34.00000
+  lesion_precision: 0.82128
+  lesion_recall: 0.85130
+  lesion_f1: 0.83203
+  small_lesion_recall: 0.79738
+  fp_voxels: 2003.33333
+  fp_volume_mm3: 2003.33333
+  fp_near_voxels_frac: 0.76485
+  fp_far_voxels_frac: 0.20992
+  fp_dist_median_mm: 4.09319
+  fp_dist_p95_mm: 17.82836
+  fp_boundary_cc: 367.58333
+  fp_blob_cc: 6.08333
+  fp_boundary_volume_mm3: 1116.66667
+  fp_blob_volume_mm3: 886.66667
+  fp_blob_cc_frac: 0.01998
+  fp_blob_volume_frac: 0.20499
+  mean_entropy_gt: 0.00169
+  brier_union: 0.78733
+  ece_union: 0.78756
+
+fp_blob_index_mean:
+  fp_blob_volume_frac: 0.20499

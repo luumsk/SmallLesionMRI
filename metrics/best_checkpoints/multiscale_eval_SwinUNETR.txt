@@ -1,0 +1,29 @@
+per_case_csv: metrics/best_checkpoints/multiscale_eval_SwinUNETR.csv
+mean_metrics:
+  dice: 0.77759
+  hd95_mm: 11.17169
+  assd_mm: 2.24022
+  gt_lesion_count: 30.08333
+  pred_lesion_count: 37.50000
+  lesion_precision: 0.76891
+  lesion_recall: 0.84501
+  lesion_f1: 0.79672
+  small_lesion_recall: 0.76699
+  fp_voxels: 1423.83333
+  fp_volume_mm3: 1423.83333
+  fp_near_voxels_frac: 0.72741
+  fp_far_voxels_frac: 0.25056
+  fp_dist_median_mm: 6.76631
+  fp_dist_p95_mm: 19.76785
+  fp_boundary_cc: 356.75000
+  fp_blob_cc: 9.16667
+  fp_boundary_volume_mm3: 1103.25000
+  fp_blob_volume_mm3: 320.58333
+  fp_blob_cc_frac: 0.03618
+  fp_blob_volume_frac: 0.25082
+  mean_entropy_gt: 0.00057
+  brier_union: 0.82554
+  ece_union: 0.82578
+
+fp_blob_index_mean:
+  fp_blob_volume_frac: 0.25082
