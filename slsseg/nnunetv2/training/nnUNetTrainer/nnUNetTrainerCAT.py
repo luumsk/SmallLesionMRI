@@ -426,6 +426,7 @@ class nnUNetTrainerCAT(nnUNetTrainer):
                 self.cat_bin_loss = cat_bin_loss
                 self.cat_mc_loss = cat_mc_loss
                 self.trainer = trainer_ref
+                self._logged_mode = True
 
             def forward(self, net_output, target) -> torch.Tensor:
                 if isinstance(net_output, (list, tuple)):
@@ -442,6 +443,12 @@ class nnUNetTrainerCAT(nnUNetTrainer):
                 # This is robust even if labels are not {0,1} (e.g. {0,2}).
                 n_ch = int(out.shape[1])
                 is_multiclass = n_ch > 2
+
+                # Log once which CAT mode is used (binary or multi-class)
+                if self._logged_mode:
+                    mode = "CAT-MC (multi-class)" if is_multiclass else "CAT-Binary"
+                    print(f"[nnUNetTrainerCAT] Using {mode}, channels={n_ch}")
+                    self._logged_mode = False
 
                 base_term = self.base_loss(net_output, target)
                 lambda_cat = float(self.trainer.lambda_cat)
