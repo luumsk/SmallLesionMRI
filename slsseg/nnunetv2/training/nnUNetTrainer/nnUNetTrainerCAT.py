@@ -443,14 +443,27 @@ class nnUNetTrainerCAT(nnUNetTrainer):
                 n_ch = int(out.shape[1])
                 is_multiclass = n_ch > 2
 
+                base_term = self.base_loss(net_output, target)
+                lambda_cat = float(self.trainer.lambda_cat)
+
+                # During warmup lambda_cat can be 0.0. Avoid computing CAT in
+                # that case because 0.0 * NaN is still NaN in PyTorch.
+                if lambda_cat <= 0.0:
+                    return base_term
+
                 if is_multiclass:
                     cat_term = self.cat_mc_loss(out, tgt)
                 else:
                     cat_term = self.cat_bin_loss(out, tgt)
 
-                return (
-                    self.base_loss(net_output, target)
-                    + float(self.trainer.lambda_cat) * cat_term
+                # Extra safety: ensure CAT cannot introduce NaNs/Infs.
+                cat_term = torch.nan_to_num(
+                    cat_term,
+                    nan=0.0,
+                    posinf=0.0,
+                    neginf=0.0,
                 )
+
+                return base_term + lambda_cat * cat_term
 
         return _CATWrappedLoss(base, cat_bin, cat_mc, self)
