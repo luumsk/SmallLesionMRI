@@ -1,52 +1,47 @@
-# GT_DIR="/Volumes/BACH2TB/Projects/SmallLesionMRI/labelsTs"
-# PRED_MASK_DIR="/Volumes/BACH2TB/Projects/SmallLesionMRI/MSLesSeg/nnUNet"
-# PRED_PROB_DIR="/Volumes/BACH2TB/Projects/SmallLesionMRI/MSLesSeg/nnUNet"
-# OUT_CSV="metrics/multiscale_eval_nnUNet.csv"
-# OUT_TXT="metrics/multiscale_eval_nnUNet.txt"
+GT_DIR="/media/storage/luu/nnUNet_raw/Dataset333_MSLesSeg/labelsTs"
+BASE_DIR="/media/storage/luu/SmallLesionMRI/MSLesSeg/final_checkpoints"
+OUT_DIR="metrics/MSLesSeg/latest_checkpoints"
 
-# python multiscale_eval.py \
-#   --gt_dir $GT_DIR \
-#   --pred_mask_dir $PRED_MASK_DIR \
-#   --pred_prob_dir $PRED_PROB_DIR \
-#   --out_csv $OUT_CSV \
-#   --out_txt $OUT_TXT \
-#   --small_voxels_thresh 150 \
-# #   --allow_missing_prob
-
-
-GT_DIR="/Volumes/BACH2TB/Projects/SmallLesionMRI/labelsTs"
-BASE_DIR="/Volumes/BACH2TB/Projects/SmallLesionMRI/MSLesSeg/latest_checkpoints"
-OUT_DIR="metrics/latest_checkpoints"
+FOLDS=(0 1 2 3 4)
 
 MODELS=(
-  MIL
-  CAT
-  CATMIL
-  nnUNet
-  SegResNet
-  UNETR
+  # CAT
+  # MIL
+  # CATMIL
+  # nnUNet
+  # SegResNet
+  # UNETR
   SwinUNETR
-  UMambaBot
-  UMambaEnc
+  # UMambaBot
+  # UMambaEnc
 )
+
+mkdir -p "$OUT_DIR"
 
 for MODEL in "${MODELS[@]}"; do
 
   echo "Running multiscale evaluation for ${MODEL}..."
 
-  PRED_MASK_DIR="${BASE_DIR}/${MODEL}"
-  PRED_PROB_DIR="${BASE_DIR}/${MODEL}"
-  OUT_CSV="${OUT_DIR}/multiscale_eval_${MODEL}.csv"
-  OUT_TXT="${OUT_DIR}/multiscale_eval_${MODEL}.txt"
+  for FOLD in "${FOLDS[@]}"; do
 
-  python multiscale_eval.py \
-    --gt_dir "${GT_DIR}" \
-    --pred_mask_dir "${PRED_MASK_DIR}" \
-    --pred_prob_dir "${PRED_PROB_DIR}" \
-    --out_csv "${OUT_CSV}" \
-    --out_txt "${OUT_TXT}" \
-    --small_voxels_thresh 150
-    # --allow_missing_prob
+    echo "  Fold ${FOLD}"
+
+    PRED_MASK_DIR="${BASE_DIR}/${MODEL}/fold_${FOLD}"
+    PRED_PROB_DIR="${BASE_DIR}/${MODEL}/fold_${FOLD}"
+
+    OUT_CSV="${OUT_DIR}/multiscale_eval_${MODEL}_fold${FOLD}.csv"
+    OUT_TXT="${OUT_DIR}/multiscale_eval_${MODEL}_fold${FOLD}.txt"
+
+    python multiscale_eval.py \
+      --gt_dir "${GT_DIR}" \
+      --pred_mask_dir "${PRED_MASK_DIR}" \
+      --pred_prob_dir "${PRED_PROB_DIR}" \
+      --out_csv "${OUT_CSV}" \
+      --out_txt "${OUT_TXT}" \
+      --small_voxels_thresh 150
+      # --allow_missing_prob
+
+  done
 
 done
 
