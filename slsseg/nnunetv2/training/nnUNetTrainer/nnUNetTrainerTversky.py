@@ -9,18 +9,17 @@ class MyTverskyLoss(torch.nn.Module):
     def __init__(self, alpha: float, beta: float):
         super().__init__()
         self.tversky_loss = TverskyLoss(
-            to_onehot_y=False,
-            sigmoid=True,
+            to_onehot_y=True,
+            softmax=True,
             alpha=alpha,
             beta=beta,
         )
 
     def forward(self, y_hat, y):
-        y_f32 = y.float()
-        return self.tversky_loss(y_hat, y_f32)
+        return self.tversky_loss(y_hat, y)
 
 
-class nnUNetTrainer_Tversky(nnUNetTrainer):
+class nnUNetTrainerTversky(nnUNetTrainer):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True,
                  device: torch.device = torch.device('cuda')):
         
