@@ -1,49 +1,20 @@
-
-
 """Multiscale evaluation for small-lesion segmentation.
 
 This script matches ground-truth masks (*.nii.gz) with model predictions
 (predicted mask *.nii.gz and probability *.npz), computes per-case metrics,
-then saves results to a CSV.
-
-Assumptions
------------
-- Ground-truth masks are binary (0/1) in NIfTI format.
-- Predicted masks are binary (0/1) in NIfTI format.
-- Probability files are *.npz and contain either:
-    - key "probabilities" (shape: [C, X, Y, Z] or [X, Y, Z])
-    - key "softmax" (shape: [C, X, Y, Z])
-    - a single unnamed array (first key) with the above shapes
-  For binary segmentation, if C=2, foreground probability is channel 1.
-
-Metrics
--------
-- Dice (voxel overlap)
-- HD95 (95th percentile Hausdorff distance, surface-to-surface)
-- ASSD (average symmetric surface distance)
-- Lesion-wise precision/recall/F1 (connected components)
-- Small-lesion recall (lesions with volume <= threshold)
-- Uncertainty (mean entropy within GT lesions)
-- Calibration (Brier score, ECE within union ROI)
-
-Run
----
-python multiscale_eval.py \
-  --gt_dir /path/to/gt \
-  --pred_mask_dir /path/to/pred_masks \
-  --pred_prob_dir /path/to/pred_probs \
-  --out_csv results.csv
+saves per-case results to a CSV, and saves mean metrics to a flat JSON file.
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import json
 import math
-import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import nibabel as nib
 import numpy as np
@@ -66,7 +37,6 @@ class CasePaths:
 
 def _stem_niigz(path: Path) -> str:
     """Return filename stem for .nii.gz (case id)."""
-
     name = path.name
     if name.endswith(".nii.gz"):
         return name[: -len(".nii.gz")]
@@ -88,7 +58,6 @@ def build_case_table(
     allow_missing_prob: bool,
 ) -> List[CasePaths]:
     """Match GT masks with predicted masks and optional probability files."""
-
     gt_paths = _list_niigz(gt_dir)
     pred_paths = _list_niigz(pred_mask_dir)
 
@@ -128,7 +97,6 @@ def build_case_table(
 
 def load_nii_mask(path: Path) -> Tuple[np.ndarray, Tuple[float, float, float]]:
     """Load NIfTI as a boolean mask and return voxel spacing (mm)."""
-
     img = nib.load(str(path))
     data = np.asanyarray(img.dataobj)
     mask = data.astype(np.float32) > 0.5
@@ -144,7 +112,6 @@ def load_nii_mask(path: Path) -> Tuple[np.ndarray, Tuple[float, float, float]]:
 
 def load_npz_probability(path: Path) -> np.ndarray:
     """Load foreground probability volume from a .npz file."""
-
     obj = np.load(str(path))
     keys = list(obj.keys())
     if not keys:
@@ -162,7 +129,6 @@ def load_npz_probability(path: Path) -> np.ndarray:
     if arr.ndim == 3:
         fg = arr
     elif arr.ndim == 4:
-        # Expect [C, X, Y, Z]
         if arr.shape[0] == 1:
             fg = arr[0]
         elif arr.shape[0] >= 2:
@@ -178,7 +144,6 @@ def load_npz_probability(path: Path) -> np.ndarray:
 
 def dice_score(gt: np.ndarray, pred: np.ndarray) -> float:
     """Dice for binary masks."""
-
     gt_sum = float(gt.sum())
     pr_sum = float(pred.sum())
     if gt_sum + pr_sum == 0.0:
@@ -189,7 +154,6 @@ def dice_score(gt: np.ndarray, pred: np.ndarray) -> float:
 
 def _surface_voxels(mask: np.ndarray) -> np.ndarray:
     """Return a boolean mask of surface voxels for a binary object."""
-
     if mask.sum() == 0:
         return np.zeros_like(mask, dtype=bool)
 
@@ -205,7 +169,6 @@ def _surface_distances_mm(
     spacing: Tuple[float, float, float],
 ) -> np.ndarray:
     """Distances (mm) from each src surface voxel to nearest dst surface."""
-
     if src_surface.sum() == 0 or dst_mask.sum() == 0:
         return np.array([], dtype=np.float32)
 
@@ -213,7 +176,6 @@ def _surface_distances_mm(
     if dst_surface.sum() == 0:
         return np.array([], dtype=np.float32)
 
-    # Distance transform on the complement of dst surface.
     dt = ndimage.distance_transform_edt(
         np.logical_not(dst_surface), sampling=spacing
     )
@@ -227,7 +189,6 @@ def hd95_mm(
     spacing: Tuple[float, float, float],
 ) -> float:
     """HD95 in mm using symmetric surface distances."""
-
     if gt.sum() == 0 and pred.sum() == 0:
         return 0.0
     if gt.sum() == 0 or pred.sum() == 0:
@@ -250,7 +211,6 @@ def assd_mm(
     spacing: Tuple[float, float, float],
 ) -> float:
     """ASSD in mm using symmetric surface distances."""
-
     if gt.sum() == 0 and pred.sum() == 0:
         return 0.0
     if gt.sum() == 0 or pred.sum() == 0:
@@ -277,26 +237,12 @@ def lesion_detection_metrics(
     pred: np.ndarray,
     small_voxels_thresh: int,
 ) -> Dict[str, float]:
-    """Lesion-wise metrics using connected components.
-
-    A predicted lesion is a TP if it overlaps any GT lesion (>=1 voxel).
-
-    Returns
-    -------
-    - lesion_precision, lesion_recall, lesion_f1
-    - gt_lesion_count, pred_lesion_count
-    - small_lesion_recall (GT lesions <= small_voxels_thresh)
-    """
-
+    """Lesion-wise metrics using connected components."""
     gt_lab, gt_n = _label_cc(gt)
     pr_lab, pr_n = _label_cc(pred)
 
     gt_sizes = np.bincount(gt_lab.ravel())
-    pr_sizes = np.bincount(pr_lab.ravel())
-
-    # Skip background label 0
     gt_ids = list(range(1, gt_n + 1))
-    pr_ids = list(range(1, pr_n + 1))
 
     gt_hit = set()
     pr_hit = set()
@@ -305,7 +251,6 @@ def lesion_detection_metrics(
         overlap_pairs = np.unique(
             np.stack([gt_lab[gt], pr_lab[gt]], axis=1), axis=0
         )
-        # overlap_pairs rows are [gt_id, pr_id] for voxels where gt==1.
         for gt_id, pr_id in overlap_pairs:
             if gt_id == 0 or pr_id == 0:
                 continue
@@ -319,7 +264,6 @@ def lesion_detection_metrics(
     precision = tp_pr / (pr_n + EPS)
     f1 = (2.0 * precision * recall) / (precision + recall + EPS)
 
-    # Small-lesion recall (GT lesions with volume <= threshold)
     small_gt_ids = [
         i for i in gt_ids if int(gt_sizes[i]) <= int(small_voxels_thresh)
     ]
@@ -339,8 +283,6 @@ def lesion_detection_metrics(
     }
 
 
-# --- FP error profile helpers ---
-
 def _voxel_volume_mm3(spacing: Tuple[float, float, float]) -> float:
     return float(spacing[0] * spacing[1] * spacing[2])
 
@@ -358,20 +300,7 @@ def fp_error_profile(
     near_mm: float,
     far_mm: float,
 ) -> Dict[str, float]:
-    """Characterize FP errors as boundary extensions vs detached blobs.
-
-    Definitions
-    -----------
-    - FP voxels: pred==1 and gt==0.
-    - Boundary-extension FP: FP components whose minimum distance to any
-      GT voxel is <= `near_mm`.
-    - Blob FP: FP components whose minimum distance to any GT voxel is
-      > `near_mm`.
-
-    Additionally reports voxel-level FP proximity statistics using distance
-    to the nearest GT voxel.
-    """
-
+    """Characterize FP errors as boundary extensions vs detached blobs."""
     fp = np.logical_and(pred, np.logical_not(gt))
     fp_vox = int(fp.sum())
 
@@ -407,8 +336,6 @@ def fp_error_profile(
         )
         return out
 
-    # Distance (mm) from every voxel to the nearest GT voxel.
-    # If GT is empty, FP distances are undefined for boundary vs blob.
     if gt.sum() == 0:
         return out
 
@@ -420,14 +347,9 @@ def fp_error_profile(
     out["fp_dist_median_mm"] = float(np.median(fp_dist))
     out["fp_dist_p95_mm"] = _nan_percentile(fp_dist, 95.0)
 
-    out["fp_near_voxels_frac"] = float(
-        np.mean(fp_dist <= float(near_mm))
-    )
-    out["fp_far_voxels_frac"] = float(
-        np.mean(fp_dist > float(far_mm))
-    )
+    out["fp_near_voxels_frac"] = float(np.mean(fp_dist <= float(near_mm)))
+    out["fp_far_voxels_frac"] = float(np.mean(fp_dist > float(far_mm)))
 
-    # Component-level: blobs vs boundary extensions.
     fp_lab, fp_n = _label_cc(fp)
     vox_vol = _voxel_volume_mm3(spacing)
 
@@ -468,14 +390,7 @@ def fp_error_profile(
 
 
 def mean_entropy_in_mask(prob: np.ndarray, mask: np.ndarray) -> float:
-    """Mean Bernoulli entropy inside a mask (numerically stable).
-
-    Notes
-    -----
-    - Handles NaN/Inf values in `prob`.
-    - Avoids log(0) and the resulting 0 * -inf -> NaN.
-    """
-
+    """Mean Bernoulli entropy inside a mask."""
     if mask.sum() == 0:
         return float("nan")
 
@@ -505,11 +420,7 @@ def expected_calibration_error(
     max_points: int,
     seed: int,
 ) -> float:
-    """ECE for binary classification within ROI.
-
-    This subsamples points to keep runtime reasonable.
-    """
-
+    """ECE for binary classification within ROI."""
     idx = np.flatnonzero(roi.ravel())
     if idx.size == 0:
         return float("nan")
@@ -578,9 +489,7 @@ def compute_case_metrics(
         metrics["ece_union"] = float("nan")
         return metrics
 
-    # ROI: union of GT and prediction to focus on relevant voxels.
     roi = np.logical_or(gt, pred)
-
     metrics["mean_entropy_gt"] = mean_entropy_in_mask(prob, gt)
     metrics["brier_union"] = brier_score(prob, gt, roi)
     metrics["ece_union"] = expected_calibration_error(
@@ -592,6 +501,51 @@ def compute_case_metrics(
         seed=ece_seed,
     )
     return metrics
+
+
+def extract_model_and_fold(per_case_csv: str) -> Tuple[str, int]:
+    """Extract model_name and fold from per_case_csv path."""
+    match = re.search(
+        r"multiscale_eval_(.+?)_fold(\d+)\.csv$",
+        Path(per_case_csv).name,
+    )
+    if not match:
+        raise ValueError(
+            "Cannot extract model_name and fold from per_case_csv: "
+            f"{per_case_csv}"
+        )
+    return match.group(1), int(match.group(2))
+
+
+def format_json_value(value: float) -> float | str | None:
+    """Round finite floats to 5 decimals; keep NaN/Inf as None."""
+    if isinstance(value, (np.floating, float)):
+        if math.isfinite(float(value)):
+            return round(float(value), 5)
+        return None
+    if isinstance(value, (np.integer, int)):
+        return float(value)
+    return value
+
+
+def build_summary_json(
+    per_case_csv: Path,
+    summary: pd.Series,
+) -> Dict[str, float | int | str | None]:
+    """Build flat JSON summary in the requested format."""
+    per_case_csv_str = str(per_case_csv)
+    model_name, fold = extract_model_and_fold(per_case_csv_str)
+
+    out: Dict[str, float | int | str | None] = {
+        "per_case_csv": per_case_csv_str,
+        "model_name": model_name,
+        "fold": fold,
+    }
+
+    for key, value in summary.to_dict().items():
+        out[key] = format_json_value(value)
+
+    return out
 
 
 def parse_args() -> argparse.Namespace:
@@ -620,15 +574,13 @@ def parse_args() -> argparse.Namespace:
         "--out_csv",
         type=str,
         required=True,
-        help="Output CSV path.",
+        help="Output CSV path for per-case metrics.",
     )
     p.add_argument(
-        "--out_txt",
+        "--out_json",
         type=str,
         default=None,
-        help=(
-            "Optional output TXT file to store mean metrics over cases."
-        ),
+        help="Optional output JSON path for mean metrics summary.",
     )
     p.add_argument(
         "--allow_missing_prob",
@@ -732,53 +684,28 @@ def main() -> None:
         rows.append(row)
 
     df = pd.DataFrame(rows)
-    out_path = Path(args.out_csv)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(out_path, index=False, quoting=csv.QUOTE_MINIMAL)
+    out_csv_path = Path(args.out_csv)
+    out_csv_path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(out_csv_path, index=False, quoting=csv.QUOTE_MINIMAL)
 
-    # Compute and optionally persist a quick summary.
     numeric_cols = [c for c in df.columns if c != "case_id"]
     summary = df[numeric_cols].mean(numeric_only=True)
 
-    print(f"Saved per-case metrics to: {out_path}")
+    print(f"Saved per-case metrics to: {out_csv_path}")
 
-    if args.out_txt:
-        txt_path = Path(args.out_txt)
-        txt_path.parent.mkdir(parents=True, exist_ok=True)
+    if args.out_json:
+        out_json_path = Path(args.out_json)
+        out_json_path.parent.mkdir(parents=True, exist_ok=True)
 
-        lines: List[str] = []
-        lines.append(f"per_case_csv: {out_path}")
-        lines.append("mean_metrics:")
+        summary_json = build_summary_json(
+            per_case_csv=out_csv_path,
+            summary=summary,
+        )
 
-        for k, v in summary.to_dict().items():
-            if isinstance(v, float) and math.isfinite(v):
-                lines.append(f"  {k}: {v:.5f}")
-            else:
-                lines.append(f"  {k}: {v}")
+        with open(out_json_path, "w", encoding="utf-8") as f:
+            json.dump(summary_json, f, indent=2, ensure_ascii=False)
 
-        # Extra FP summary: single scalar for blobs vs boundary.
-        # 0.0 => mostly boundary extension, 1.0 => mostly detached blobs.
-        if "fp_blob_volume_frac" in df.columns:
-            blob_fp_index = float(summary.get("fp_blob_volume_frac", float("nan")))
-            lines.append("")
-            lines.append("fp_blob_index_mean:")
-            if math.isfinite(blob_fp_index):
-                lines.append(f"  fp_blob_volume_frac: {blob_fp_index:.5f}")
-            else:
-                lines.append(f"  fp_blob_volume_frac: {blob_fp_index}")
-        elif "fp_near_voxels_frac" in df.columns:
-            # Fallback if blob volume fraction is not available.
-            # Convert 'near fraction' to a blob-like index for consistency.
-            near_frac = float(summary.get("fp_near_voxels_frac", float("nan")))
-            blob_fp_index = 1.0 - near_frac if math.isfinite(near_frac) else near_frac
-            lines.append("")
-            lines.append("fp_blob_index_mean:")
-            if math.isfinite(blob_fp_index):
-                lines.append(f"  fp_blob_like_index: {blob_fp_index:.5f}")
-            else:
-                lines.append(f"  fp_blob_like_index: {blob_fp_index}")
-
-        txt_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        print(f"Saved mean metrics JSON to: {out_json_path}")
 
 
 if __name__ == "__main__":
