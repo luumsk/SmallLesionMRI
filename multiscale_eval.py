@@ -22,6 +22,7 @@ import pandas as pd
 from scipy import ndimage
 
 
+
 EPS = 1e-8
 
 
@@ -235,6 +236,7 @@ def _label_cc(mask: np.ndarray) -> Tuple[np.ndarray, int]:
 def lesion_detection_metrics(
     gt: np.ndarray,
     pred: np.ndarray,
+    spacing: Tuple[float, float, float],
     small_voxels_thresh: int,
 ) -> Dict[str, float]:
     """Lesion-wise metrics using connected components."""
@@ -259,10 +261,12 @@ def lesion_detection_metrics(
 
     tp_gt = len(gt_hit)
     tp_pr = len(pr_hit)
+    fn_gt = gt_n - tp_gt
 
     recall = tp_gt / (gt_n + EPS)
     precision = tp_pr / (pr_n + EPS)
     f1 = (2.0 * precision * recall) / (precision + recall + EPS)
+    miss_rate = fn_gt / (gt_n + EPS)
 
     small_gt_ids = [
         i for i in gt_ids if int(gt_sizes[i]) <= int(small_voxels_thresh)
@@ -273,13 +277,29 @@ def lesion_detection_metrics(
         small_hit = sum([1 for i in small_gt_ids if i in gt_hit])
         small_recall = small_hit / (len(small_gt_ids) + EPS)
 
+    missed_gt_ids = [i for i in gt_ids if i not in gt_hit]
+    missed_fn_voxels = float(sum(int(gt_sizes[i]) for i in missed_gt_ids))
+    voxel_volume_mm3 = _voxel_volume_mm3(spacing)
+    total_gt_voxels = float(int(gt.sum()))
+    fn_volume_mm3 = missed_fn_voxels * voxel_volume_mm3
+    total_gt_volume_mm3 = total_gt_voxels * voxel_volume_mm3
+    fn_volume_fraction = (
+        fn_volume_mm3 / (total_gt_volume_mm3 + EPS)
+        if total_gt_volume_mm3 > 0.0
+        else float("nan")
+    )
+
     return {
         "gt_lesion_count": float(gt_n),
         "pred_lesion_count": float(pr_n),
+        "fn_lesion_count": float(fn_gt),
         "lesion_precision": float(precision),
         "lesion_recall": float(recall),
         "lesion_f1": float(f1),
+        "miss_rate": float(miss_rate),
         "small_lesion_recall": float(small_recall),
+        "fn_volume_mm3": float(fn_volume_mm3),
+        "fn_volume_fraction": float(fn_volume_fraction),
     }
 
 
@@ -291,6 +311,160 @@ def _nan_percentile(values: np.ndarray, q: float) -> float:
     if values.size == 0:
         return float("nan")
     return float(np.percentile(values, q))
+
+
+# -------- FN error profile helper functions and main function --------
+
+def _safe_fraction(numerator: float, denominator: float) -> float:
+    """Return a stable fraction with NaN when denominator is zero."""
+    if denominator <= 0.0:
+        return float("nan")
+    return float(numerator) / float(denominator + EPS)
+
+
+def _coverage_histogram_metrics(
+    coverages: np.ndarray,
+) -> Dict[str, float]:
+    """Coverage histogram fractions for later plotting and analysis."""
+    out: Dict[str, float] = {
+        "lesion_coverage_hist_0_0_1_frac": float("nan"),
+        "lesion_coverage_hist_0_1_0_25_frac": float("nan"),
+        "lesion_coverage_hist_0_25_0_5_frac": float("nan"),
+        "lesion_coverage_hist_0_5_0_75_frac": float("nan"),
+        "lesion_coverage_hist_0_75_1_0_frac": float("nan"),
+    }
+
+    if coverages.size == 0:
+        return out
+
+    out["lesion_coverage_hist_0_0_1_frac"] = float(
+        np.mean((coverages >= 0.0) & (coverages < 0.1))
+    )
+    out["lesion_coverage_hist_0_1_0_25_frac"] = float(
+        np.mean((coverages >= 0.1) & (coverages < 0.25))
+    )
+    out["lesion_coverage_hist_0_25_0_5_frac"] = float(
+        np.mean((coverages >= 0.25) & (coverages < 0.5))
+    )
+    out["lesion_coverage_hist_0_5_0_75_frac"] = float(
+        np.mean((coverages >= 0.5) & (coverages < 0.75))
+    )
+    out["lesion_coverage_hist_0_75_1_0_frac"] = float(
+        np.mean((coverages >= 0.75) & (coverages <= 1.0))
+    )
+    return out
+
+
+def fn_error_profile(
+    gt: np.ndarray,
+    pred: np.ndarray,
+    spacing: Tuple[float, float, float],
+) -> Dict[str, float]:
+    """Characterize FN errors by lesion size and lesion coverage."""
+    gt_lab, gt_n = _label_cc(gt)
+    voxel_volume_mm3 = _voxel_volume_mm3(spacing)
+
+    out: Dict[str, float] = {
+        "fn_tiny_count": 0.0,
+        "fn_small_count": 0.0,
+        "fn_medium_count": 0.0,
+        "fn_large_count": 0.0,
+        "recall_tiny": float("nan"),
+        "recall_small": float("nan"),
+        "recall_medium": float("nan"),
+        "recall_large": float("nan"),
+        "fn_tiny_volume_mm3": 0.0,
+        "fn_small_volume_mm3": 0.0,
+        "fn_medium_volume_mm3": 0.0,
+        "fn_large_volume_mm3": 0.0,
+        "fn_tiny_volume_frac": float("nan"),
+        "fn_small_volume_frac": float("nan"),
+        "fn_medium_volume_frac": float("nan"),
+        "fn_large_volume_frac": float("nan"),
+        "lesion_coverage_mean": float("nan"),
+        "lesion_coverage_median": float("nan"),
+        "lesion_coverage_p25": float("nan"),
+        "lesion_coverage_p75": float("nan"),
+        "lesion_coverage_lt_0_1_frac": float("nan"),
+        "lesion_coverage_lt_0_25_frac": float("nan"),
+        "lesion_coverage_lt_0_5_frac": float("nan"),
+        "lesion_coverage_zero_frac": float("nan"),
+        "lesion_coverage_hist_0_0_1_frac": float("nan"),
+        "lesion_coverage_hist_0_1_0_25_frac": float("nan"),
+        "lesion_coverage_hist_0_25_0_5_frac": float("nan"),
+        "lesion_coverage_hist_0_5_0_75_frac": float("nan"),
+        "lesion_coverage_hist_0_75_1_0_frac": float("nan"),
+    }
+
+    if gt_n == 0:
+        return out
+
+    gt_sizes = np.bincount(gt_lab.ravel())
+    gt_ids = list(range(1, gt_n + 1))
+
+    coverages: List[float] = []
+
+    bins = {
+        "tiny": {"count": 0, "hit": 0, "fn": 0, "vol": 0.0, "fn_vol": 0.0},
+        "small": {"count": 0, "hit": 0, "fn": 0, "vol": 0.0, "fn_vol": 0.0},
+        "medium": {"count": 0, "hit": 0, "fn": 0, "vol": 0.0, "fn_vol": 0.0},
+        "large": {"count": 0, "hit": 0, "fn": 0, "vol": 0.0, "fn_vol": 0.0},
+    }
+
+    for lesion_id in gt_ids:
+        lesion_mask = gt_lab == lesion_id
+        lesion_voxels = int(gt_sizes[lesion_id])
+        lesion_volume_mm3 = float(lesion_voxels) * voxel_volume_mm3
+
+        if lesion_voxels <= 10:
+            bin_name = "tiny"
+        elif lesion_voxels <= 50:
+            bin_name = "small"
+        elif lesion_voxels <= 200:
+            bin_name = "medium"
+        else:
+            bin_name = "large"
+
+        bins[bin_name]["count"] += 1
+        bins[bin_name]["vol"] += lesion_volume_mm3
+
+        overlap_voxels = float(np.logical_and(lesion_mask, pred).sum())
+        coverage = overlap_voxels / (float(lesion_voxels) + EPS)
+        coverages.append(float(coverage))
+
+        if overlap_voxels > 0.0:
+            bins[bin_name]["hit"] += 1
+        else:
+            bins[bin_name]["fn"] += 1
+            bins[bin_name]["fn_vol"] += lesion_volume_mm3
+
+    coverage_arr = np.asarray(coverages, dtype=np.float32)
+    out["lesion_coverage_mean"] = float(np.mean(coverage_arr))
+    out["lesion_coverage_median"] = float(np.median(coverage_arr))
+    out["lesion_coverage_p25"] = _nan_percentile(coverage_arr, 25.0)
+    out["lesion_coverage_p75"] = _nan_percentile(coverage_arr, 75.0)
+    out["lesion_coverage_lt_0_1_frac"] = float(np.mean(coverage_arr < 0.1))
+    out["lesion_coverage_lt_0_25_frac"] = float(np.mean(coverage_arr < 0.25))
+    out["lesion_coverage_lt_0_5_frac"] = float(np.mean(coverage_arr < 0.5))
+    out["lesion_coverage_zero_frac"] = float(np.mean(coverage_arr <= EPS))
+    out.update(_coverage_histogram_metrics(coverage_arr))
+
+    for bin_name in ["tiny", "small", "medium", "large"]:
+        count_value = float(bins[bin_name]["count"])
+        hit_value = float(bins[bin_name]["hit"])
+        fn_value = float(bins[bin_name]["fn"])
+        vol_value = float(bins[bin_name]["vol"])
+        fn_vol_value = float(bins[bin_name]["fn_vol"])
+
+        out[f"fn_{bin_name}_count"] = fn_value
+        out[f"recall_{bin_name}"] = _safe_fraction(hit_value, count_value)
+        out[f"fn_{bin_name}_volume_mm3"] = fn_vol_value
+        out[f"fn_{bin_name}_volume_frac"] = _safe_fraction(
+            fn_vol_value,
+            vol_value,
+        )
+
+    return out
 
 
 def fp_error_profile(
@@ -458,28 +632,48 @@ def compute_case_metrics(
     ece_seed: int,
     fp_near_mm: float,
     fp_far_mm: float,
+    metrics_mode: str,
 ) -> Dict[str, float]:
     metrics: Dict[str, float] = {}
 
     metrics["dice"] = dice_score(gt, pred)
     metrics["hd95_mm"] = hd95_mm(gt, pred, spacing)
-    metrics["assd_mm"] = assd_mm(gt, pred, spacing)
 
-    metrics.update(
-        lesion_detection_metrics(
-            gt=gt,
-            pred=pred,
-            small_voxels_thresh=small_voxels_thresh,
-        )
+    lesion_metrics = lesion_detection_metrics(
+        gt=gt,
+        pred=pred,
+        spacing=spacing,
+        small_voxels_thresh=small_voxels_thresh,
     )
+    metrics["small_lesion_recall"] = lesion_metrics[
+        "small_lesion_recall"
+    ]
+    metrics["lesion_f1"] = lesion_metrics["lesion_f1"]
+    metrics["fn_lesion_count"] = lesion_metrics["fn_lesion_count"]
+    metrics["fn_volume_fraction"] = lesion_metrics[
+        "fn_volume_fraction"
+    ]
 
+    fp_metrics = fp_error_profile(
+        gt=gt,
+        pred=pred,
+        spacing=spacing,
+        near_mm=float(fp_near_mm),
+        far_mm=float(fp_far_mm),
+    )
+    metrics["fp_volume_mm3"] = fp_metrics["fp_volume_mm3"]
+
+    if metrics_mode == "main":
+        return metrics
+
+    metrics["assd_mm"] = assd_mm(gt, pred, spacing)
+    metrics.update(lesion_metrics)
+    metrics.update(fp_metrics)
     metrics.update(
-        fp_error_profile(
+        fn_error_profile(
             gt=gt,
             pred=pred,
             spacing=spacing,
-            near_mm=float(fp_near_mm),
-            far_mm=float(fp_far_mm),
         )
     )
 
@@ -506,7 +700,7 @@ def compute_case_metrics(
 def extract_model_and_fold(per_case_csv: str) -> Tuple[str, int]:
     """Extract model_name and fold from per_case_csv path."""
     match = re.search(
-        r"multiscale_eval_(.+?)_fold(\d+)\.csv$",
+        r"multiscale_eval_(.+?)_fold(\d+)(?:_(main|all))?\.csv$",
         Path(per_case_csv).name,
     )
     if not match:
@@ -531,6 +725,7 @@ def format_json_value(value: float) -> float | str | None:
 def build_summary_json(
     per_case_csv: Path,
     summary: pd.Series,
+    df: pd.DataFrame,
 ) -> Dict[str, float | int | str | None]:
     """Build flat JSON summary in the requested format."""
     per_case_csv_str = str(per_case_csv)
@@ -544,6 +739,36 @@ def build_summary_json(
 
     for key, value in summary.to_dict().items():
         out[key] = format_json_value(value)
+
+    metrics_mode = "main"
+    if "fn_volume_mm3" in df.columns:
+        metrics_mode = "all"
+
+    if metrics_mode == "all" and "fn_lesion_count" in df.columns:
+        out["total_fn_lesion_count"] = format_json_value(
+            float(df["fn_lesion_count"].sum())
+        )
+
+    if metrics_mode == "all" and "fn_volume_mm3" in df.columns:
+        out["total_fn_volume_mm3"] = format_json_value(
+            float(df["fn_volume_mm3"].sum())
+        )
+
+    if metrics_mode == "all":
+        for key in [
+            "fn_tiny_count",
+            "fn_small_count",
+            "fn_medium_count",
+            "fn_large_count",
+            "fn_tiny_volume_mm3",
+            "fn_small_volume_mm3",
+            "fn_medium_volume_mm3",
+            "fn_large_volume_mm3",
+        ]:
+            if key in df.columns:
+                out[f"total_{key}"] = format_json_value(
+                    float(df[key].sum())
+                )
 
     return out
 
@@ -629,11 +854,22 @@ def parse_args() -> argparse.Namespace:
         default=123,
         help="Random seed used for ECE subsampling.",
     )
+    p.add_argument(
+        "--metrics_mode",
+        type=str,
+        default="main",
+        choices=["main", "all"],
+        help=(
+            "Metric set to compute and save. 'main' saves only the main "
+            "paper metrics, while 'all' saves the full evaluation profile."
+        ),
+    )
     return p.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    print(f"Metrics mode enabled: {args.metrics_mode}")
 
     gt_dir = Path(args.gt_dir)
     pred_mask_dir = Path(args.pred_mask_dir)
@@ -646,7 +882,7 @@ def main() -> None:
         allow_missing_prob=bool(args.allow_missing_prob),
     )
 
-    rows: List[Dict[str, float]] = []
+    rows: List[Dict[str, float | str]] = []
     for case in cases:
         gt, spacing = load_nii_mask(case.gt_path)
         pred, _ = load_nii_mask(case.pred_mask_path)
@@ -677,14 +913,22 @@ def main() -> None:
             ece_seed=int(args.ece_seed),
             fp_near_mm=float(args.fp_near_mm),
             fp_far_mm=float(args.fp_far_mm),
+            metrics_mode=str(args.metrics_mode),
         )
 
-        row: Dict[str, float] = {"case_id": case.case_id}
+        row: Dict[str, float | str] = {
+            "case_id": case.case_id,
+        }
         row.update(metrics)
         rows.append(row)
 
     df = pd.DataFrame(rows)
     out_csv_path = Path(args.out_csv)
+    out_csv_suffix = out_csv_path.suffix
+    out_csv_stem = out_csv_path.stem
+    out_csv_path = out_csv_path.with_name(
+        f"{out_csv_stem}_{args.metrics_mode}{out_csv_suffix}"
+    )
     out_csv_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_csv_path, index=False, quoting=csv.QUOTE_MINIMAL)
 
@@ -693,19 +937,25 @@ def main() -> None:
 
     print(f"Saved per-case metrics to: {out_csv_path}")
 
-    if args.out_json:
-        out_json_path = Path(args.out_json)
-        out_json_path.parent.mkdir(parents=True, exist_ok=True)
 
-        summary_json = build_summary_json(
-            per_case_csv=out_csv_path,
-            summary=summary,
-        )
+    out_json_path = Path(args.out_json)
+    out_json_suffix = out_json_path.suffix
+    out_json_stem = out_json_path.stem
+    out_json_path = out_json_path.with_name(
+        f"{out_json_stem}_{args.metrics_mode}{out_json_suffix}"
+    )
+    out_json_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(out_json_path, "w", encoding="utf-8") as f:
-            json.dump(summary_json, f, indent=2, ensure_ascii=False)
+    summary_json = build_summary_json(
+        per_case_csv=out_csv_path,
+        summary=summary,
+        df=df,
+    )
 
-        print(f"Saved mean metrics JSON to: {out_json_path}")
+    with open(out_json_path, "w", encoding="utf-8") as f:
+        json.dump(summary_json, f, indent=2, ensure_ascii=False)
+
+    print(f"Saved mean metrics JSON to: {out_json_path}")
 
 
 if __name__ == "__main__":
