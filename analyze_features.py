@@ -236,9 +236,19 @@ def maybe_mkdir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
+
 def save_json(path: Path, payload: Dict) -> None:
     with path.open("w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
+
+
+def display_model_name(model_key: str) -> str:
+    """Return user-facing model names for plots and saved outputs."""
+    mapping = {
+        "CATMIL": "nnUNet-CATMIL",
+        "nnUNet": "nnUNet-DiceCE",
+    }
+    return mapping.get(model_key, model_key)
 
 
 def find_case_ids(
@@ -534,7 +544,7 @@ def build_analysis_tables(
         bg_rows.append(
             {
                 "case_id": case_id,
-                "model": "CATMIL",
+                "model": display_model_name("CATMIL"),
                 "n_bg_samples": int(bg_cat.shape[0]),
                 **{
                     f"f{i:02d}": float(bg_centroid_cat[i])
@@ -545,7 +555,7 @@ def build_analysis_tables(
         bg_rows.append(
             {
                 "case_id": case_id,
-                "model": "nnUNet",
+                "model": display_model_name("nnUNet"),
                 "n_bg_samples": int(bg_nnu.shape[0]),
                 **{
                     f"f{i:02d}": float(bg_centroid_nnu[i])
@@ -591,7 +601,7 @@ def build_analysis_tables(
             lesion_rows.append(
                 {
                     **row_common,
-                    "model": "CATMIL",
+                    "model": display_model_name("CATMIL"),
                     "detection": det_cat,
                     "dist_to_bg_euclidean": euclidean_distance(
                         emb_cat, bg_centroid_cat
@@ -609,7 +619,7 @@ def build_analysis_tables(
             lesion_rows.append(
                 {
                     **row_common,
-                    "model": "nnUNet",
+                    "model": display_model_name("nnUNet"),
                     "detection": det_nnu,
                     "dist_to_bg_euclidean": euclidean_distance(
                         emb_nnu, bg_centroid_nnu
