@@ -14,7 +14,7 @@ import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import nibabel as nib
 import numpy as np
@@ -697,10 +697,12 @@ def compute_case_metrics(
     return metrics
 
 
-def extract_model_and_fold(per_case_csv: str) -> Tuple[str, int]:
-    """Extract model_name and fold from per_case_csv path."""
+def extract_model_and_fold(
+    per_case_csv: str,
+) -> Tuple[str, Union[int, str]]:
+    """Extract model name and fold from a per-case CSV path."""
     match = re.search(
-        r"multiscale_eval_(.+?)_fold(\d+)(?:_(main|all))?\.csv$",
+        r"multiscale_eval_(.+?)_fold(\d+|all)(?:_(main|all))?\.csv$",
         Path(per_case_csv).name,
     )
     if not match:
@@ -708,7 +710,11 @@ def extract_model_and_fold(per_case_csv: str) -> Tuple[str, int]:
             "Cannot extract model_name and fold from per_case_csv: "
             f"{per_case_csv}"
         )
-    return match.group(1), int(match.group(2))
+
+    fold_str = match.group(2)
+    fold = int(fold_str) if fold_str.isdigit() else fold_str
+
+    return match.group(1), fold
 
 
 def format_json_value(value: float) -> float | str | None:

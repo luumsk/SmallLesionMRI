@@ -20,19 +20,16 @@ The selection is driven mainly by:
 - dice
 - small_lesion_recall
 - fn_lesion_count
-- fp_volume
-
-Author: OpenAI
+- fp_volume_mm3
 """
 
 from __future__ import annotations
 
 import argparse
-import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, List
 
 import numpy as np
 import pandas as pd
@@ -44,9 +41,12 @@ FILE_PATTERN = re.compile(
 
 REQUIRED_METRICS = [
     "dice",
+    "hd95_mm",
     "small_lesion_recall",
+    "lesion_f1",
     "fn_lesion_count",
-    "fp_volume",
+    "fn_volume_fraction",
+    "fp_volume_mm3",
 ]
 
 
@@ -173,8 +173,10 @@ def load_all_metrics(csv_infos: List[CsvFileInfo]) -> pd.DataFrame:
     Load all CSVs into one long dataframe.
 
     Output columns include:
-        fold, model, case_id, dice, small_lesion_recall,
-        fn_lesion_count, fp_volume, ...
+        fold, model, case_id, dice, hd95_mm,
+        small_lesion_recall, lesion_f1,
+        fn_lesion_count, fn_volume_fraction,
+        fp_volume_mm3, ...
     """
     frames: List[pd.DataFrame] = []
 
@@ -250,9 +252,9 @@ def build_case_comparison_table(
             - float(target_row["fn_lesion_count"])
         ).mean()
 
-        delta_fp_volume = (
-            competitors["fp_volume"].astype(float)
-            - float(target_row["fp_volume"])
+        delta_fp_volume_mm3 = (
+            competitors["fp_volume_mm3"].astype(float)
+            - float(target_row["fp_volume_mm3"])
         ).mean()
 
         rows.append(
@@ -261,19 +263,28 @@ def build_case_comparison_table(
                 "case_id": str(case_id),
                 "n_competitors": int(len(competitors)),
                 "target_dice": float(target_row["dice"]),
+                "target_hd95_mm": float(target_row["hd95_mm"]),
                 "target_small_lesion_recall": float(
                     target_row["small_lesion_recall"]
                 ),
+                "target_lesion_f1": float(target_row["lesion_f1"]),
                 "target_fn_lesion_count": float(
                     target_row["fn_lesion_count"]
                 ),
-                "target_fp_volume": float(target_row["fp_volume"]),
+                "target_fn_volume_fraction": float(
+                    target_row["fn_volume_fraction"]
+                ),
+                "target_fp_volume_mm3": float(
+                    target_row["fp_volume_mm3"]
+                ),
                 "mean_delta_dice": float(delta_dice),
                 "mean_delta_small_lesion_recall": float(
                     delta_small_recall
                 ),
                 "mean_delta_fn_lesion_count": float(delta_fn_count),
-                "mean_delta_fp_volume": float(delta_fp_volume),
+                "mean_delta_fp_volume_mm3": float(
+                    delta_fp_volume_mm3
+                ),
             }
         )
 
@@ -303,7 +314,7 @@ def score_cases(case_df: pd.DataFrame) -> pd.DataFrame:
     """
     df = case_df.copy()
 
-    # Improvement: CATMIL better than other models.
+    # Improvement: target better than other models.
     # Positive is good for dice, small lesion recall, lower FN count.
     # FP increase is penalized.
     df["z_delta_dice"] = zscore(df["mean_delta_dice"])
@@ -311,51 +322,52 @@ def score_cases(case_df: pd.DataFrame) -> pd.DataFrame:
         df["mean_delta_small_lesion_recall"]
     )
     df["z_delta_fn_count"] = zscore(df["mean_delta_fn_lesion_count"])
-    df["z_delta_fp_volume"] = zscore(df["mean_delta_fp_volume"])
+    df["z_delta_fp_volume_mm3"] = zscore(
+        df["mean_delta_fp_volume_mm3"]
+    )
 
     df["improvement_score"] = (
         0.35 * df["z_delta_small_recall"]
         + 0.30 * df["z_delta_fn_count"]
         + 0.25 * df["z_delta_dice"]
-        + 0.10 * df["z_delta_fp_volume"]
+        + 0.10 * df["z_delta_fp_volume_mm3"]
     )
 
-    # Failure: opposite direction.
     df["failure_score"] = (
         0.35 * (-df["z_delta_small_recall"])
         + 0.30 * (-df["z_delta_fn_count"])
         + 0.25 * (-df["z_delta_dice"])
-        + 0.10 * (-df["z_delta_fp_volume"])
+        + 0.10 * (-df["z_delta_fp_volume_mm3"])
     )
 
-    # Typical: close to CATMIL median on its own metrics.
     median_dice = df["target_dice"].median()
     median_small_recall = df["target_small_lesion_recall"].median()
     median_fn = df["target_fn_lesion_count"].median()
-    median_fp = df["target_fp_volume"].median()
+    median_fp = df["target_fp_volume_mm3"].median()
 
     df["typical_distance"] = np.sqrt(
-        ((df["target_dice"] - median_dice) / max(df["target_dice"].std(ddof=0), 1e-8)) ** 2
+        (
+            (df["target_dice"] - median_dice)
+            / max(df["target_dice"].std(ddof=0), 1e-8)
+        ) ** 2
         + (
             (
-                df["target_small_lesion_recall"] - median_small_recall
+                df["target_small_lesion_recall"]
+                - median_small_recall
             )
             / max(
                 df["target_small_lesion_recall"].std(ddof=0),
                 1e-8,
             )
-        )
-        ** 2
+        ) ** 2
         + (
             (df["target_fn_lesion_count"] - median_fn)
             / max(df["target_fn_lesion_count"].std(ddof=0), 1e-8)
-        )
-        ** 2
+        ) ** 2
         + (
-            (df["target_fp_volume"] - median_fp)
-            / max(df["target_fp_volume"].std(ddof=0), 1e-8)
-        )
-        ** 2
+            (df["target_fp_volume_mm3"] - median_fp)
+            / max(df["target_fp_volume_mm3"].std(ddof=0), 1e-8)
+        ) ** 2
     )
 
     return df
@@ -370,7 +382,11 @@ def select_top_cases(
     """Select improvement, failure, and typical cases."""
     improvement = (
         scored_df.sort_values(
-            by=["improvement_score", "target_small_lesion_recall", "target_dice"],
+            by=[
+                "improvement_score",
+                "target_small_lesion_recall",
+                "target_dice",
+            ],
             ascending=[False, False, False],
         )
         .head(n_improve)
@@ -387,7 +403,7 @@ def select_top_cases(
     ]
     failure = (
         failure_pool.sort_values(
-            by=["failure_score", "target_fp_volume"],
+            by=["failure_score", "target_fp_volume_mm3"],
             ascending=[False, False],
         )
         .head(n_failure)
@@ -428,7 +444,10 @@ def print_selected_cases(
 
     print()
     print("=" * 80)
-    print(f"Selected qualitative-analysis cases for target model: {target_model}")
+    print(
+        f"Selected qualitative-analysis cases for target model: "
+        f"{target_model}"
+    )
     print("=" * 80)
 
     print("\n[Improvement cases]")
@@ -444,11 +463,11 @@ def print_selected_cases(
                     "target_dice",
                     "target_small_lesion_recall",
                     "target_fn_lesion_count",
-                    "target_fp_volume",
+                    "target_fp_volume_mm3",
                     "mean_delta_dice",
                     "mean_delta_small_lesion_recall",
                     "mean_delta_fn_lesion_count",
-                    "mean_delta_fp_volume",
+                    "mean_delta_fp_volume_mm3",
                 ]
             ].to_string(index=False)
         )
@@ -466,11 +485,11 @@ def print_selected_cases(
                     "target_dice",
                     "target_small_lesion_recall",
                     "target_fn_lesion_count",
-                    "target_fp_volume",
+                    "target_fp_volume_mm3",
                     "mean_delta_dice",
                     "mean_delta_small_lesion_recall",
                     "mean_delta_fn_lesion_count",
-                    "mean_delta_fp_volume",
+                    "mean_delta_fp_volume_mm3",
                 ]
             ].to_string(index=False)
         )
@@ -488,7 +507,7 @@ def print_selected_cases(
                     "target_dice",
                     "target_small_lesion_recall",
                     "target_fn_lesion_count",
-                    "target_fp_volume",
+                    "target_fp_volume_mm3",
                 ]
             ].to_string(index=False)
         )
