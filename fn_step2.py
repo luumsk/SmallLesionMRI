@@ -24,15 +24,23 @@ width = 0.2
 
 fig, ax = plt.subplots(figsize=(9, 5.5))
 
-# Plot grouped bars
+# Colorblind-safe palette (CATMIL highlighted)
+color_map = {
+    "CATMIL": "#E69F00",       # highlight orange
+    "DiceCE": "#A6CEE3",       # light blue
+    "Tversky": "#B2DF8A",      # light green
+    "FocalTversky": "#CAB2D6", # light purple
+}
+
 for i, (model, values) in enumerate(models.items()):
     bars = ax.bar(
         x + (i - 1.5) * width,
         values,
         width,
         label=model,
+        color=color_map[model],
         edgecolor="black",
-        linewidth=0.8,
+        linewidth=0.9,
     )
 
 # Labels and formatting

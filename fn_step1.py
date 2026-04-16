@@ -115,7 +115,12 @@ for ax, (metric, panel_label, y_label, as_fraction) in zip(axes, metric_info):
         x,
         values,
         width=0.56,
-        color=["#4C72B0", "#55A868", "#C44E52", "#8172B2"][:len(x)],
+        color=[
+            "#9E9E9E",  # baseline models (gray)
+            "#9E9E9E",
+            "#9E9E9E",
+            "#9E9E9E",
+        ][:len(x)],
         edgecolor="black",
         linewidth=1.0,
         zorder=3,
@@ -123,30 +128,8 @@ for ax, (metric, panel_label, y_label, as_fraction) in zip(axes, metric_info):
 
     for idx, bar in enumerate(bars):
         if labels[idx] == highlight_model:
-            bar.set_facecolor("#DD8452")
-            bar.set_hatch("////")
+            bar.set_facecolor("#E69F00")  # colorblind-safe orange
             bar.set_linewidth(1.2)
-
-    ax.scatter(
-        x,
-        values,
-        s=28,
-        facecolors="white",
-        edgecolors="black",
-        linewidths=0.8,
-        zorder=4,
-    )
-
-    catmil_idx = labels.index(highlight_model)
-    ax.scatter(
-        [catmil_idx],
-        [values[catmil_idx]],
-        s=34,
-        facecolors="white",
-        edgecolors="black",
-        linewidths=1.0,
-        zorder=5,
-    )
 
     ax.set_xticks(x)
     ax.set_xticklabels(["CATMIL", "FocalTversky", "Tversky", "DiceCE"])
