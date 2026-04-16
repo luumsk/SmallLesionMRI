@@ -26,10 +26,17 @@ fig, ax = plt.subplots(figsize=(9, 5.5))
 
 # Colorblind-safe palette (CATMIL highlighted)
 color_map = {
-    "CATMIL": "#E69F00",       # highlight orange
-    "DiceCE": "#A6CEE3",       # light blue
-    "Tversky": "#B2DF8A",      # light green
-    "FocalTversky": "#CAB2D6", # light purple
+    "CATMIL": "#E69F00",   # highlight orange
+    "DiceCE": "#9E9E9E",   # gray
+    "Tversky": "#9E9E9E",
+    "FocalTversky": "#9E9E9E",
+}
+
+hatch_map = {
+    "CATMIL": None,
+    "DiceCE": "//",
+    "Tversky": "\\\\",
+    "FocalTversky": "xx",
 }
 
 for i, (model, values) in enumerate(models.items()):
@@ -42,6 +49,10 @@ for i, (model, values) in enumerate(models.items()):
         edgecolor="black",
         linewidth=0.9,
     )
+    # Apply hatch patterns for grayscale robustness
+    if hatch_map[model] is not None:
+        for bar in bars:
+            bar.set_hatch(hatch_map[model])
 
 # Labels and formatting
 ax.set_xticks(x)
