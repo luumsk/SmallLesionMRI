@@ -17,9 +17,8 @@ model_order = [
 ]
 
 metric_info = [
-    ("fn_lesion_count", "FN lesion count", "", False),
-    ("lesion_recall", "Lesion recall", "", True),
-    ("miss_rate", "Miss rate", "", True),
+    ("fn_lesion_count", "False Negative Lesion Count", "", False),
+    ("miss_rate", "Miss Rate", "", True),
 ]
 
 highlight_model = "CATMIL"
@@ -105,7 +104,7 @@ df_plot = load_plot_data(csv_path)
 # -----------------------------
 # Plot
 # -----------------------------
-fig, axes = plt.subplots(1, 3, figsize=(12.6, 4.8), dpi=300)
+fig, axes = plt.subplots(1, 2, figsize=(8.6, 4.8), dpi=300)
 
 for ax, (metric, panel_label, y_label, as_fraction) in zip(axes, metric_info):
     values = df_plot[metric].values
@@ -116,7 +115,7 @@ for ax, (metric, panel_label, y_label, as_fraction) in zip(axes, metric_info):
         x,
         values,
         width=0.56,
-        facecolor="#d9d9d9",
+        color=["#4C72B0", "#55A868", "#C44E52", "#8172B2"][:len(x)],
         edgecolor="black",
         linewidth=1.0,
         zorder=3,
@@ -124,7 +123,7 @@ for ax, (metric, panel_label, y_label, as_fraction) in zip(axes, metric_info):
 
     for idx, bar in enumerate(bars):
         if labels[idx] == highlight_model:
-            bar.set_facecolor("white")
+            bar.set_facecolor("#DD8452")
             bar.set_hatch("////")
             bar.set_linewidth(1.2)
 
@@ -152,10 +151,7 @@ for ax, (metric, panel_label, y_label, as_fraction) in zip(axes, metric_info):
     ax.set_xticks(x)
     ax.set_xticklabels(["CATMIL", "FocalTversky", "Tversky", "DiceCE"])
 
-    if metric == "lesion_recall":
-        ax.set_ylim(0.80, 0.93)
-        ax.set_yticks(np.arange(0.80, 0.931, 0.03))
-    elif metric == "miss_rate":
+    if metric == "miss_rate":
         ax.set_ylim(0.00, 0.17)
         ax.set_yticks(np.arange(0.00, 0.171, 0.04))
     else:
