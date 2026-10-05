@@ -1,6 +1,4 @@
-# SmallLesionMRI
-
-**Component-Adaptive and Lesion-Level Supervision for Improved Small Structure Segmentation in Brain MRI**
+# Component-Adaptive and Lesion-Level Supervision for Improved Small Structure Segmentation in Brain MRI
 
 [![arXiv](https://img.shields.io/badge/arXiv-2604.08015-b31b1b.svg)](https://arxiv.org/abs/2604.08015)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
