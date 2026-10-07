@@ -1,0 +1,23 @@
+This study shows that modifying the training objective is an effective way
+to control model behavior in sparse lesion segmentation. Rather than
+increasing architectural complexity, the proposed approach redistributes
+supervision during optimization, enabling clearer interpretation of its
+effects. Voxel-wise objectives inherently favor high-volume regions, causing small
+lesions to have limited influence. The proposed objective addresses this
+through two terms: a component-adaptive term that balances contributions
+across lesion structures, and a lesion-level term that enforces lesion
+detection. Together, these shift learning from purely overlap-driven
+optimization toward better sensitivity to sparse lesion signals. Results support this design. The method improves small lesion recall and reduces false negatives while maintaining competitive Dice and improving
+boundary accuracy, indicating balanced performance across metrics. However, increased sensitivity leads to reduced lesion-wise precision, often due to small isolated false positives or fragmented predictions.
+This reflects a trade-off between detection and delineation, further
+affected by the lesion-level term, which enforces detection but not full
+coverage. Lesion detectability also depends on factors such as contrast and boundary
+clarity. While the proposed objective improves sensitivity, it does not
+fully overcome limitations in input data. Limitations include evaluation on a single dataset, focus on one disease,
+and use of a single architecture. In addition, the detection–precision
+trade-off is not explicitly controlled. Future work should evaluate generalization across datasets and diseases,
+validate across architectures, and improve control over false positives
+and boundary consistency. Extending lesion-level supervision to include
+coverage constraints may further improve segmentation quality. Overall, the results suggest that small lesion segmentation depends on how sparse signals are represented during learning. The proposed objective
+improves sensitivity to small lesions while maintaining stable global
+performance, highlighting the role of loss design in imbalanced settings.

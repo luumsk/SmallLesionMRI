@@ -1,0 +1,192 @@
+\subsection{Dataset}
+
+We evaluate our methods on the MSLesSeg dataset \cite{guarnera_mslesseg_2025},
+which contains longitudinal brain MRI scans of multiple sclerosis patients.
+The dataset provides MRI images with manual lesion annotations for the
+training set and unlabeled scans for the official test set. In total, the dataset includes 75 subjects. The labeled portion consists of 53 patients, each having between one and four longitudinal timepoints. Since the official test set does not provide segmentation labels, we use only the
+labeled portion of the dataset for our experiments. To avoid data leakage
+across longitudinal scans, the data partitioning is performed at the
+\textit{patient level}. We adopt a 5-fold cross-validation strategy, where the 53 patients are
+randomly divided into five disjoint folds. In each fold, approximately
+80\% of the patients are used for training and the remaining 20\% for
+validation. This process is repeated across all five folds such
+that each patient appears in the test set exactly once. For evaluation, predictions are generated for each fold independently. Performance metrics are computed per fold and then averaged across all
+five folds to obtain the final reported results. Each MRI scan includes three modalities: T1-weighted (T1-w), T2-weighted (T2-w), and FLAIR images. The dataset provided by the MSLesSeg organizers
+is already skull-stripped and co-registered to the MNI152 template. All images are resampled to an isotropic voxel spacing of $(1.0, 1.0, 1.0)\,\mathrm{mm}$.
+
+\subsection{Implementation Details}
+
+All models are trained using the \texttt{nnUNet} framework (version 2.1.1).
+Training is performed for 150 epochs with a batch size of 2 using the Adam
+optimizer and an initial learning rate of 0.01. The default nnUNet configuration uses a combination of Dice loss and cross-entropy loss. Based on this baseline, we implement three variants of
+loss functions designed to improve lesion detection:
+
+\begin{itemize}
+    \item \textbf{CAT}: Component-Adaptive Tversky term that emphasizes
+    small connected components.
+    \item \textbf{MIL}: A lesion-level multiple-instance learning term that
+    encourages the detection of individual lesions.
+    \item \textbf{CATMIL}: A combination of CAT and MIL to jointly improve
+    voxel-level segmentation and lesion-level detection.
+\end{itemize}
+
+All experiments are conducted on a workstation equipped with an NVIDIA
+Quadro RTX 8000 GPU.
+
+\subsection{Compared Methods}
+
+% We compare the proposed loss formulations with several widely used
+% 3D medical image segmentation architectures, including nnUNet
+% \cite{isensee_nnu-net_2021}}, SegResNet \cite{myronenko_3d_2018}, UNETR \cite{hatamizadeh_unetr_2021}, SwinUNETR \cite{hatamizadeh_swin_2022},
+% UMambaEnc \cite{ma_u-mamba_2024}, and UMambaBot \cite{ma_u-mamba_2024}.
+% For a fair comparison, all models are trained using the same dataset split
+% and experimental protocol.
+
+We compare the proposed loss formulation against several widely used
+segmentation loss functions using a U-Net architecture implemented
+within the nnUNet framework~\cite{isensee_nnu-net_2021}. In
+particular, we benchmark our method against standard losses commonly
+used in medical image segmentation, including Dice + Cross Entropy
+(nnUNet default), as well as Tversky and Focal Tversky losses,
+which are designed to address class imbalance by reweighting false
+positives and false negatives. All models are trained using the same
+dataset split, preprocessing pipeline, and training protocol to ensure
+a fair and consistent comparison. Since the architecture is fixed across all experiments, we denote each
+variant according to the loss function used, namely
+nnUNet-DiceCE, nnUNet-Tversky,
+nnUNet-FocalTversky, and nnUNet-CATMIL (ours).
+
+\subsection{Evaluation Metrics}
+
+To comprehensively evaluate segmentation performance, all methods are
+assessed using a combination of voxel-level and lesion-level metrics.
+While Dice and HD95 are standard in medical image segmentation, they
+primarily reflect global overlap and boundary accuracy, and may not
+adequately capture the detection of small and sparse lesions. In
+particular, small lesions contribute minimally to voxel-level overlap and
+can be overlooked without significantly affecting Dice scores.
+Therefore, additional lesion-level and size-aware metrics are included
+to provide a more complete evaluation of model behavior, especially in
+the sparse lesion regime.
+
+\paragraph{Voxel-level Metrics.}
+Voxel-level metrics measure the agreement between predicted and
+ground-truth segmentation masks at the voxel level. Let $\Omega$ denote
+the voxel domain, $P \subset \Omega$ the set of predicted lesion voxels,
+and $G \subset \Omega$ the set of ground-truth lesion voxels.
+
+\begin{itemize}
+    \item \textbf{Dice Similarity Coefficient (Dice).} Measures the
+    spatial overlap between the predicted segmentation and the
+    ground-truth annotation:
+    \begin{equation}
+    \text{Dice} =
+    \frac{2|P \cap G|}{|P| + |G|}.
+    \end{equation}
+
+    \item \textbf{Hausdorff Distance (HD95).} Measures the boundary
+    discrepancy between prediction and ground truth using the 95th
+    percentile of surface distances:
+    \begin{equation}
+    d(S_P,S_G) =
+    \left\{
+    \min_{g \in S_G} d(p,g) : p \in S_P
+    \right\},
+    \end{equation}
+    \begin{equation}
+    HD_{95}(P,G) =
+    \max \left\{
+    \mathrm{percentile}_{95}\big(d(S_P,S_G)\big),
+    \mathrm{percentile}_{95}\big(d(S_G,S_P)\big)
+    \right\},
+    \end{equation}
+    where $S_P$ and $S_G$ denote the sets of surface voxels of the
+    predicted and ground-truth masks, respectively, and $d(\cdot,\cdot)$
+    denotes the Euclidean distance.
+\end{itemize}
+
+\paragraph{Lesion-level and Error Metrics.}
+Voxel-level metrics may not fully reflect lesion detection performance,
+especially for small and sparse lesions. Therefore, lesion-level
+evaluation is additionally performed using connected component analysis,
+where each lesion is defined as a 3D connected component of the binary
+mask. Let $\mathcal{G} = \{g_1, \dots, g_{N_{\mathrm{GT}}}\}$ denote the
+set of ground-truth connected components, and
+$\mathcal{P} = \{p_1, \dots, p_{N_{\mathrm{P}}}\}$ the set of predicted
+connected components.
+
+\begin{itemize}
+    \item \textbf{Lesion-wise F1 Score.} Evaluates lesion-level detection
+    performance by measuring the balance between lesion-wise precision
+    and recall:
+    \begin{equation}
+    \mathrm{Precision}_{\mathrm{les}} =
+    \frac{|\mathcal{P}_{\mathrm{hit}}|}
+    {|\mathcal{P}| + \varepsilon},
+    \qquad
+    \mathrm{Recall}_{\mathrm{les}} =
+    \frac{|\mathcal{G}_{\mathrm{hit}}|}
+    {|\mathcal{G}| + \varepsilon},
+    \end{equation}
+    \begin{equation}
+    \mathrm{F1}_{\mathrm{les}} =
+    \frac{
+        2 \, \mathrm{Precision}_{\mathrm{les}} \, \mathrm{Recall}_{\mathrm{les}}
+    }{
+        \mathrm{Precision}_{\mathrm{les}} + \mathrm{Recall}_{\mathrm{les}} + \varepsilon
+    },
+    \end{equation}
+    where $\mathcal{G}_{\mathrm{hit}} \subseteq \mathcal{G}$ and
+    $\mathcal{P}_{\mathrm{hit}} \subseteq \mathcal{P}$ denote detected
+    ground-truth and predicted lesions, respectively.
+
+    \item \textbf{Small Lesion Recall.} Measures the fraction of small
+    ground-truth lesions that are successfully detected:
+    \begin{equation}
+    \mathcal{G}_{\mathrm{small}} =
+    \left\{
+        g \in \mathcal{G} : |g| \leq \tau
+    \right\},
+    \end{equation}
+    \begin{equation}
+    \mathrm{Recall}_{\mathrm{small}} =
+    \frac{
+        \left|
+        \left\{
+        g \in \mathcal{G}_{\mathrm{small}} : g \in \mathcal{G}_{\mathrm{hit}}
+        \right\}
+        \right|
+    }{
+        |\mathcal{G}_{\mathrm{small}}| + \varepsilon
+    }.
+    \end{equation}
+
+    \item \textbf{False Positive Volume.} Quantifies the total physical
+    volume of falsely predicted lesion voxels:
+    \begin{equation}
+    \mathrm{FP} = P - G,
+    \end{equation}
+    \begin{equation}
+    V_{\mathrm{FP}} =
+    |\mathrm{FP}| \cdot (s_x s_y s_z),
+    \end{equation}
+    where $s_x, s_y, s_z$ denote voxel spacing along each axis.
+
+    \item \textbf{False Negative Lesion Count.} Counts the number of
+    ground-truth lesions that are completely missed:
+    \begin{equation}
+    \text{FN Lesion Count} =
+    |\mathcal{G}| - |\mathcal{G}_{\mathrm{hit}}|.
+    \end{equation}
+
+    \item \textbf{False Negative Volume Fraction.} Measures the fraction
+    of total lesion volume corresponding to missed lesions:
+    \begin{equation}
+    \mathrm{FN} = G - P,
+    \end{equation}
+    \begin{equation}
+    V_{\mathrm{FN}}^{\mathrm{frac}}
+    =
+    \frac{|\mathrm{FN}|}{|G| + \varepsilon}.
+    \end{equation}
+\end{itemize}

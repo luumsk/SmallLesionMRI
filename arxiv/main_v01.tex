@@ -1,0 +1,83 @@
+\documentclass[11pt]{article}
+
+% ---------- Encoding & layout ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{microtype} % arXiv-safe; improves spacing
+
+% ---------- Math & symbols ----------
+\usepackage{amsmath,amssymb,amsfonts}
+\numberwithin{equation}{section}
+\renewcommand{\labelitemi}{--}
+
+% ---------- Figures & tables ----------
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+% ---------- References (arXiv-friendly) ----------
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{url}
+% \usepackage[hidelinks]{hyperref}
+\usepackage{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+% ---------- Author/affil (simple & arXiv-safe) ----------
+\usepackage{authblk}
+\usepackage{orcidlink}
+
+% ---------- Title ----------
+\title{Component-Adaptive and Lesion-Level Supervision for Improved Small Structure Segmentation in Brain MRI}
+\author[1]{Minh Sao Khue Luu\,\orcidlink{0000-0002-6766-4966}}
+\author[1]{Evgeniy N. Pavlovskiy\,\orcidlink{0000-0001-6976-1885}}
+\author[1]{Bair N. Tuchinov\,\orcidlink{0000-0002-8931-9848}}
+\affil[1]{The Artificial Intelligence Research Center of Novosibirsk State University, Novosibirsk 630090, Russia}
+\affil[ ]{\texttt{khue.luu@g.nsu.ru}}
+\date{}
+
+% ---------- Optional: macros ----------
+% \newcommand{\method}{\textsc{BrainFM}\xspace}
+
+\begin{document}
+\maketitle
+
+% ---------- Abstract ----------
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+% ---------- Optional keywords ----------
+\paragraph{Keywords:} small lesions segmentation; component-adaptive loss;  multiple instance learning; brain MRI
+
+\section{Introduction}
+\input{sections/introduction}
+
+\section{Method}
+\label{sec:method}
+\input{sections/method}
+
+\section{Experiments}
+\label{sec:experiments}
+\input{sections/experiments.tex}
+
+\section{Results}
+\input{sections/results}
+
+\section{Conclusion \& Discussion}
+\input{sections/conclusion}
+
+\paragraph{Acknowledgements.}
+\input{sections/acknowledgements}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\newpage
+\section*{Ablation}
+\input{sections/ablation}
+
+\end{document}

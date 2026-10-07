@@ -1,0 +1,116 @@
+Small lesions in brain magnetic resonance imaging (MRI) are sparse,
+spatially localized, and clinically important targets embedded within a
+large volume of normal-appearing tissue. This results in an extreme
+imbalance in voxel distribution, where lesion voxels constitute only a
+small fraction of the image. Consequently, the learning process is
+dominated by background and large structures, while signals from small
+lesions are easily overlooked. Despite their size, small lesions play a
+critical role in clinical assessment.
+
+Deep learning methods, particularly convolutional neural networks (CNNs),
+have substantially advanced medical image segmentation. Architectures
+such as U-Net and its 3D extensions have become standard for volumetric
+analysis~\cite{navab_u-net_2015}, while automated frameworks such as
+nnU-Net have demonstrated strong performance across a wide range of
+biomedical datasets through systematic pipeline
+adaptation~\cite{isensee_nnu-net_2021}. More recently, transformer-based
+and hybrid CNN--transformer models have further expanded the design space
+for medical segmentation~\cite{hatamizadeh_unetr_2021,
+hatamizadeh_swin_2022}. However, despite these advances, segmentation of
+small pathological structures remains challenging even for
+state-of-the-art models.
+
+A primary difficulty arises from this imbalance. In brain MRI, lesion
+voxels typically constitute only a very small fraction of the image
+volume, causing standard training objectives to be dominated by
+background regions. As a result, models tend to prioritize large
+structures while under-representing small lesions during optimization.
+To address this issue, several loss functions have been proposed. The
+Tversky loss~\cite{salehi_tversky_2017} generalizes the Dice formulation
+by introducing asymmetric weighting between false positives and false
+negatives, allowing the objective to emphasize missed lesions and improve
+recall. The Focal loss~\cite{lin_focal_2017} shifts training focus toward
+hard examples by reducing the contribution of well-classified samples,
+and its adaptation, the Focal Tversky
+loss~\cite{abraham_novel_2019}, further enhances sensitivity and boundary
+delineation in difficult regions. In addition, Yeung et
+al.~\cite{yeung_calibrating_2023} propose DSC++, a modified Dice-based
+objective that penalizes overconfident predictions, resulting in improved
+calibration while preserving strong segmentation performance.
+
+Although these methods improve voxel-level optimization under class
+imbalance, they treat segmentation as a voxel-wise prediction problem and
+do not explicitly model lesion structure. Small lesions typically appear
+as discrete connected components scattered throughout the brain, and
+their contribution to voxel-level objectives remains disproportionately
+small. Consequently, models can achieve high overlap scores while still
+missing clinically relevant small lesions, highlighting a fundamental
+limitation of purely voxel-level supervision.
+
+In the context of multiple sclerosis segmentation, several approaches
+have explored architectural and ensemble strategies to improve
+robustness. Wiltgen et al.~\cite{wiltgen_lst-ai_2024} proposed LST-AI,
+an ensemble of 3D U-Net models trained on multimodal MRI with combined
+losses, demonstrating improved generalization. Dereskewicz et
+al.~\cite{dereskewicz_flames_2025} introduced FLAMeS, an nnU-Net-based
+ensemble framework with strong performance on FLAIR MRI. Hashemi et
+al.~\cite{hashemi_asymmetric_2019} proposed an asymmetric Tversky-based
+loss within a 3D FC-DenseNet to improve the precision--recall trade-off
+under severe imbalance. While effective, these approaches remain
+fundamentally voxel-level and therefore do not explicitly address the
+structural nature of small lesions.
+
+More recent work has explored incorporating higher-level information into
+the training objective. Region-based formulations modulate supervision
+based on spatial context, such as adaptive region-level
+losses~\cite{chen_adaptive_2023} and region-wise rectified
+frameworks~\cite{valverde_region-wise_2023}. Zhang et
+al.~\cite{zhang_all-net_2021} introduced lesion-aware modeling through
+anatomical priors, while Javed et al.~\cite{aqib_javed_novel_2025}
+proposed dual-coefficient regularization to better handle instance-level
+imbalance. In parallel, multiple instance learning (MIL) provides a
+set-level formulation where supervision is defined over groups of
+instances rather than individual voxels. This has been explored in
+medical imaging through object-aware MIL frameworks~\cite{liu_object_2026},
+graph-based MIL approaches~\cite{huang_geometric_2026}, and weakly
+supervised classification models~\cite{pal_deep_2021}. Although these
+methods highlight the importance of object-level signals, they are not
+designed to jointly optimize voxel-level segmentation and lesion-level
+detection in a unified manner.
+
+Overall, existing approaches either focus on voxel-level reweighting or
+introduce partial higher-level supervision, but do not simultaneously
+address structural imbalance and lesion-level detection. This suggests
+that improving small lesion segmentation requires a unified objective
+that integrates both component-level and instance-level information.
+
+To address this gap, we propose a loss formulation specifically designed
+for small lesion segmentation in brain MRI. First, we introduce a
+Component-Adaptive Tversky (CAT) term that reweights the contribution of
+individual lesion components, ensuring that small structures have a
+stronger influence during training. Second, we incorporate a lesion-level
+Multiple Instance Learning (MIL) term that encourages the model to detect
+lesions at the component level. These two components are combined into a
+unified CATMIL loss, which jointly optimizes voxel-level accuracy and
+lesion-level detection.
+
+We evaluate the proposed method on the MSLesSeg dataset for multiple
+sclerosis lesion segmentation. Experimental results show that the
+proposed loss improves the detection of small lesions while maintaining
+competitive segmentation accuracy and stable error behavior compared to
+standard objectives. These findings indicate that incorporating
+structure-level and lesion-level supervision provides an effective and
+practical strategy for improving small lesion segmentation.
+
+The main contributions of this study are twofold. First, we propose a
+loss formulation for small lesion segmentation that integrates a
+component-adaptive term and a lesion-level supervision term within a
+unified objective (CATMIL), enabling joint optimization of voxel-level
+accuracy and lesion-level detection. Second, we provide a comprehensive
+multi-level evaluation of segmentation behavior under severe class
+imbalance, including voxel-level accuracy, lesion-level detection,
+small-lesion recall, and detailed false positive and false negative
+analysis. This evaluation reveals the strengths and trade-offs of
+different objectives and demonstrates that the proposed formulation
+improves small lesion detection while maintaining stable overall
+performance.

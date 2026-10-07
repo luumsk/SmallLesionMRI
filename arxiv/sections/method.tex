@@ -1,0 +1,216 @@
+\subsection{Component-Adaptive Tversky Term}
+
+Lesion segmentation in brain MRI is characterized by severe class imbalance
+and large variability in lesion size. Standard overlap-based losses, such as
+the Dice loss or the Tversky loss~\cite{salehi_tversky_2017}, operate at the
+voxel level and therefore tend to be dominated by large lesions. As a result,
+small lesions may contribute negligibly to the optimization objective,
+leading to reduced detection sensitivity for clinically relevant small
+structures.
+
+To mitigate this issue, we introduce a \emph{Component-Adaptive Tversky (CAT)}
+term that balances lesion contributions by incorporating connected-component
+information from the ground-truth segmentation.
+
+\paragraph{Notation.}
+Let $\Omega \subset \mathbb{R}^3$ denote the voxel domain of a 3D MRI volume.
+For each voxel $i \in \Omega$:
+
+\begin{itemize}
+    \item $g_i \in \{0,1\}$ denotes the ground-truth label,
+    \item $p_i \in [0,1]$ denotes the predicted probability of the foreground class.
+\end{itemize}
+
+The set of foreground voxels is defined as
+
+\[
+G = \{ i \in \Omega \mid g_i = 1 \}.
+\]
+
+\paragraph{Connected-component decomposition.}
+The binary foreground mask is decomposed into $K$ disjoint connected components
+
+\[
+G = \bigcup_{k=1}^{K} C_k, 
+\qquad
+C_k \cap C_j = \varnothing \;\; \text{for } k \neq j,
+\]
+
+where each $C_k$ represents an individual lesion instance.
+The size of lesion $k$ is
+
+\[
+|C_k| = \sum_{i \in C_k} 1 .
+\]
+
+\paragraph{Component-adaptive weighting.}
+To balance lesion contributions during optimization,
+we introduce a voxel-wise weight $w_i$ defined as
+
+\[
+w_i =
+\begin{cases}
+(|C_k| + \epsilon)^{-\gamma}, & \text{if } i \in C_k, \\
+w_{\mathrm{bg}}, & \text{if } g_i = 0 ,
+\end{cases}
+\]
+
+where $\gamma \ge 0$ controls the strength of size adaptation,
+$\epsilon > 0$ stabilizes extremely small components,
+and $w_{\mathrm{bg}}$ denotes the background weight.
+
+This formulation assigns larger weights to voxels belonging to smaller
+lesions and smaller weights to voxels belonging to larger lesions,
+thereby reducing the dominance of large lesions in the optimization
+objective.
+
+\paragraph{Weighted Tversky index.}
+Building upon the Tversky similarity index~\cite{salehi_tversky_2017},
+we define weighted true positives, false positives, and false negatives as
+
+\[
+\mathrm{TP}_w = \sum_{i \in \Omega} w_i \, p_i \, g_i,
+\]
+
+\[
+\mathrm{FP}_w = \sum_{i \in \Omega} w_i \, p_i \, (1 - g_i),
+\]
+
+\[
+\mathrm{FN}_w = \sum_{i \in \Omega} w_i \, (1 - p_i) \, g_i.
+\]
+
+The component-adaptive Tversky index is then
+
+\[
+\mathrm{I}_{\mathrm{CAT}} =
+\frac{\mathrm{TP}_w + \delta}
+{\mathrm{TP}_w + \alpha \mathrm{FP}_w + \beta \mathrm{FN}_w + \delta},
+\]
+
+where $\alpha$ and $\beta$ control the penalties for false positives and
+false negatives, respectively, and $\delta > 0$ is a smoothing constant.
+
+\paragraph{CAT term.}
+The final term is defined as
+
+\[
+\mathcal{L}_{\mathrm{CAT}} = 1 - \mathrm{I}_{\mathrm{CAT}} .
+\]
+
+\paragraph{Lesion-level interpretation.}
+For $\gamma = 1$, the total contribution of lesion $k$ is approximately
+
+\[
+\sum_{i \in C_k} w_i
+\approx
+|C_k| (|C_k| + \epsilon)^{-1}
+\approx 1,
+\]
+
+indicating that each lesion contributes approximately equally to the
+optimization objective regardless of its volume. This shifts the learning
+process from voxel-dominated optimization toward lesion-balanced
+optimization, which is particularly beneficial for improving the
+segmentation of small lesions.
+
+\paragraph{Relationship to existing losses.}
+The proposed formulation generalizes several existing overlap-based losses:
+
+\begin{itemize}
+\item If $\gamma = 0$, the CAT term reduces to the standard Tversky loss.
+\item If $\alpha = \beta = 0.5$, the formulation corresponds to a component-weighted Dice loss.
+\item If $w_i = 1$ for all voxels, the formulation becomes the standard voxel-wise Tversky loss.
+\end{itemize}
+
+\subsection{Lesion-Level Multiple Instance Learning Term}
+
+While overlap-based losses encourage accurate voxel-wise segmentation,
+they do not explicitly enforce the detection of individual lesions.
+In highly imbalanced medical segmentation tasks, a model may achieve
+reasonable overlap metrics while completely missing small lesions.
+To address this limitation, we introduce an auxiliary
+\emph{lesion-level detection term} based on the Multiple Instance
+Learning (MIL) paradigm.
+
+\paragraph{Lesion instances.}
+
+Let the foreground set $G$ be decomposed into $K$ connected components
+
+\[
+G = \bigcup_{k=1}^{K} C_k,
+\]
+
+where each component $C_k$ represents an individual lesion instance.
+
+\paragraph{Instance detection score.}
+
+Let $p_i \in [0,1]$ denote the predicted foreground probability for voxel
+$i$. For each lesion component $C_k$, we define the detection score as
+
+\[
+s_k = \max_{i \in C_k} p_i .
+\]
+
+\paragraph{MIL term.}
+
+\[
+\mathcal{L}_{\mathrm{MIL}}
+=
+\frac{1}{K}
+\sum_{k=1}^{K}
+-\log \left( s_k + \epsilon \right),
+\]
+
+where $\epsilon$ is a small constant ensuring numerical stability.
+For samples with no foreground lesion components (i.e., $K = 0$),
+$\mathcal{L}_{\mathrm{MIL}}$ is set to $0$.
+
+This objective encourages at least one voxel inside each lesion to have
+high predicted probability, thereby improving lesion-level recall,
+particularly for small lesions.
+
+\subsection{CATMIL Objective Function}
+
+The base loss is defined as
+
+\[
+\mathcal{L}_{\mathrm{base}}
+=
+\mathcal{L}_{\mathrm{Dice}}
++
+\mathcal{L}_{\mathrm{CE}}.
+\]
+
+The proposed objective function, referred to as CATMIL, integrates the
+component-adaptive term and the lesion-level term into a unified training
+objective.
+
+\[
+\mathcal{L}_{\mathrm{CATMIL}}
+=
+\mathcal{L}_{\mathrm{base}}
++
+\lambda_{\mathrm{CAT}}
+\mathcal{L}_{\mathrm{CAT}}
++
+\lambda_{\mathrm{MIL}}
+\mathcal{L}_{\mathrm{MIL}},
+\]
+
+where $\mathcal{L}_{\mathrm{CAT}}$ is the component-adaptive term and
+$\mathcal{L}_{\mathrm{MIL}}$ is the lesion-level detection term.
+
+\paragraph{Training strategy.}
+
+\[
+\lambda_{\mathrm{CAT}}(t)
+=
+\lambda_{\mathrm{CAT}}^{\mathrm{final}}
+\cdot
+\min\left(\frac{t}{T},1\right),
+\]
+
+where $t$ denotes the current training epoch and $T$ is the number of
+warm-up epochs. The MIL weight $\lambda_{\mathrm{MIL}}$ is kept constant
+during training.

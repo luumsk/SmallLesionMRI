@@ -1,0 +1,1801 @@
+
+@misc{hatamizadeh_swin_2022,
+	title = {Swin {UNETR}: {Swin} {Transformers} for {Semantic} {Segmentation} of {Brain} {Tumors} in {MRI} {Images}},
+	copyright = {Creative Commons Attribution Non Commercial No Derivatives 4.0 International},
+	shorttitle = {Swin {UNETR}},
+	url = {https://arxiv.org/abs/2201.01266},
+	doi = {10.48550/ARXIV.2201.01266},
+	abstract = {Semantic segmentation of brain tumors is a fundamental medical image analysis task involving multiple MRI imaging modalities that can assist clinicians in diagnosing the patient and successively studying the progression of the malignant entity. In recent years, Fully Convolutional Neural Networks (FCNNs) approaches have become the de facto standard for 3D medical image segmentation. The popular "U-shaped" network architecture has achieved state-of-the-art performance benchmarks on different 2D and 3D semantic segmentation tasks and across various imaging modalities. However, due to the limited kernel size of convolution layers in FCNNs, their performance of modeling long-range information is sub-optimal, and this can lead to deficiencies in the segmentation of tumors with variable sizes. On the other hand, transformer models have demonstrated excellent capabilities in capturing such long-range information in multiple domains, including natural language processing and computer vision. Inspired by the success of vision transformers and their variants, we propose a novel segmentation model termed Swin UNEt TRansformers (Swin UNETR). Specifically, the task of 3D brain tumor semantic segmentation is reformulated as a sequence to sequence prediction problem wherein multi-modal input data is projected into a 1D sequence of embedding and used as an input to a hierarchical Swin transformer as the encoder. The swin transformer encoder extracts features at five different resolutions by utilizing shifted windows for computing self-attention and is connected to an FCNN-based decoder at each resolution via skip connections. We have participated in BraTS 2021 segmentation challenge, and our proposed model ranks among the top-performing approaches in the validation phase. Code: https://monai.io/research/swin-unetr},
+	urldate = {2026-04-09},
+	publisher = {arXiv},
+	author = {Hatamizadeh, Ali and Nath, Vishwesh and Tang, Yucheng and Yang, Dong and Roth, Holger and Xu, Daguang},
+	year = {2022},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV), Machine Learning (cs.LG)},
+}
+
+@misc{hatamizadeh_unetr_2021,
+	title = {{UNETR}: {Transformers} for {3D} {Medical} {Image} {Segmentation}},
+	copyright = {Creative Commons Attribution Non Commercial No Derivatives 4.0 International},
+	shorttitle = {{UNETR}},
+	url = {https://arxiv.org/abs/2103.10504},
+	doi = {10.48550/ARXIV.2103.10504},
+	abstract = {Fully Convolutional Neural Networks (FCNNs) with contracting and expanding paths have shown prominence for the majority of medical image segmentation applications since the past decade. In FCNNs, the encoder plays an integral role by learning both global and local features and contextual representations which can be utilized for semantic output prediction by the decoder. Despite their success, the locality of convolutional layers in FCNNs, limits the capability of learning long-range spatial dependencies. Inspired by the recent success of transformers for Natural Language Processing (NLP) in long-range sequence learning, we reformulate the task of volumetric (3D) medical image segmentation as a sequence-to-sequence prediction problem. We introduce a novel architecture, dubbed as UNEt TRansformers (UNETR), that utilizes a transformer as the encoder to learn sequence representations of the input volume and effectively capture the global multi-scale information, while also following the successful "U-shaped" network design for the encoder and decoder. The transformer encoder is directly connected to a decoder via skip connections at different resolutions to compute the final semantic segmentation output. We have validated the performance of our method on the Multi Atlas Labeling Beyond The Cranial Vault (BTCV) dataset for multi-organ segmentation and the Medical Segmentation Decathlon (MSD) dataset for brain tumor and spleen segmentation tasks. Our benchmarks demonstrate new state-of-the-art performance on the BTCV leaderboard. Code: https://monai.io/research/unetr},
+	urldate = {2026-04-09},
+	publisher = {arXiv},
+	author = {Hatamizadeh, Ali and Tang, Yucheng and Nath, Vishwesh and Yang, Dong and Myronenko, Andriy and Landman, Bennett and Roth, Holger and Xu, Daguang},
+	year = {2021},
+	note = {Version Number: 3},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV), Machine Learning (cs.LG)},
+}
+
+@misc{myronenko_3d_2018,
+	title = {{3D} {MRI} brain tumor segmentation using autoencoder regularization},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	url = {https://arxiv.org/abs/1810.11654},
+	doi = {10.48550/ARXIV.1810.11654},
+	abstract = {Automated segmentation of brain tumors from 3D magnetic resonance images (MRIs) is necessary for the diagnosis, monitoring, and treatment planning of the disease. Manual delineation practices require anatomical knowledge, are expensive, time consuming and can be inaccurate due to human error. Here, we describe a semantic segmentation network for tumor subregion segmentation from 3D MRIs based on encoder-decoder architecture. Due to a limited training dataset size, a variational auto-encoder branch is added to reconstruct the input image itself in order to regularize the shared decoder and impose additional constraints on its layers. The current approach won 1st place in the BraTS 2018 challenge.},
+	urldate = {2026-04-09},
+	publisher = {arXiv},
+	author = {Myronenko, Andriy},
+	year = {2018},
+	note = {Version Number: 3},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Biological sciences, FOS: Computer and information sciences, Neurons and Cognition (q-bio.NC)},
+}
+
+@article{isensee_nnu-net_2021,
+	title = {{nnU}-{Net}: a self-configuring method for deep learning-based biomedical image segmentation},
+	volume = {18},
+	issn = {1548-7091, 1548-7105},
+	shorttitle = {{nnU}-{Net}},
+	url = {https://www.nature.com/articles/s41592-020-01008-z},
+	doi = {10.1038/s41592-020-01008-z},
+	language = {en},
+	number = {2},
+	urldate = {2026-04-09},
+	journal = {Nature Methods},
+	author = {Isensee, Fabian and Jaeger, Paul F. and Kohl, Simon A. A. and Petersen, Jens and Maier-Hein, Klaus H.},
+	month = feb,
+	year = {2021},
+	pages = {203--211},
+}
+
+@incollection{navab_u-net_2015,
+	address = {Cham},
+	title = {U-{Net}: {Convolutional} {Networks} for {Biomedical} {Image} {Segmentation}},
+	volume = {9351},
+	isbn = {978-3-319-24573-7 978-3-319-24574-4},
+	shorttitle = {U-{Net}},
+	url = {http://link.springer.com/10.1007/978-3-319-24574-4_28},
+	doi = {10.1007/978-3-319-24574-4_28},
+	language = {en},
+	urldate = {2026-04-09},
+	booktitle = {Medical {Image} {Computing} and {Computer}-{Assisted} {Intervention} – {MICCAI} 2015},
+	publisher = {Springer International Publishing},
+	author = {Ronneberger, Olaf and Fischer, Philipp and Brox, Thomas},
+	editor = {Navab, Nassir and Hornegger, Joachim and Wells, William M. and Frangi, Alejandro F.},
+	year = {2015},
+	note = {Series Title: Lecture Notes in Computer Science},
+	pages = {234--241},
+}
+
+@article{pal_deep_2021,
+	title = {Deep multiple-instance learning for abnormal cell detection in cervical histopathology images},
+	volume = {138},
+	issn = {00104825},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0010482521006843},
+	doi = {10.1016/j.compbiomed.2021.104890},
+	language = {en},
+	urldate = {2026-04-05},
+	journal = {Computers in Biology and Medicine},
+	author = {Pal, Anabik and Xue, Zhiyun and Desai, Kanan and Aina F Banjo, Adekunbiola and Adepiti, Clement Akinfolarin and Long, L. Rodney and Schiffman, Mark and Antani, Sameer},
+	month = nov,
+	year = {2021},
+	pages = {104890},
+}
+
+@article{huang_geometric_2026,
+	title = {Geometric multi-instance learning for weakly supervised gastric cancer segmentation},
+	volume = {9},
+	issn = {2398-6352},
+	url = {https://www.nature.com/articles/s41746-025-02287-6},
+	doi = {10.1038/s41746-025-02287-6},
+	language = {en},
+	number = {1},
+	urldate = {2026-04-05},
+	journal = {npj Digital Medicine},
+	author = {Huang, Chenshen and Xia, Haoyun and Xiao, Xi and Chen, Hong and Jiang, Yiqing and Lyu, Yahui and Ni, Zhizhan and Wang, Tianyang and Wang, Ning and Huang, Qi},
+	month = jan,
+	year = {2026},
+	pages = {101},
+}
+
+@article{liu_object_2026,
+	title = {Object knowledge-aware multiple instance learning for small tumor segmentation},
+	volume = {115},
+	issn = {17468094},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1746809425019111},
+	doi = {10.1016/j.bspc.2025.109400},
+	language = {en},
+	urldate = {2026-04-05},
+	journal = {Biomedical Signal Processing and Control},
+	author = {Liu, Haofeng and Gou, Shuiping and Zhou, Yanyan and Jiao, Changzhe and Liu, Wenbo and Shi, Mei and Luo, Zhonghua},
+	month = apr,
+	year = {2026},
+	pages = {109400},
+}
+
+@article{aqib_javed_novel_2025,
+	title = {A novel regularization approach for loss functions to reduce instance imbalance in biomedical image segmentation},
+	volume = {119},
+	issn = {14769271},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1476927125002154},
+	doi = {10.1016/j.compbiolchem.2025.108555},
+	language = {en},
+	urldate = {2026-04-05},
+	journal = {Computational Biology and Chemistry},
+	author = {Aqib Javed, Muhammad and Khuram Shahzad, Muhammad and Syed Muhammad Bilal Ali, Hafiz},
+	month = dec,
+	year = {2025},
+	pages = {108555},
+}
+
+@article{zhang_all-net_2021,
+	title = {{ALL}-{Net}: {Anatomical} information lesion-wise loss function integrated into neural network for multiple sclerosis lesion segmentation},
+	volume = {32},
+	issn = {22131582},
+	shorttitle = {{ALL}-{Net}},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S2213158221002989},
+	doi = {10.1016/j.nicl.2021.102854},
+	language = {en},
+	urldate = {2026-04-05},
+	journal = {NeuroImage: Clinical},
+	author = {Zhang, Hang and Zhang, Jinwei and Li, Chao and Sweeney, Elizabeth M. and Spincemaille, Pascal and Nguyen, Thanh D. and Gauthier, Susan A. and Wang, Yi and Marcille, Melanie},
+	year = {2021},
+	pages = {102854},
+}
+
+@misc{azad_loss_2023,
+	title = {Loss {Functions} in the {Era} of {Semantic} {Segmentation}: {A} {Survey} and {Outlook}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	shorttitle = {Loss {Functions} in the {Era} of {Semantic} {Segmentation}},
+	url = {https://arxiv.org/abs/2312.05391},
+	doi = {10.48550/ARXIV.2312.05391},
+	abstract = {Semantic image segmentation, the process of classifying each pixel in an image into a particular class, plays an important role in many visual understanding systems. As the predominant criterion for evaluating the performance of statistical models, loss functions are crucial for shaping the development of deep learning-based segmentation algorithms and improving their overall performance. To aid researchers in identifying the optimal loss function for their particular application, this survey provides a comprehensive and unified review of \$25\$ loss functions utilized in image segmentation. We provide a novel taxonomy and thorough review of how these loss functions are customized and leveraged in image segmentation, with a systematic categorization emphasizing their significant features and applications. Furthermore, to evaluate the efficacy of these methods in real-world scenarios, we propose unbiased evaluations of some distinct and renowned loss functions on established medical and natural image datasets. We conclude this review by identifying current challenges and unveiling future research opportunities. Finally, we have compiled the reviewed studies that have open-source implementations on our GitHub page.},
+	urldate = {2026-04-05},
+	publisher = {arXiv},
+	author = {Azad, Reza and Heidary, Moein and Yilmaz, Kadir and Hüttemann, Michael and Karimijafarbigloo, Sanaz and Wu, Yuli and Schmeink, Anke and Merhof, Dorit},
+	year = {2023},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences},
+}
+
+@article{valverde_region-wise_2023,
+	title = {Region-wise loss for biomedical image segmentation},
+	volume = {136},
+	issn = {00313203},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0031320322006872},
+	doi = {10.1016/j.patcog.2022.109208},
+	language = {en},
+	urldate = {2026-04-04},
+	journal = {Pattern Recognition},
+	author = {Valverde, Juan Miguel and Tohka, Jussi},
+	month = apr,
+	year = {2023},
+	pages = {109208},
+}
+
+@article{chen_adaptive_2023,
+	title = {Adaptive {Region}-{Specific} {Loss} for {Improved} {Medical} {Image} {Segmentation}},
+	volume = {45},
+	issn = {1939-3539},
+	doi = {10.1109/TPAMI.2023.3289667},
+	abstract = {Defining the loss function is an important part of neural network design and critically determines the success of deep learning modeling. A significant shortcoming of the conventional loss functions is that they weight all regions in the input image volume equally, despite the fact that the system is known to be heterogeneous (i.e., some regions can achieve high prediction performance more easily than others). Here, we introduce a region-specific loss to lift the implicit assumption of homogeneous weighting for better learning. We divide the entire volume into multiple sub-regions, each with an individualized loss constructed for optimal local performance. Effectively, this scheme imposes higher weightings on the sub-regions that are more difficult to segment, and vice versa. Furthermore, the regional false positive and false negative errors are computed for each input image during a training step and the regional penalty is adjusted accordingly to enhance the overall accuracy of the prediction. Using different public and in-house medical image datasets, we demonstrate that the proposed regionally adaptive loss paradigm outperforms conventional methods in the multi-organ segmentations, without any modification to the neural network architecture or additional data preparation.},
+	language = {eng},
+	number = {11},
+	journal = {IEEE transactions on pattern analysis and machine intelligence},
+	author = {Chen, Yizheng and Yu, Lequan and Wang, Jen-Yeu and Panjwani, Neil and Obeid, Jean-Pierre and Liu, Wu and Liu, Lianli and Kovalchuk, Nataliya and Gensheimer, Michael Francis and Vitzthum, Lucas Kas and Beadle, Beth M. and Chang, Daniel T. and Le, Quynh-Thu and Han, Bin and Xing, Lei},
+	month = nov,
+	year = {2023},
+	keywords = {Algorithms, Image Processing, Computer-Assisted, Neural Networks, Computer},
+	pages = {13408--13421},
+}
+
+@article{hashemi_asymmetric_2019,
+	title = {Asymmetric {Loss} {Functions} and {Deep} {Densely}-{Connected} {Networks} for {Highly}-{Imbalanced} {Medical} {Image} {Segmentation}: {Application} to {Multiple} {Sclerosis} {Lesion} {Detection}},
+	volume = {7},
+	copyright = {https://ieeexplore.ieee.org/Xplorehelp/downloads/license-information/OAPA.html},
+	issn = {2169-3536},
+	shorttitle = {Asymmetric {Loss} {Functions} and {Deep} {Densely}-{Connected} {Networks} for {Highly}-{Imbalanced} {Medical} {Image} {Segmentation}},
+	url = {https://ieeexplore.ieee.org/document/8573779/},
+	doi = {10.1109/ACCESS.2018.2886371},
+	urldate = {2026-04-04},
+	journal = {IEEE Access},
+	author = {Hashemi, Seyed Raein and Mohseni Salehi, Seyed Sadegh and Erdogmus, Deniz and Prabhu, Sanjay P. and Warfield, Simon K. and Gholipour, Ali},
+	year = {2019},
+	pages = {1721--1735},
+}
+
+@article{dereskewicz_flames_2025,
+	title = {{FLAMeS}: {A} {Robust} {Deep} {Learning} {Model} for {Automated} {Multiple} {Sclerosis} {Lesion} {Segmentation}},
+	shorttitle = {{FLAMeS}},
+	doi = {10.1101/2025.05.19.25327707},
+	abstract = {BACKGROUND AND PURPOSE: Assessment of brain lesions on MRI is crucial for research in multiple sclerosis (MS). Manual segmentation is time consuming and inconsistent. We aimed to develop an automated MS lesion segmentation algorithm for T2-weighted fluid-attenuated inversion recovery (FLAIR) MRI.
+METHODS: We developed FLAIR Lesion Analysis in Multiple Sclerosis (FLAMeS), a deep learning-based MS lesion segmentation algorithm based on the nnU-Net 3D full-resolution U-Net and trained on 668 FLAIR 1.5 and 3 tesla scans from persons with MS. FLAMeS was evaluated on three external datasets: MSSEG-2 (n=14), MSLesSeg (n=51), and a clinical cohort (n=10), and compared to SAMSEG, LST-LPA, and LST-AI. Performance was assessed qualitatively by two blinded experts and quantitatively by comparing automated and ground truth lesion masks using standard segmentation metrics.
+RESULTS: In a blinded qualitative review of 20 scans, both raters selected FLAMeS as the most accurate segmentation in 15 cases, with one rater favoring FLAMeS in two additional cases. Across all testing datasets, FLAMeS achieved a mean Dice score of 0.74, a true positive rate of 0.84, and an F1 score of 0.78, consistently outperforming the benchmark methods. For other metrics, including positive predictive value, relative volume difference, and false positive rate, FLAMeS performed similarly or better than benchmark methods. Most lesions missed by FLAMeS were smaller than 10 mm3, whereas the benchmark methods missed larger lesions in addition to smaller ones.
+CONCLUSIONS: FLAMeS is an accurate, robust method for MS lesion segmentation that outperforms other publicly available methods.},
+	language = {eng},
+	journal = {medRxiv: The Preprint Server for Health Sciences},
+	author = {Dereskewicz, Emma and La Rosa, Francesco and Dos Santos Silva, Jonadab and Sizer, Edward and Kohli, Amit and Wynen, Maxence and Mullins, William A. and Maggi, Pietro and Levy, Sarah and Onyemeh, Kamso and Ayci, Batuhan and Solomon, Andrew J. and Assländer, Jakob and Al-Louzi, Omar and Reich, Daniel S. and Sumowski, James and Beck, Erin S.},
+	month = may,
+	year = {2025},
+	pages = {2025.05.19.25327707},
+}
+
+@article{yeung_calibrating_2023,
+	title = {Calibrating the {Dice} {Loss} to {Handle} {Neural} {Network} {Overconfidence} for {Biomedical} {Image} {Segmentation}},
+	volume = {36},
+	issn = {1618-727X},
+	doi = {10.1007/s10278-022-00735-3},
+	abstract = {The Dice similarity coefficient (DSC) is both a widely used metric and loss function for biomedical image segmentation due to its robustness to class imbalance. However, it is well known that the DSC loss is poorly calibrated, resulting in overconfident predictions that cannot be usefully interpreted in biomedical and clinical practice. Performance is often the only metric used to evaluate segmentations produced by deep neural networks, and calibration is often neglected. However, calibration is important for translation into biomedical and clinical practice, providing crucial contextual information to model predictions for interpretation by scientists and clinicians. In this study, we provide a simple yet effective extension of the DSC loss, named the DSC++ loss, that selectively modulates the penalty associated with overconfident, incorrect predictions. As a standalone loss function, the DSC++ loss achieves significantly improved calibration over the conventional DSC loss across six well-validated open-source biomedical imaging datasets, including both 2D binary and 3D multi-class segmentation tasks. Similarly, we observe significantly improved calibration when integrating the DSC++ loss into four DSC-based loss functions. Finally, we use softmax thresholding to illustrate that well calibrated outputs enable tailoring of recall-precision bias, which is an important post-processing technique to adapt the model predictions to suit the biomedical or clinical task. The DSC++ loss overcomes the major limitation of the DSC loss, providing a suitable loss function for training deep learning segmentation models for use in biomedical and clinical practice. Source code is available at https://github.com/mlyg/DicePlusPlus .},
+	language = {eng},
+	number = {2},
+	journal = {Journal of Digital Imaging},
+	author = {Yeung, Michael and Rundo, Leonardo and Nan, Yang and Sala, Evis and Schönlieb, Carola-Bibiane and Yang, Guang},
+	month = apr,
+	year = {2023},
+	keywords = {Biomedical imaging, Cost function, Humans, Image Processing, Computer-Assisted, Image segmentation, Machine learning, Neural Networks, Computer},
+	pages = {739--752},
+}
+
+@misc{lin_focal_2017,
+	title = {Focal {Loss} for {Dense} {Object} {Detection}},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	url = {https://arxiv.org/abs/1708.02002},
+	doi = {10.48550/ARXIV.1708.02002},
+	abstract = {The highest accuracy object detectors to date are based on a two-stage approach popularized by R-CNN, where a classifier is applied to a sparse set of candidate object locations. In contrast, one-stage detectors that are applied over a regular, dense sampling of possible object locations have the potential to be faster and simpler, but have trailed the accuracy of two-stage detectors thus far. In this paper, we investigate why this is the case. We discover that the extreme foreground-background class imbalance encountered during training of dense detectors is the central cause. We propose to address this class imbalance by reshaping the standard cross entropy loss such that it down-weights the loss assigned to well-classified examples. Our novel Focal Loss focuses training on a sparse set of hard examples and prevents the vast number of easy negatives from overwhelming the detector during training. To evaluate the effectiveness of our loss, we design and train a simple dense detector we call RetinaNet. Our results show that when trained with the focal loss, RetinaNet is able to match the speed of previous one-stage detectors while surpassing the accuracy of all existing state-of-the-art two-stage detectors. Code is at: https://github.com/facebookresearch/Detectron.},
+	urldate = {2026-04-04},
+	publisher = {arXiv},
+	author = {Lin, Tsung-Yi and Goyal, Priya and Girshick, Ross and He, Kaiming and Dollár, Piotr},
+	year = {2017},
+	note = {Version Number: 2},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences},
+}
+
+@inproceedings{abraham_novel_2019,
+	address = {Venice, Italy},
+	title = {A {Novel} {Focal} {Tversky} {Loss} {Function} {With} {Improved} {Attention} {U}-{Net} for {Lesion} {Segmentation}},
+	copyright = {https://ieeexplore.ieee.org/Xplorehelp/downloads/license-information/Crown.html},
+	isbn = {978-1-5386-3641-1},
+	url = {https://ieeexplore.ieee.org/document/8759329/},
+	doi = {10.1109/ISBI.2019.8759329},
+	urldate = {2026-04-04},
+	booktitle = {2019 {IEEE} 16th {International} {Symposium} on {Biomedical} {Imaging} ({ISBI} 2019)},
+	publisher = {IEEE},
+	author = {Abraham, Nabila and Khan, Naimul Mefraz},
+	month = apr,
+	year = {2019},
+	pages = {683--687},
+}
+
+@article{wottschel_predicting_2015,
+	title = {Predicting outcome in clinically isolated syndrome using machine learning},
+	volume = {7},
+	issn = {22131582},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S2213158214001880},
+	doi = {10.1016/j.nicl.2014.11.021},
+	language = {en},
+	urldate = {2026-03-28},
+	journal = {NeuroImage: Clinical},
+	author = {Wottschel, V. and Alexander, D.C. and Kwok, P.P. and Chard, D.T. and Stromillo, M.L. and De Stefano, N. and Thompson, A.J. and Miller, D.H. and Ciccarelli, O.},
+	year = {2015},
+	keywords = {Adult, Clinically isolated syndrome, Demyelinating Diseases, Disease Progression, Female, Humans, Image Interpretation, Computer-Assisted, MRI, Magnetic Resonance Imaging, Male, Middle Aged, Multiple Sclerosis, Retrospective Studies, Sensitivity and Specificity, Support Vector Machine, Support vector machines, Young Adult},
+	pages = {281--287},
+}
+
+@article{wiltgen_lst-ai_2024,
+	title = {{LST}-{AI}: {A} deep learning ensemble for accurate {MS} lesion segmentation},
+	volume = {42},
+	issn = {22131582},
+	shorttitle = {{LST}-{AI}},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S2213158224000500},
+	doi = {10.1016/j.nicl.2024.103611},
+	language = {en},
+	urldate = {2026-04-04},
+	journal = {NeuroImage: Clinical},
+	author = {Wiltgen, Tun and McGinnis, Julian and Schlaeger, Sarah and Kofler, Florian and Voon, CuiCi and Berthele, Achim and Bischl, Daria and Grundl, Lioba and Will, Nikolaus and Metz, Marie and Schinz, David and Sepp, Dominik and Prucker, Philipp and Schmitz-Koep, Benita and Zimmer, Claus and Menze, Bjoern and Rueckert, Daniel and Hemmer, Bernhard and Kirschke, Jan and Mühlau, Mark and Wiestler, Benedikt},
+	year = {2024},
+	pages = {103611},
+}
+
+@article{grahl_evidence_2019,
+	title = {Evidence for a white matter lesion size threshold to support the diagnosis of relapsing remitting multiple sclerosis},
+	volume = {29},
+	issn = {22110348},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S2211034819300434},
+	doi = {10.1016/j.msard.2019.01.042},
+	language = {en},
+	urldate = {2026-04-04},
+	journal = {Multiple Sclerosis and Related Disorders},
+	author = {Grahl, S. and Pongratz, V. and Schmidt, P. and Engl, C. and Bussas, M. and Radetz, A. and Gonzalez-Escamilla, G. and Groppa, S. and Zipp, F. and Lukas, C. and Kirschke, J. and Zimmer, C. and Hoshi, M. and Berthele, A. and Hemmer, B. and Mühlau, M.},
+	month = apr,
+	year = {2019},
+	pages = {124--129},
+}
+
+@article{wang_survey_1997,
+	title = {Survey of the distribution of lesion size in multiple sclerosis: implication for the measurement of total lesion load},
+	volume = {63},
+	issn = {0022-3050},
+	shorttitle = {Survey of the distribution of lesion size in multiple sclerosis},
+	doi = {10.1136/jnnp.63.4.452},
+	abstract = {OBJECTIVES: Quantitative measurement of lesion load on proton density or T2 weighted brain MRI in multiple sclerosis is a widely used marker of disease progression in treatment trials and natural history studies. However, it has proved difficult to obtain highly reproducible measurements. Several factors account for this, one of which is uncertainties in lesion identification, particularly very small white matter abnormalities. This paper aims to ascertain the significance of very small white matter abnormalities in the measurement of lesion load in multiple sclerosis.
+METHODS: All visible lesion areas identified by an experienced observer on proton density weighted spin echo brain MRI with 5 mm thick slices were measured by using a contouring technique in 15 patients with secondary progressive multiple sclerosis (SPMS) and 13 with relapsing remitting multiple sclerosis (RRMS). The size distribution of these lesions was analysed.
+RESULTS: 80\% of the number of the lesions were smaller than 80 mm2. Lesions that were smaller than 10 mm2 (equivalent diameter {\textless}3.5 mm) made up nearly 20\% of all lesions; their relative contribution to the total lesion load varied from 0.0-5.7\% (mean=1.1\%, median=0.65\%) in individual patients, and was larger when the total lesion load was smaller (r = -0.65, P{\textless}0.001). Median lesion size was significantly smaller in the SPMS group than the RRMS group.
+CONCLUSIONS: The results suggest that it is prudent to identify and measure small lesions in evaluating treatment effects, and that measures are undertaken (for example, using thinner slices such as 3 mm) to improve their detection.},
+	language = {eng},
+	number = {4},
+	journal = {Journal of Neurology, Neurosurgery, and Psychiatry},
+	author = {Wang, L. and Lai, H. M. and Thompson, A. J. and Miller, D. H.},
+	month = oct,
+	year = {1997},
+	keywords = {Adult, Brain, Disease Progression, Female, Humans, Magnetic Resonance Imaging, Male, Middle Aged, Multiple Sclerosis, Recurrence, Remission, Spontaneous},
+	pages = {452--455},
+}
+
+@misc{lundberg_unified_2017,
+	title = {A {Unified} {Approach} to {Interpreting} {Model} {Predictions}},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	url = {https://arxiv.org/abs/1705.07874},
+	doi = {10.48550/ARXIV.1705.07874},
+	abstract = {Understanding why a model makes a certain prediction can be as crucial as the prediction's accuracy in many applications. However, the highest accuracy for large modern datasets is often achieved by complex models that even experts struggle to interpret, such as ensemble or deep learning models, creating a tension between accuracy and interpretability. In response, various methods have recently been proposed to help users interpret the predictions of complex models, but it is often unclear how these methods are related and when one method is preferable over another. To address this problem, we present a unified framework for interpreting predictions, SHAP (SHapley Additive exPlanations). SHAP assigns each feature an importance value for a particular prediction. Its novel components include: (1) the identification of a new class of additive feature importance measures, and (2) theoretical results showing there is a unique solution in this class with a set of desirable properties. The new class unifies six existing methods, notable because several recent methods in the class lack the proposed desirable properties. Based on insights from this unification, we present new methods that show improved computational performance and/or better consistency with human intuition than previous approaches.},
+	urldate = {2026-03-29},
+	publisher = {arXiv},
+	author = {Lundberg, Scott and Lee, Su-In},
+	year = {2017},
+	note = {Version Number: 2},
+	keywords = {Artificial Intelligence (cs.AI), FOS: Computer and information sciences, Machine Learning (cs.LG), Machine Learning (stat.ML)},
+}
+
+@book{hosmer_applied_2000,
+	edition = {1},
+	title = {Applied {Logistic} {Regression}},
+	isbn = {978-0-471-35632-5 978-0-471-72214-4},
+	url = {https://onlinelibrary.wiley.com/doi/book/10.1002/0471722146},
+	doi = {10.1002/0471722146},
+	language = {en},
+	urldate = {2026-03-28},
+	publisher = {Wiley},
+	author = {Hosmer, David W. and Lemeshow, Stanley},
+	month = sep,
+	year = {2000},
+}
+
+@article{cortes_support-vector_1995,
+	title = {Support-vector networks},
+	volume = {20},
+	copyright = {http://www.springer.com/tdm},
+	issn = {0885-6125, 1573-0565},
+	url = {http://link.springer.com/10.1007/BF00994018},
+	doi = {10.1007/BF00994018},
+	language = {en},
+	number = {3},
+	urldate = {2026-03-28},
+	journal = {Machine Learning},
+	author = {Cortes, Corinna and Vapnik, Vladimir},
+	month = sep,
+	year = {1995},
+	pages = {273--297},
+}
+
+@article{breiman_random_2001,
+	title = {Random {Forests}},
+	volume = {45},
+	issn = {0885-6125, 1573-0565},
+	url = {https://link.springer.com/10.1023/A:1010933404324},
+	doi = {10.1023/A:1010933404324},
+	language = {en},
+	number = {1},
+	urldate = {2026-03-28},
+	journal = {Machine Learning},
+	author = {Breiman, Leo},
+	month = oct,
+	year = {2001},
+	pages = {5--32},
+}
+
+@inproceedings{machado_lightgbm_2019,
+	address = {Toronto, ON, Canada},
+	title = {{LightGBM}: an {Effective} {Decision} {Tree} {Gradient} {Boosting} {Method} to {Predict} {Customer} {Loyalty} in the {Finance} {Industry}},
+	copyright = {https://ieeexplore.ieee.org/Xplorehelp/downloads/license-information/IEEE.html},
+	isbn = {978-1-7281-1846-8},
+	shorttitle = {{LightGBM}},
+	url = {https://ieeexplore.ieee.org/document/8845529/},
+	doi = {10.1109/ICCSE.2019.8845529},
+	urldate = {2026-03-28},
+	booktitle = {2019 14th {International} {Conference} on {Computer} {Science} \& {Education} ({ICCSE})},
+	publisher = {IEEE},
+	author = {Machado, Marcos Roberto and Karray, Salma and De Sousa, Ivaldo Tributino},
+	month = aug,
+	year = {2019},
+	pages = {1111--1116},
+}
+
+@inproceedings{chen_xgboost_2016,
+	address = {San Francisco California USA},
+	title = {{XGBoost}: {A} {Scalable} {Tree} {Boosting} {System}},
+	isbn = {978-1-4503-4232-2},
+	shorttitle = {{XGBoost}},
+	url = {https://dl.acm.org/doi/10.1145/2939672.2939785},
+	doi = {10.1145/2939672.2939785},
+	language = {en},
+	urldate = {2026-03-28},
+	booktitle = {Proceedings of the 22nd {ACM} {SIGKDD} {International} {Conference} on {Knowledge} {Discovery} and {Data} {Mining}},
+	publisher = {ACM},
+	author = {Chen, Tianqi and Guestrin, Carlos},
+	month = aug,
+	year = {2016},
+	pages = {785--794},
+}
+
+@misc{dorogush_catboost_2018,
+	title = {{CatBoost}: gradient boosting with categorical features support},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	shorttitle = {{CatBoost}},
+	url = {https://arxiv.org/abs/1810.11363},
+	doi = {10.48550/ARXIV.1810.11363},
+	abstract = {In this paper we present CatBoost, a new open-sourced gradient boosting library that successfully handles categorical features and outperforms existing publicly available implementations of gradient boosting in terms of quality on a set of popular publicly available datasets. The library has a GPU implementation of learning algorithm and a CPU implementation of scoring algorithm, which are significantly faster than other gradient boosting libraries on ensembles of similar sizes.},
+	urldate = {2026-03-28},
+	publisher = {arXiv},
+	author = {Dorogush, Anna Veronika and Ershov, Vasily and Gulin, Andrey},
+	year = {2018},
+	note = {Version Number: 1},
+	keywords = {FOS: Computer and information sciences, Machine Learning (cs.LG), Machine Learning (stat.ML), Mathematical Software (cs.MS)},
+}
+
+@article{chavarria_conversion_2023,
+	title = {Conversion {Predictors} of {Clinically} {Isolated} {Syndrome} to {Multiple} {Sclerosis} in {Mexican} {Patients}: {A} {Prospective} {Study}},
+	volume = {54},
+	issn = {1873-5487},
+	shorttitle = {Conversion {Predictors} of {Clinically} {Isolated} {Syndrome} to {Multiple} {Sclerosis} in {Mexican} {Patients}},
+	doi = {10.1016/j.arcmed.2023.102843},
+	abstract = {BACKGROUND: Clinically Isolated Syndrome (CIS) is the first clinical episode suggestive of Clinical Definite Multiple Sclerosis (CDMS). There are no reports on possible predictors of conversion to CDMS in Mexican mestizo patients.
+AIM OF THE STUDY: To investigate immunological markers, clinical and paraclinical findings, and the presence of herpesvirus DNA to predict the transition from CIS to CDMS in Mexican patients.
+METHODS: A single-center prospective cohort study was conducted with newly diagnosed patients with CIS in Mexico between 2006 and 2010. Clinical information, immunophenotype, serum cytokines, anti-myelin protein immunoglobulins, and herpes viral DNA were determined at the time of diagnosis.
+RESULTS: 273 patients diagnosed with CIS met the enrolment criteria; after 10 years of follow-up, 46\% met the 2010 McDonald criteria for CDMS. Baseline parameters associated with conversion to CDMS were motor symptoms, multifocal syndromes, and alterations of somatosensory evoked potentials. The presence of at least one lesion on magnetic resonance imaging was the main factor associated with an increased risk of conversion to CDMS (RR 15.52, 95\% CI 3.96-60.79, p = 0.000). Patients who converted to CDMS showed a significantly lower percentage of circulating regulatory T cells, cytotoxic T cells, and B cells, and the conversion to CDMS was associated with the presence of varicella-zoster virus and herpes simplex virus 1 DNA in cerebrospinal fluid and blood.
+CONCLUSION: There is scarce evidence in Mexico regarding the demographic and clinical aspects of CIS and CDMS. This study shows several predictors of conversion to CDMS to be considered in Mexican patients with CIS.},
+	language = {eng},
+	number = {5},
+	journal = {Archives of Medical Research},
+	author = {Chavarria, Víctor and Espinosa-Ramírez, Guillermo and Sotelo, Julio and Flores-Rivera, José and Anguiano, Omar and Hernández, Ana Campos and Guzmán-Ríos, Edgar Daniel and Salazar, Aleli and Ordoñez, Graciela and Pineda, Benjamin},
+	month = jul,
+	year = {2023},
+	keywords = {Clinical Definite Multiple Sclerosis, Clinically Isolated Syndrome, Conversion predictors, Conversion risk, Demyelinating Diseases, Disease Progression, Humans, Magnetic Resonance Imaging, Mexico, Multiple Sclerosis, Prospective Studies, Prospective cohort study},
+	pages = {102843},
+}
+
+@article{kuhle_conversion_2015,
+	title = {Conversion from clinically isolated syndrome to multiple sclerosis: {A} large multicentre study},
+	volume = {21},
+	issn = {1352-4585, 1477-0970},
+	shorttitle = {Conversion from clinically isolated syndrome to multiple sclerosis},
+	url = {https://journals.sagepub.com/doi/10.1177/1352458514568827},
+	doi = {10.1177/1352458514568827},
+	abstract = {Background and objective:
+              We explored which clinical and biochemical variables predict conversion from clinically isolated syndrome (CIS) to clinically definite multiple sclerosis (CDMS) in a large international cohort.
+            
+            
+              Methods:
+              Thirty-three centres provided serum samples from 1047 CIS cases with at least two years’ follow-up. Age, sex, clinical presentation, T2-hyperintense lesions, cerebrospinal fluid (CSF) oligoclonal bands (OCBs), CSF IgG index, CSF cell count, serum 25-hydroxyvitamin D3 (25-OH-D), cotinine and IgG titres against Epstein-Barr nuclear antigen 1 (EBNA-1) and cytomegalovirus were tested for association with risk of CDMS.
+            
+            
+              Results:
+              At median follow-up of 4.31 years, 623 CIS cases converted to CDMS. Predictors of conversion in multivariable analyses were OCB (HR = 2.18, 95\% CI = 1.71–2.77, p {\textless} 0.001), number of T2 lesions (two to nine lesions vs 0/1 lesions: HR = 1.97, 95\% CI = 1.52–2.55, p {\textless} 0.001; {\textgreater}9 lesions vs 0/1 lesions: HR = 2.74, 95\% CI = 2.04–3.68, p {\textless} 0.001) and age at CIS (HR per year inversely increase = 0.98, 95\% CI = 0.98–0.99, p {\textless} 0.001). Lower 25-OH-D levels were associated with CDMS in univariable analysis, but this was attenuated in the multivariable model. OCB positivity was associated with higher EBNA-1 IgG titres.
+            
+            
+              Conclusions:
+              We validated MRI lesion load, OCB and age at CIS as the strongest independent predictors of conversion to CDMS in this multicentre setting. A role for vitamin D is suggested but requires further investigation.},
+	language = {en},
+	number = {8},
+	urldate = {2026-03-28},
+	journal = {Multiple Sclerosis Journal},
+	author = {Kuhle, J and Disanto, G and Dobson, R and Adiutori, R and Bianchi, L and Topping, J and Bestwick, Jp and Meier, U-C and Marta, M and Costa, G Dalla and Runia, T and Evdoshenko, E and Lazareva, N and Thouvenot, E and Iaffaldano, P and Direnzo, V and Khademi, M and Piehl, F and Comabella, M and Sombekke, M and Killestein, J and Hegen, H and Rauch, S and D’Alfonso, S and Alvarez-Cermeño, Jc and Kleinová, P and Horáková, D and Roesler, R and Lauda, F and Llufriu, S and Avsar, T and Uygunoglu, U and Altintas, A and Saip, S and Menge, T and Rajda, C and Bergamaschi, R and Moll, N and Khalil, M and Marignier, R and Dujmovic, I and Larsson, H and Malmestrom, C and Scarpini, E and Fenoglio, C and Wergeland, S and Laroni, A and Annibali, V and Romano, S and Martínez, Ad and Carra, A and Salvetti, M and Uccelli, A and Torkildsen, Ø and Myhr, Km and Galimberti, D and Rejdak, K and Lycke, J and Frederiksen, Jl and Drulovic, J and Confavreux, C and Brassat, D and Enzinger, C and Fuchs, S and Bosca, I and Pelletier, J and Picard, C and Colombo, E and Franciotta, D and Derfuss, T and Lindberg, Rlp and Yaldizli, Ö and Vécsei, L and Kieseier, Bc and Hartung, Hp and Villoslada, P and Siva, A and Saiz, A and Tumani, H and Havrdová, E and Villar, Lm and Leone, M and Barizzone, N and Deisenhammer, F and Teunissen, C and Montalban, X and Tintoré, M and Olsson, T and Trojano, M and Lehmann, S and Castelnovo, G and Lapin, S and Hintzen, R and Kappos, L and Furlan, R and Martinelli, V and Comi, G and Ramagopalan, Sv and Giovannoni, G},
+	month = jul,
+	year = {2015},
+	pages = {1013--1024},
+}
+
+@article{shaheen_early_2018,
+	title = {Early predictors of conversion in patients with clinically isolated syndrome: a preliminary {Egyptian} study},
+	volume = {54},
+	issn = {1687-8329},
+	shorttitle = {Early predictors of conversion in patients with clinically isolated syndrome},
+	url = {https://ejnpn.springeropen.com/articles/10.1186/s41983-018-0021-3},
+	doi = {10.1186/s41983-018-0021-3},
+	language = {en},
+	number = {1},
+	urldate = {2026-03-28},
+	journal = {The Egyptian Journal of Neurology, Psychiatry and Neurosurgery},
+	author = {Shaheen, Hala A. and Sayed, Sayed S. and Daker, Lamiaa I. and Taha, Mohamed A.},
+	month = dec,
+	year = {2018},
+	pages = {21},
+}
+
+@article{piri_cinar_prediction_2017,
+	title = {Prediction of {Conversion} from {Clinically} {Isolated} {Syndrome} to {Multiple} {Sclerosis} {According} to {Baseline} {Characteristics}: {A} {Prospective} {Study}},
+	issn = {13094866},
+	shorttitle = {Prediction of {Conversion} from {Clinically} {Isolated} {Syndrome} to {Multiple} {Sclerosis} {According} to {Baseline} {Characteristics}},
+	url = {http://www.noropsikiyatriarsivi.com/crossref?doi=10.5152/npa.2017.12667},
+	doi = {10.5152/npa.2017.12667},
+	urldate = {2026-03-28},
+	journal = {Noro Psikiyatri Arsivi},
+	author = {Piri Cinar, Bilge and Ozakbas, Serkan},
+	month = sep,
+	year = {2017},
+}
+
+@article{ro_prospective_2019,
+	title = {A prospective, observational study on conversion of clinically isolated syndrome to multiple sclerosis during 4-year period ({MS} {NEO} study) in {Taiwan}},
+	volume = {14},
+	issn = {1932-6203},
+	url = {https://dx.plos.org/10.1371/journal.pone.0202453},
+	doi = {10.1371/journal.pone.0202453},
+	language = {en},
+	number = {7},
+	urldate = {2026-03-28},
+	journal = {PLOS ONE},
+	author = {Ro, Long-Sun and Yang, Chih-Chao and Lyu, Rong-Kuo and Lin, Kon-Ping and Tsai, Tzung-Chang and Lu, Shiang-Ru and Chang, Kuo-Hsuan and Huang, Li-Chieh and Tsai, Ching-Piao},
+	editor = {Aktas, Orhan},
+	month = jul,
+	year = {2019},
+	pages = {e0202453},
+}
+
+@article{banerjee_conversion_2019,
+	title = {Conversion of clinically isolated syndrome to multiple sclerosis: a prospective multi-center study in {Eastern} {India}},
+	volume = {5},
+	issn = {2055-2173, 2055-2173},
+	shorttitle = {Conversion of clinically isolated syndrome to multiple sclerosis},
+	url = {https://journals.sagepub.com/doi/10.1177/2055217319849721},
+	doi = {10.1177/2055217319849721},
+	abstract = {Background
+              In White populations more than 60\% of clinically isolated syndrome (CIS) convert to multiple sclerosis (MS) on a long-term follow-up; several predictors for conversion have been identified.
+            
+            
+              Objective
+              This study aimed to determine the conversion rate and the predictors of conversion from CIS to MS (McDonald 2010) among Indians. The other objective was to evaluate the diagnostic accuracy of the new McDonald 2017 criteria in prediction of a second clinical attack.
+            
+            
+              Methods
+              Clinical and demographic data of CIS cohorts were collected. Baseline investigations included cerebrospinal magnetic resonance imaging (MRI) with contrast and cerebrospinal fluid (CSF) testing for oligoclonal band (OCB). Follow-up clinical and MRI examinations were performed annually for at least 24 months.
+            
+            
+              Results
+              Of the 82 subjects (age range 15–58 years), 36 (43.9\%) converted to MS; 31/82 (37.8\%) converted in 24 months. The predictors for conversion were earlier age of onset, CSF-OCB, cerebral MRI T2 lesion count, and periventricular and juxtacortical location of lesions. Twenty-two (26.83\%) CIS fulfilled the McDonald MS 2017 criteria at baseline.
+            
+            
+              Conclusion
+              In this first prospective study of CIS in India, the risk factors for conversion are similar but the conversion rate to MS is lower than that in the western nations.},
+	language = {en},
+	number = {2},
+	urldate = {2026-03-28},
+	journal = {Multiple Sclerosis Journal - Experimental, Translational and Clinical},
+	author = {Banerjee, Tk and Saha, M and Ghosh, E and Hazra, A and Das, A and Choudhury, D and Ojha, S and Haldar, A and Mukherjee, A and Nandi, Ss and Ghosh, A and Mukherjee, A and Chatterjee, A and Datta, A and Purakayastha, S},
+	month = apr,
+	year = {2019},
+	pages = {2055217319849721},
+}
+
+@article{yoo_deep_2019,
+	title = {Deep learning of brain lesion patterns and user-defined clinical and {MRI} features for predicting conversion to multiple sclerosis from clinically isolated syndrome},
+	volume = {7},
+	issn = {2168-1163, 2168-1171},
+	url = {https://www.tandfonline.com/doi/full/10.1080/21681163.2017.1356750},
+	doi = {10.1080/21681163.2017.1356750},
+	language = {en},
+	number = {3},
+	urldate = {2026-03-28},
+	journal = {Computer Methods in Biomechanics and Biomedical Engineering: Imaging \& Visualization},
+	author = {Yoo, Youngjin and Tang, Lisa Y. W. and Li, David K. B. and Metz, Luanne and Kolind, Shannon and Traboulsee, Anthony L. and Tam, Roger C.},
+	month = may,
+	year = {2019},
+	pages = {250--259},
+}
+
+@article{bendfeldt_mri-based_2019,
+	title = {{MRI}-based prediction of conversion from clinically isolated syndrome to clinically definite multiple sclerosis using {SVM} and lesion geometry},
+	volume = {13},
+	issn = {1931-7557, 1931-7565},
+	url = {http://link.springer.com/10.1007/s11682-018-9942-9},
+	doi = {10.1007/s11682-018-9942-9},
+	language = {en},
+	number = {5},
+	urldate = {2026-03-28},
+	journal = {Brain Imaging and Behavior},
+	author = {Bendfeldt, Kerstin and Taschler, Bernd and Gaetano, Laura and Madoerin, Philip and Kuster, Pascal and Mueller-Lenke, Nicole and Amann, Michael and Vrenken, Hugo and Wottschel, Viktor and Barkhof, Frederik and Borgwardt, Stefan and Klöppel, Stefan and Wicklein, Eva-Maria and Kappos, Ludwig and Edan, Gilles and Freedman, Mark S. and Montalbán, Xavier and Hartung, Hans-Peter and Pohl, Christoph and Sandbrink, Rupert and Sprenger, Till and Radue, Ernst-Wilhelm and Wuerfel, Jens and Nichols, Thomas E.},
+	month = oct,
+	year = {2019},
+	pages = {1361--1374},
+}
+
+@article{zhang_predicting_2019,
+	title = {Predicting conversion from clinically isolated syndrome to multiple sclerosis–{An} imaging-based machine learning approach},
+	volume = {21},
+	issn = {22131582},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S2213158218303413},
+	doi = {10.1016/j.nicl.2018.11.003},
+	language = {en},
+	urldate = {2026-03-28},
+	journal = {NeuroImage: Clinical},
+	author = {Zhang, Haike and Alberts, Esther and Pongratz, Viola and Mühlau, Mark and Zimmer, Claus and Wiestler, Benedikt and Eichinger, Paul},
+	year = {2019},
+	pages = {101593},
+}
+
+@article{kolcava_conversion_2020,
+	title = {Conversion of clinically isolated syndrome to multiple sclerosis: a prospective study},
+	volume = {44},
+	issn = {22110348},
+	shorttitle = {Conversion of clinically isolated syndrome to multiple sclerosis},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S2211034820303382},
+	doi = {10.1016/j.msard.2020.102262},
+	language = {en},
+	urldate = {2026-03-28},
+	journal = {Multiple Sclerosis and Related Disorders},
+	author = {Kolčava, Jan and Kočica, Jan and Hulová, Monika and Dušek, Ladislav and Horáková, Magda and Keřkovský, Miloš and Stulík, Jakub and Dostál, Marek and Kuhn, Matyas and Vlčková, Eva and Bednařík, Josef and Benešová, Yvonne},
+	month = sep,
+	year = {2020},
+	pages = {102262},
+}
+
+@article{alroughani_predictors_2012,
+	title = {Predictors of {Conversion} to {Multiple} {Sclerosis} in {Patients} with {Clinical} {Isolated} {Syndrome} {Using} the 2010 {Revised} {McDonald} {Criteria}},
+	volume = {2012},
+	copyright = {http://creativecommons.org/licenses/by/3.0/},
+	issn = {2090-5513},
+	url = {https://www.hindawi.com/journals/isrn/2012/792192/},
+	doi = {10.5402/2012/792192},
+	abstract = {Background
+              . Clinically isolated syndrome (CIS) is the first neurologic episode of multiple sclerosis (MS). Magnetic resonance imaging (MRI) and clinical features are used to predict risk of conversion to MS.
+              Objectives
+              . The aim of this prospective study is to evaluate predictors of conversion of CIS to McDonald MS.
+              Method
+              . 97 patients with CIS have been followed for 2 years. Age of onset, gender, initial clinical presentation, and MRI brain and spine were assessed. The 2010 revised McDonald criteria were applied.
+              Results
+              . Fifty-nine patients (60.8\%) with CIS converted to McDonald MS after 10.1
+              
+                
+                  +
+                
+              
+              4.2 months. Thirty-seven (38.1\%) of the convertors satisfied the diagnostic criteria based on the radiological parameters, while 21.7\% sustained their second clinical events. A multivariate regression analysis revealed that high number of lesions in MRI (
+              
+                
+                  P
+                  =
+                  0.001
+                
+              
+              ) and earlier age of onset (
+              
+                
+                  P
+                  =
+                  0.043
+                
+              
+              ) predicted the conversion of CIS to McDonald MS. Gender (
+              
+                
+                  P
+                  =
+                  0.5
+                
+              
+              ) and initial clinical presentation (optic pathway (
+              
+                
+                  P
+                  =
+                  0.4
+                
+              
+              ), supratentorial (
+              
+                
+                  P
+                  =
+                  0.91
+                
+              
+              ), brain stem/ cerebellum (
+              
+                
+                  P
+                  =
+                  0.97
+                
+              
+              ), and spinal (
+              
+                
+                  P
+                  =
+                  0.76
+                
+              
+              )) were not statistically significant.
+              Conclusion
+              . Age of onset and MRI parameters can be used as predictors of CIS conversion to McDonald MS. Application of the 2010 revised McDonald criteria  allows an earlier MS diagnosis.},
+	language = {en},
+	urldate = {2026-03-28},
+	journal = {ISRN Neurology},
+	author = {Alroughani, R. and Al Hashel, J. and Lamdhade, S. and Ahmed, S. F.},
+	month = nov,
+	year = {2012},
+	pages = {1--6},
+}
+
+@article{champs_study_group_mri_2002,
+	title = {{MRI} predictors of early conversion to clinically definite {MS} in the {CHAMPS} placebo group},
+	volume = {59},
+	issn = {0028-3878, 1526-632X},
+	url = {https://www.neurology.org/doi/10.1212/WNL.59.7.998},
+	doi = {10.1212/WNL.59.7.998},
+	language = {en},
+	number = {7},
+	urldate = {2026-03-28},
+	journal = {Neurology},
+	author = {{CHAMPS Study Group*}},
+	month = oct,
+	year = {2002},
+	pages = {998--1005},
+}
+
+@article{naji_artificial_2023,
+	title = {Artificial {Intelligence} and {Multiple} {Sclerosis}: {Up}-to-{Date} {Review}},
+	issn = {2168-8184},
+	shorttitle = {Artificial {Intelligence} and {Multiple} {Sclerosis}},
+	url = {https://www.cureus.com/articles/183314-artificial-intelligence-and-multiple-sclerosis-up-to-date-review},
+	doi = {10.7759/cureus.45412},
+	language = {en},
+	urldate = {2026-03-28},
+	journal = {Cureus},
+	author = {Naji, Yahya and Mahdaoui, Mohamed and Klevor, Raymond and Kissani, Najib},
+	month = sep,
+	year = {2023},
+}
+
+@article{vazquez-marrufo_systematic_2023,
+	title = {A systematic review of the application of machine-learning algorithms in multiple sclerosis},
+	volume = {38},
+	issn = {21735808},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S217358082200075X},
+	doi = {10.1016/j.nrleng.2020.10.013},
+	language = {en},
+	number = {8},
+	urldate = {2026-03-28},
+	journal = {Neurología (English Edition)},
+	author = {Vázquez-Marrufo, M. and Sarrias-Arrabal, E. and García-Torres, M. and Martín-Clemente, R. and Izquierdo, G.},
+	month = oct,
+	year = {2023},
+	pages = {577--590},
+}
+
+@article{haouam_machine_2024,
+	title = {Machine {Learning} {Algorithms} for {Early} {Prediction} of {Multiple} {Sclerosis} {Progression}: {A} {Comparative} {Study}},
+	volume = {04},
+	issn = {25829793},
+	shorttitle = {Machine {Learning} {Algorithms} for {Early} {Prediction} of {Multiple} {Sclerosis} {Progression}},
+	url = {https://www.oajaiml.com/uploads/archivepdf/798241116.pdf},
+	doi = {10.54364/AAIML.2024.41116},
+	abstract = {Multiple Sclerosis (MS) is a chronic autoimmune disease characterized by central nervous system (CNS) degeneration, leading to diverse neurological symptoms. Managing MS poses a challenge due to its unpredictable progression. This study focuses on early prediction of MS progression using machine learning (ML) algorithms, comparing the effectiveness of Random Forest, XGBoost, Decision Tree, and Logistic Regression. Clinical, genetic, and environmental factors were analyzed in a cohort of Mexican mestizo patients recently diagnosed with Clinically Isolated Syndrome (CIS). Data preprocessing addressed missing values, and feature selection tailored to the population’s characteristics was applied. The dataset was split into training and testing sets, maintaining stratification for CDMS and nonCDMS cases. Machine learning models were trained with optimized hyperparameters. Performance evaluation metrics, including accuracy, precision, recall, F1-score, and AUC-ROC, were employed. The Random Forest model exhibited superior performance (AUC: 0.93, accuracy: 87\%), outperforming other models. Variable importance analysis identified top predictors, including Periventricular MRI, Age, Infratentorial MRI, and Oligoclonal Bands. The study’s clinical implications highlight ML’s potential in enhancing early MS prognosis, aiding timely interventions. The Random Forest model, with its robust performance, emerges as a valuable tool for identifying patients at risk. While the study contributes to predictive analytics in neurological disorders, limitations include cohort specificity and retrospective data use. Prospective studies and further exploration of data sources are recommended for broader applicability. This research demonstrates the efficacy of ML in early MS progression prediction, providing clinicians with a promising tool for personalized patient care. The findings contribute to advancing predictive healthcare analytics and emphasize the significance of tailored interventions in neurological disorders.},
+	number = {01},
+	urldate = {2026-03-28},
+	journal = {Advances in Artificial Intelligence and Machine Learning},
+	author = {Haouam, Kamel-Dine and Benmalek, Mourad},
+	year = {2024},
+	pages = {2027--2051},
+}
+
+@article{branco_machine_2022,
+	title = {Machine learning techniques for prediction of multiple sclerosis progression},
+	volume = {26},
+	issn = {1432-7643, 1433-7479},
+	url = {https://link.springer.com/10.1007/s00500-022-07503-z},
+	doi = {10.1007/s00500-022-07503-z},
+	abstract = {Abstract
+            Patients afflicted by multiple sclerosis experience a relapsing-remitting course in about 85\% of the cases. Furthermore, after a 10/15-year period their situation tends to worse, resulting in what is considered the second phase of multiple sclerosis. While treatments are now available to reduce the symptoms and slow down the progression of the disease, the administration of drugs must be adapted to the course of the disease, and predicting relapsing periods and the worsening of the symptoms can greatly improve the outcome of the treatment. For this reason, indicators such as the patient-reported outcome measures (PROMs) have been largely used to support early diagnosis and prediction of future relapsing periods in patients affected by multiple sclerosis. However, such indicators are insufficient, as the prediction they provide is often not accurate enough. In this paper, machine learning techniques have been applied to data obtained from clinical trial, in order to improve the prediction capabilities and provide doctors with an additional instrument to evaluate the clinical situation of patients. After the application of correlation indicators and the use of principal component analysis for the reduction of the dimensionality of the feature space, classification algorithms have been applied and compared, in order to identify the best suiting one for our purposes. After the application of re-balance algorithms, the accuracy of the machine learning-based prediction system reaches 79\%, demonstrating the capability of the framework to correctly predict future progression of disability.},
+	language = {en},
+	number = {22},
+	urldate = {2026-03-28},
+	journal = {Soft Computing},
+	author = {Branco, Dario and Martino, Beniamino Di and Esposito, Antonio and Tedeschi, Gioacchino and Bonavita, Simona and Lavorgna, Luigi},
+	month = nov,
+	year = {2022},
+	pages = {12041--12055},
+}
+
+@incollection{colliot_machine_2023,
+	address = {New York, NY},
+	title = {Machine {Learning} in {Multiple} {Sclerosis}},
+	volume = {197},
+	isbn = {978-1-0716-3194-2 978-1-0716-3195-9},
+	url = {https://link.springer.com/10.1007/978-1-0716-3195-9_28},
+	doi = {10.1007/978-1-0716-3195-9_28},
+	abstract = {Abstract
+            Multiple sclerosis (MS) is characterized by inflammatory activity and neurodegeneration, leading to the accumulation of damage to the central nervous system resulting in the accumulation of disability. MRI depicts an important part of the pathology of this disease and therefore plays a key part in diagnosis and disease monitoring. Still, major challenges exist with regard to the differential diagnosis, adequate monitoring of disease progression, quantification of CNS damage, and prediction of disease progression. Machine learning techniques have been employed in an attempt to overcome these challenges. This chapter aims to give an overview of how machine learning techniques are employed in MS with applications for diagnostic classification, lesion segmentation, improved visualization of relevant brain pathology, characterization of neurodegeneration, and prognostic subtyping.},
+	language = {en},
+	urldate = {2026-03-28},
+	booktitle = {Machine {Learning} for {Brain} {Disorders}},
+	publisher = {Springer US},
+	author = {Jasperse, Bas and Barkhof, Frederik},
+	editor = {Colliot, Olivier},
+	year = {2023},
+	note = {Series Title: Neuromethods},
+	pages = {899--919},
+}
+
+@article{ion-margineanu_machine_2017,
+	title = {Machine {Learning} {Approach} for {Classifying} {Multiple} {Sclerosis} {Courses} by {Combining} {Clinical} {Data} with {Lesion} {Loads} and {Magnetic} {Resonance} {Metabolic} {Features}},
+	volume = {11},
+	issn = {1662-453X},
+	url = {http://journal.frontiersin.org/article/10.3389/fnins.2017.00398/full},
+	doi = {10.3389/fnins.2017.00398},
+	urldate = {2026-03-28},
+	journal = {Frontiers in Neuroscience},
+	author = {Ion-Mărgineanu, Adrian and Kocevar, Gabriel and Stamile, Claudio and Sima, Diana M. and Durand-Dubief, Françoise and Van Huffel, Sabine and Sappey-Marinier, Dominique},
+	month = jul,
+	year = {2017},
+	pages = {398},
+}
+
+@article{zhao_exploration_2017,
+	title = {Exploration of machine learning techniques in predicting multiple sclerosis disease course},
+	volume = {12},
+	issn = {1932-6203},
+	url = {https://dx.plos.org/10.1371/journal.pone.0174866},
+	doi = {10.1371/journal.pone.0174866},
+	language = {en},
+	number = {4},
+	urldate = {2026-03-28},
+	journal = {PLOS ONE},
+	author = {Zhao, Yijun and Healy, Brian C. and Rotstein, Dalia and Guttmann, Charles R. G. and Bakshi, Rohit and Weiner, Howard L. and Brodley, Carla E. and Chitnis, Tanuja},
+	editor = {Ramagopalan, Sreeram V.},
+	month = apr,
+	year = {2017},
+	pages = {e0174866},
+}
+
+@article{pinto_prediction_2020,
+	title = {Prediction of disease progression and outcomes in multiple sclerosis with machine learning},
+	volume = {10},
+	issn = {2045-2322},
+	url = {https://www.nature.com/articles/s41598-020-78212-6},
+	doi = {10.1038/s41598-020-78212-6},
+	abstract = {Abstract
+            
+              Multiple Sclerosis is a chronic inflammatory disease, affecting the Central Nervous System and leading to irreversible neurological damage, such as long term functional impairment and disability. It has no cure and the symptoms vary widely, depending on the affected regions, amount of damage, and the ability to activate compensatory mechanisms, which constitutes a challenge to evaluate and predict its course. Additionally, relapsing-remitting patients can evolve its course into a secondary progressive, characterized by a slow progression of disability independent of relapses. With clinical information from Multiple Sclerosis patients, we developed a machine learning exploration framework concerning this disease evolution, more specifically to obtain three predictions: one on conversion to secondary progressive course and two on disease severity with rapid accumulation of disability, concerning the 6th and 10th years of progression. For the first case, the best results were obtained within two years: AUC=
+              
+                
+                  \$\$0.86{\textbackslash}pm 0.07\$\$
+                  
+                    
+                      0.86
+                      ±
+                      0.07
+                    
+                  
+                
+              
+              , sensitivity=
+              
+                
+                  \$\$0.76{\textbackslash}pm 0.14\$\$
+                  
+                    
+                      0.76
+                      ±
+                      0.14
+                    
+                  
+                
+              
+              and specificity=
+              
+                
+                  \$\$0.77{\textbackslash}pm 0.05\$\$
+                  
+                    
+                      0.77
+                      ±
+                      0.05
+                    
+                  
+                
+              
+              ; and for the second, the best results were obtained for the 6th year of progression, also within two years: AUC=
+              
+                
+                  \$\$0.89{\textbackslash}pm 0.03\$\$
+                  
+                    
+                      0.89
+                      ±
+                      0.03
+                    
+                  
+                
+              
+              , sensitivity=
+              
+                
+                  \$\$0.84{\textbackslash}pm 0.11\$\$
+                  
+                    
+                      0.84
+                      ±
+                      0.11
+                    
+                  
+                
+              
+              , and specificity=
+              
+                
+                  \$\$0.81{\textbackslash}pm 0.05\$\$
+                  
+                    
+                      0.81
+                      ±
+                      0.05
+                    
+                  
+                
+              
+              . The Expanded Disability Status Scale value, the majority of functional systems, affected functions during relapses, and age at onset were described as the most predictive features. These results demonstrate the possibility of predicting Multiple Sclerosis progression by using machine learning, which may help to understand this disease’s dynamics and thus, advise physicians on medication intake.},
+	language = {en},
+	number = {1},
+	urldate = {2026-03-28},
+	journal = {Scientific Reports},
+	author = {Pinto, Mauro F. and Oliveira, Hugo and Batista, Sónia and Cruz, Luís and Pinto, Mafalda and Correia, Inês and Martins, Pedro and Teixeira, César},
+	month = dec,
+	year = {2020},
+	pages = {21038},
+}
+
+@article{thompson_diagnosis_2018,
+	title = {Diagnosis of multiple sclerosis: 2017 revisions of the {McDonald} criteria},
+	volume = {17},
+	issn = {14744422},
+	shorttitle = {Diagnosis of multiple sclerosis},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1474442217304702},
+	doi = {10.1016/S1474-4422(17)30470-2},
+	language = {en},
+	number = {2},
+	urldate = {2026-03-28},
+	journal = {The Lancet Neurology},
+	author = {Thompson, Alan J and Banwell, Brenda L and Barkhof, Frederik and Carroll, William M and Coetzee, Timothy and Comi, Giancarlo and Correale, Jorge and Fazekas, Franz and Filippi, Massimo and Freedman, Mark S and Fujihara, Kazuo and Galetta, Steven L and Hartung, Hans Peter and Kappos, Ludwig and Lublin, Fred D and Marrie, Ruth Ann and Miller, Aaron E and Miller, David H and Montalban, Xavier and Mowry, Ellen M and Sorensen, Per Soelberg and Tintoré, Mar and Traboulsee, Anthony L and Trojano, Maria and Uitdehaag, Bernard M J and Vukusic, Sandra and Waubant, Emmanuelle and Weinshenker, Brian G and Reingold, Stephen C and Cohen, Jeffrey A},
+	month = feb,
+	year = {2018},
+	pages = {162--173},
+}
+
+@article{compston_multiple_2008,
+	title = {Multiple sclerosis},
+	volume = {372},
+	copyright = {https://www.elsevier.com/tdm/userlicense/1.0/},
+	issn = {01406736},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0140673608616207},
+	doi = {10.1016/S0140-6736(08)61620-7},
+	language = {en},
+	number = {9648},
+	urldate = {2026-03-28},
+	journal = {The Lancet},
+	author = {Compston, Alastair and Coles, Alasdair},
+	month = oct,
+	year = {2008},
+	pages = {1502--1517},
+}
+
+@article{polman_diagnostic_2011,
+	title = {Diagnostic criteria for multiple sclerosis: 2010 {Revisions} to the {McDonald} criteria},
+	volume = {69},
+	copyright = {http://onlinelibrary.wiley.com/termsAndConditions\#vor},
+	issn = {0364-5134, 1531-8249},
+	shorttitle = {Diagnostic criteria for multiple sclerosis},
+	url = {https://onlinelibrary.wiley.com/doi/10.1002/ana.22366},
+	doi = {10.1002/ana.22366},
+	abstract = {Abstract
+            New evidence and consensus has led to further revision of the McDonald Criteria for diagnosis of multiple sclerosis. The use of imaging for demonstration of dissemination of central nervous system lesions in space and time has been simplified, and in some circumstances dissemination in space and time can be established by a single scan. These revisions simplify the Criteria, preserve their diagnostic sensitivity and specificity, address their applicability across populations, and may allow earlier diagnosis and more uniform and widespread use. Ann Neurol 2011},
+	language = {en},
+	number = {2},
+	urldate = {2026-03-28},
+	journal = {Annals of Neurology},
+	author = {Polman, Chris H. and Reingold, Stephen C. and Banwell, Brenda and Clanet, Michel and Cohen, Jeffrey A. and Filippi, Massimo and Fujihara, Kazuo and Havrdova, Eva and Hutchinson, Michael and Kappos, Ludwig and Lublin, Fred D. and Montalban, Xavier and O'Connor, Paul and Sandberg‐Wollheim, Magnhild and Thompson, Alan J. and Waubant, Emmanuelle and Weinshenker, Brian and Wolinsky, Jerry S.},
+	month = feb,
+	year = {2011},
+	pages = {292--302},
+}
+
+@article{miller_clinically_2012,
+	title = {Clinically isolated syndromes},
+	volume = {11},
+	issn = {1474-4465},
+	doi = {10.1016/S1474-4422(11)70274-5},
+	abstract = {Clinically isolated syndrome (CIS) is a term that describes a first clinical episode with features suggestive of multiple sclerosis (MS). It usually occurs in young adults and affects optic nerves, the brainstem, or the spinal cord. Although patients usually recover from their presenting episode, CIS is often the first manifestation of MS. The most notable risk factors for MS are clinically silent MRI lesions and CSF oligoclonal bands; weak or uncertain risk factors include vitamin D deficiency, Epstein-Barr virus infection, smoking, HLA genes, and miscellaneous immunological abnormalities. Diagnostic investigations including MRI aim to exclude alternative causes and to define the risk for MS. MRI findings incorporated into diagnostic criteria in the past decade enable MS to be diagnosed at or soon after CIS presentation. The course of MS after CIS is variable: after 15-20 years, a third of patients have a benign course with minimal or no disability and a half will have developed secondary progressive MS with increasing disability. Prediction of the long-term course at disease onset is unreliable. Disease-modifying treatments delay the development from CIS to MS. Their use in CIS is limited by uncertain long-term clinical prognosis and treatment benefits and adverse effects, although they have the potential to prevent or delay future tissue damage, including demyelination and axonal loss. Targets for future therapeutic progress are to achieve safe and effective long-term immunomodulation with neuroprotection and repair.},
+	language = {eng},
+	number = {2},
+	journal = {The Lancet. Neurology},
+	author = {Miller, David H. and Chard, Declan T. and Ciccarelli, Olga},
+	month = feb,
+	year = {2012},
+	keywords = {Disease Progression, Early Diagnosis, Humans, Multiple Sclerosis, Syndrome},
+	pages = {157--169},
+}
+
+@article{luu_foundation_2026,
+	title = {A {Foundation} {Model} for {Brain} {MRI} with {Dynamic} {Modality} {Integration} ({Student} {Abstract})},
+	volume = {40},
+	issn = {2374-3468, 2159-5399},
+	url = {https://ojs.aaai.org/index.php/AAAI/article/view/42245},
+	doi = {10.1609/aaai.v40i48.42245},
+	abstract = {We introduce a single–backbone foundation model for brain MRI that supports dynamic modality integration: it operates with arbitrary, possibly unseen, combinations of MRI sequences at pretrain and transfer. The encoder is conditioned by text-derived modality embeddings via conditional layer normalization, while a variance–covariance penalty discourages feature collapse. Unlike expert-based designs that grow with each new sequence, our approach scales without adding modality-specific branches. Pretrained self-supervised on ∼60,000 heterogeneous MRIs, the model learns modality-aware yet modality-agnostic features. We outline evaluation on segmentation and classification under missing/unseen modalities and cross-center shifts, and present early feasibility on multiple sclerosis lesion segmentation under limited data. This work moves toward robust, protocol-agnostic MRI foundation models suited to real clinical variability.},
+	number = {48},
+	urldate = {2026-03-20},
+	journal = {Proceedings of the AAAI Conference on Artificial Intelligence},
+	author = {Luu, Minh Sao Khue and Tuchinov, Bair N.},
+	month = mar,
+	year = {2026},
+	pages = {41290--41292},
+}
+
+@article{taha_metrics_2015,
+	title = {Metrics for evaluating {3D} medical image segmentation: analysis, selection, and tool},
+	volume = {15},
+	issn = {1471-2342},
+	shorttitle = {Metrics for evaluating {3D} medical image segmentation},
+	url = {http://bmcmedimaging.biomedcentral.com/articles/10.1186/s12880-015-0068-x},
+	doi = {10.1186/s12880-015-0068-x},
+	language = {en},
+	number = {1},
+	urldate = {2026-03-15},
+	journal = {BMC Medical Imaging},
+	author = {Taha, Abdel Aziz and Hanbury, Allan},
+	month = dec,
+	year = {2015},
+	pages = {29},
+}
+
+@article{shapiro_analysis_1965,
+	title = {An {Analysis} of {Variance} {Test} for {Normality} ({Complete} {Samples})},
+	volume = {52},
+	issn = {00063444},
+	url = {https://www.jstor.org/stable/2333709?origin=crossref},
+	doi = {10.2307/2333709},
+	number = {3/4},
+	urldate = {2026-03-15},
+	journal = {Biometrika},
+	author = {Shapiro, S. S. and Wilk, M. B.},
+	month = dec,
+	year = {1965},
+	pages = {591},
+}
+
+@article{mann_test_1947,
+	title = {On a {Test} of {Whether} one of {Two} {Random} {Variables} is {Stochastically} {Larger} than the {Other}},
+	volume = {18},
+	issn = {0003-4851},
+	url = {http://projecteuclid.org/euclid.aoms/1177730491},
+	doi = {10.1214/aoms/1177730491},
+	language = {en},
+	number = {1},
+	urldate = {2026-03-15},
+	journal = {The Annals of Mathematical Statistics},
+	author = {Mann, H. B. and Whitney, D. R.},
+	month = mar,
+	year = {1947},
+	pages = {50--60},
+}
+
+@article{fedorov_3d_2012,
+	title = {{3D} {Slicer} as an image computing platform for the {Quantitative} {Imaging} {Network}},
+	volume = {30},
+	copyright = {https://www.elsevier.com/tdm/userlicense/1.0/},
+	issn = {0730725X},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0730725X12001816},
+	doi = {10.1016/j.mri.2012.05.001},
+	language = {en},
+	number = {9},
+	urldate = {2026-03-15},
+	journal = {Magnetic Resonance Imaging},
+	author = {Fedorov, Andriy and Beichel, Reinhard and Kalpathy-Cramer, Jayashree and Finet, Julien and Fillion-Robin, Jean-Christophe and Pujol, Sonia and Bauer, Christian and Jennings, Dominique and Fennessy, Fiona and Sonka, Milan and Buatti, John and Aylward, Stephen and Miller, James V. and Pieper, Steve and Kikinis, Ron},
+	month = nov,
+	year = {2012},
+	pages = {1323--1341},
+}
+
+@misc{moawad_brain_2023,
+	title = {The {Brain} {Tumor} {Segmentation} ({BraTS}-{METS}) {Challenge} 2023: {Brain} {Metastasis} {Segmentation} on {Pre}-treatment {MRI}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	shorttitle = {The {Brain} {Tumor} {Segmentation} ({BraTS}-{METS}) {Challenge} 2023},
+	url = {https://arxiv.org/abs/2306.00838},
+	doi = {10.48550/ARXIV.2306.00838},
+	abstract = {The translation of AI-generated brain metastases (BM) segmentation into clinical practice relies heavily on diverse, high-quality annotated medical imaging datasets. The BraTS-METS 2023 challenge has gained momentum for testing and benchmarking algorithms using rigorously annotated internationally compiled real-world datasets. This study presents the results of the segmentation challenge and characterizes the challenging cases that impacted the performance of the winning algorithms. Untreated brain metastases on standard anatomic MRI sequences (T1, T2, FLAIR, T1PG) from eight contributed international datasets were annotated in stepwise method: published UNET algorithms, student, neuroradiologist, final approver neuroradiologist. Segmentations were ranked based on lesion-wise Dice and Hausdorff distance (HD95) scores. False positives (FP) and false negatives (FN) were rigorously penalized, receiving a score of 0 for Dice and a fixed penalty of 374 for HD95. Eight datasets comprising 1303 studies were annotated, with 402 studies (3076 lesions) released on Synapse as publicly available datasets to challenge competitors. Additionally, 31 studies (139 lesions) were held out for validation, and 59 studies (218 lesions) were used for testing. Segmentation accuracy was measured as rank across subjects, with the winning team achieving a LesionWise mean score of 7.9. Common errors among the leading teams included false negatives for small lesions and misregistration of masks in space.The BraTS-METS 2023 challenge successfully curated well-annotated, diverse datasets and identified common errors, facilitating the translation of BM segmentation across varied clinical environments and providing personalized volumetric reports to patients undergoing BM treatment.},
+	urldate = {2026-03-14},
+	publisher = {arXiv},
+	author = {Moawad, Ahmed W. and Janas, Anastasia and Baid, Ujjwal and Ramakrishnan, Divya and Saluja, Rachit and Ashraf, Nader and Maleki, Nazanin and Jekel, Leon and Yordanov, Nikolay and Fehringer, Pascal and Gkampenis, Athanasios and Amiruddin, Raisa and Manteghinejad, Amirreza and Adewole, Maruf and Albrecht, Jake and Anazodo, Udunna and Aneja, Sanjay and Anwar, Syed Muhammad and Bergquist, Timothy and Chiang, Veronica and Chung, Verena and Conte, Gian Marco and Dako, Farouk and Eddy, James and Ezhov, Ivan and Khalili, Nastaran and Farahani, Keyvan and Iglesias, Juan Eugenio and Jiang, Zhifan and Johanson, Elaine and Kazerooni, Anahita Fathi and Kofler, Florian and Krantchev, Kiril and LaBella, Dominic and Van Leemput, Koen and Li, Hongwei Bran and Linguraru, Marius George and Liu, Xinyang and Meier, Zeke and Menze, Bjoern H and Moy, Harrison and Osenberg, Klara and Piraud, Marie and Reitman, Zachary and Shinohara, Russell Takeshi and Wang, Chunhao and Wiestler, Benedikt and Wiggins, Walter and Shafique, Umber and Willms, Klara and Avesta, Arman and Bousabarah, Khaled and Chakrabarty, Satrajit and Gennaro, Nicolo and Holler, Wolfgang and Kaur, Manpreet and LaMontagne, Pamela and Lin, MingDe and Lost, Jan and Marcus, Daniel S. and Maresca, Ryan and Merkaj, Sarah and Pedersen, Gabriel Cassinelli and von Reppert, Marc and Sotiras, Aristeidis and Teytelboym, Oleg and Tillmans, Niklas and Westerhoff, Malte and Youssef, Ayda and Godfrey, Devon and Floyd, Scott and Rauschecker, Andreas and Villanueva-Meyer, Javier and Pfluger, Irada and Cho, Jaeyoung and Bendszus, Martin and Brugnara, Gianluca and Cramer, Justin and Perez-Carillo, Gloria J. Guzman and Johnson, Derek R. and Kam, Anthony and Kwan, Benjamin Yin Ming and Lai, Lillian and Lall, Neil U. and Memon, Fatima and Krycia, Mark and Patro, Satya Narayana and Petrovic, Bojan and So, Tiffany Y. and Thompson, Gerard and Wu, Lei and Schrickel, E. Brooke and Bansal, Anu and Barkhof, Frederik and Besada, Cristina and Chu, Sammy and Druzgal, Jason and Dusoi, Alexandru and Farage, Luciano and Feltrin, Fabricio and Fong, Amy and Fung, Steve H. and Gray, R. Ian and Ikuta, Ichiro and Iv, Michael and Postma, Alida A. and Mahajan, Amit and Joyner, David and Krumpelman, Chase and Letourneau-Guillon, Laurent and Lincoln, Christie M. and Maros, Mate E. and Miller, Elka and Moron, Fanny and Nimchinsky, Esther A. and Ozsarlak, Ozkan and Patel, Uresh and Rohatgi, Saurabh and Saha, Atin and Sayah, Anousheh and Schwartz, Eric D. and Shih, Robert and Shiroishi, Mark S. and Small, Juan E. and Tanwar, Manoj and Valerie, Jewels and Weinberg, Brent D. and White, Matthew L. and Young, Robert and Zohrabian, Vahe M. and Azizova, Aynur and Bruseler, Melanie Maria Theresa and Ghonim, Mohanad and Ghonim, Mohamed and Okar, Abdullah and Pasquini, Luca and Sharifi, Yasaman and Singh, Gagandeep and Sollmann, Nico and Soumala, Theodora and Taherzadeh, Mahsa and Vollmuth, Philipp and Foltyn-Dumitru, Martha and Malhotra, Ajay and Abayazeed, Aly H. and Dellepiane, Francesco and Lohmann, Philipp and Perez-Garcia, Victor M. and Elhalawani, Hesham and de Verdier, Maria Correia and Al-Rubaiey, Sanaria and Armindo, Rui Duarte and Ashraf, Kholod and Asla, Moamen M. and Badawy, Mohamed and Bisschop, Jeroen and Lomer, Nima Broomand and Bukatz, Jan and Chen, Jim and Cimflova, Petra and Corr, Felix and Crawley, Alexis and Deptula, Lisa and Elakhdar, Tasneem and Shawali, Islam H. and Faghani, Shahriar and Frick, Alexandra and Gulati, Vaibhav and Haider, Muhammad Ammar and Hierro, Fatima and Dahl, Rasmus Holmboe and Jacobs, Sarah Maria and Hsieh, Kuang-chun Jim and Kandemirli, Sedat G. and Kersting, Katharina and Kida, Laura and Kollia, Sofia and Koukoulithras, Ioannis and Li, Xiao and Abouelatta, Ahmed and Mansour, Aya and Maria-Zamfirescu, Ruxandra-Catrinel and Marsiglia, Marcela and Mateo-Camacho, Yohana Sarahi and McArthur, Mark and McDonnell, Olivia and McHugh, Maire and Moassefi, Mana and Morsi, Samah Mostafa and Munteanu, Alexander and Nandolia, Khanak K. and Naqvi, Syed Raza and Nikanpour, Yalda and Alnoury, Mostafa and Nouh, Abdullah Mohamed Aly and Pappafava, Francesca and Patel, Markand D. and Petrucci, Samantha and Rawie, Eric and Raymond, Scott and Roohani, Borna and Sabouhi, Sadeq and Sanchez-Garcia, Laura M. and Shaked, Zoe and Suthar, Pokhraj P. and Altes, Talissa and Isufi, Edvin and Dhemesh, Yaseen and Gass, Jaime and Thacker, Jonathan and Tarabishy, Abdul Rahman and Turner, Benjamin and Vacca, Sebastiano and Vilanilam, George K. and Warren, Daniel and Weiss, David and Worede, Fikadu and Yousry, Sara and Lerebo, Wondwossen and Aristizabal, Alejandro and Karargyris, Alexandros and Kassem, Hasan and Pati, Sarthak and Sheller, Micah and Link, Katherine E. and Calabrese, Evan and Tahon, Nourel hoda and Nada, Ayman and Velichko, Yuri S. and Bakas, Spyridon and Rudie, Jeffrey D. and Aboian, Mariam},
+	year = {2023},
+	note = {Version Number: 3},
+	keywords = {FOS: Biological sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV), Other Quantitative Biology (q-bio.OT)},
+}
+
+@inproceedings{golushko_siberian_2020,
+	title = {The {Siberian} {Multimodal} {Brain} {Tumor} {Image} {Segmentation} {Dataset}},
+	isbn = {978-5-91291-051-7},
+	url = {https://publ.icgbio.ru/wp-content/uploads/2020/07/BGRS2020_15.07-433.pdf},
+	doi = {10.18699/BGRS/SB-2020-269},
+	booktitle = {Bioinformatics of {Genome} {Regulation} and {Structure} / {Systems} {Biology}},
+	publisher = {Institute of Cytology and Genetics SB RAS and Novosibirsk State University},
+	author = {Golushko, Sergey and Amelina, Evgeniya and Groza, Vladimir and Amelin, Mikhail and Tolstokulakov, Nikolay and Tuchinov, Bair and Pavlovskiy, Evgeniy},
+	month = jul,
+	year = {2020},
+}
+
+@misc{de_verdier_2024_2024,
+	title = {The 2024 {Brain} {Tumor} {Segmentation} ({BraTS}) {Challenge}: {Glioma} {Segmentation} on {Post}-treatment {MRI}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	shorttitle = {The 2024 {Brain} {Tumor} {Segmentation} ({BraTS}) {Challenge}},
+	url = {https://arxiv.org/abs/2405.18368},
+	doi = {10.48550/ARXIV.2405.18368},
+	abstract = {Gliomas are the most common malignant primary brain tumors in adults and one of the deadliest types of cancer. There are many challenges in treatment and monitoring due to the genetic diversity and high intrinsic heterogeneity in appearance, shape, histology, and treatment response. Treatments include surgery, radiation, and systemic therapies, with magnetic resonance imaging (MRI) playing a key role in treatment planning and post-treatment longitudinal assessment. The 2024 Brain Tumor Segmentation (BraTS) challenge on post-treatment glioma MRI will provide a community standard and benchmark for state-of-the-art automated segmentation models based on the largest expert-annotated post-treatment glioma MRI dataset. Challenge competitors will develop automated segmentation models to predict four distinct tumor sub-regions consisting of enhancing tissue (ET), surrounding non-enhancing T2/fluid-attenuated inversion recovery (FLAIR) hyperintensity (SNFH), non-enhancing tumor core (NETC), and resection cavity (RC). Models will be evaluated on separate validation and test datasets using standardized performance metrics utilized across the BraTS 2024 cluster of challenges, including lesion-wise Dice Similarity Coefficient and Hausdorff Distance. Models developed during this challenge will advance the field of automated MRI segmentation and contribute to their integration into clinical practice, ultimately enhancing patient care.},
+	urldate = {2026-03-09},
+	publisher = {arXiv},
+	author = {de Verdier, Maria Correia and Saluja, Rachit and Gagnon, Louis and LaBella, Dominic and Baid, Ujjwall and Tahon, Nourel Hoda and Foltyn-Dumitru, Martha and Zhang, Jikai and Alafif, Maram and Baig, Saif and Chang, Ken and D'Anna, Gennaro and Deptula, Lisa and Gupta, Diviya and Haider, Muhammad Ammar and Hussain, Ali and Iv, Michael and Kontzialis, Marinos and Manning, Paul and Moodi, Farzan and Nunes, Teresa and Simon, Aaron and Sollmann, Nico and Vu, David and Adewole, Maruf and Albrecht, Jake and Anazodo, Udunna and Chai, Rongrong and Chung, Verena and Faghani, Shahriar and Farahani, Keyvan and Kazerooni, Anahita Fathi and Iglesias, Eugenio and Kofler, Florian and Li, Hongwei and Linguraru, Marius George and Menze, Bjoern and Moawad, Ahmed W. and Velichko, Yury and Wiestler, Benedikt and Altes, Talissa and Basavasagar, Patil and Bendszus, Martin and Brugnara, Gianluca and Cho, Jaeyoung and Dhemesh, Yaseen and Fields, Brandon K. K. and Garrett, Filip and Gass, Jaime and Hadjiiski, Lubomir and Hattangadi-Gluth, Jona and Hess, Christopher and Houk, Jessica L. and Isufi, Edvin and Layfield, Lester J. and Mastorakos, George and Mongan, John and Nedelec, Pierre and Nguyen, Uyen and Oliva, Sebastian and Pease, Matthew W. and Rastogi, Aditya and Sinclair, Jason and Smith, Robert X. and Sugrue, Leo P. and Thacker, Jonathan and Vidic, Igor and Villanueva-Meyer, Javier and White, Nathan S. and Aboian, Mariam and Conte, Gian Marco and Dale, Anders and Sabuncu, Mert R. and Seibert, Tyler M. and Weinberg, Brent and Abayazeed, Aly and Huang, Raymond and Turk, Sevcan and Rauschecker, Andreas M. and Farid, Nikdokht and Vollmuth, Philipp and Nada, Ayman and Bakas, Spyridon and Calabrese, Evan and Rudie, Jeffrey D.},
+	year = {2024},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences},
+}
+
+@misc{myronenko_3d_2018-1,
+	title = {{3D} {MRI} brain tumor segmentation using autoencoder regularization},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	url = {https://arxiv.org/abs/1810.11654},
+	doi = {10.48550/ARXIV.1810.11654},
+	abstract = {Automated segmentation of brain tumors from 3D magnetic resonance images (MRIs) is necessary for the diagnosis, monitoring, and treatment planning of the disease. Manual delineation practices require anatomical knowledge, are expensive, time consuming and can be inaccurate due to human error. Here, we describe a semantic segmentation network for tumor subregion segmentation from 3D MRIs based on encoder-decoder architecture. Due to a limited training dataset size, a variational auto-encoder branch is added to reconstruct the input image itself in order to regularize the shared decoder and impose additional constraints on its layers. The current approach won 1st place in the BraTS 2018 challenge.},
+	urldate = {2026-03-05},
+	publisher = {arXiv},
+	author = {Myronenko, Andriy},
+	year = {2018},
+	note = {Version Number: 3},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Biological sciences, FOS: Computer and information sciences, Neurons and Cognition (q-bio.NC)},
+}
+
+@misc{wong_small_2021,
+	title = {Small {Lesion} {Segmentation} in {Brain} {MRIs} with {Subpixel} {Embedding}},
+	copyright = {Creative Commons Attribution Non Commercial Share Alike 4.0 International},
+	url = {https://arxiv.org/abs/2109.08791},
+	doi = {10.48550/ARXIV.2109.08791},
+	abstract = {We present a method to segment MRI scans of the human brain into ischemic stroke lesion and normal tissues. We propose a neural network architecture in the form of a standard encoder-decoder where predictions are guided by a spatial expansion embedding network. Our embedding network learns features that can resolve detailed structures in the brain without the need for high-resolution training images, which are often unavailable and expensive to acquire. Alternatively, the encoder-decoder learns global structures by means of striding and max pooling. Our embedding network complements the encoder-decoder architecture by guiding the decoder with fine-grained details lost to spatial downsampling during the encoder stage. Unlike previous works, our decoder outputs at 2 times the input resolution, where a single pixel in the input resolution is predicted by four neighboring subpixels in our output. To obtain the output at the original scale, we propose a learnable downsampler (as opposed to hand-crafted ones e.g. bilinear) that combines subpixel predictions. Our approach improves the baseline architecture by approximately 11.7\% and achieves the state of the art on the ATLAS public benchmark dataset with a smaller memory footprint and faster runtime than the best competing method. Our source code has been made available at: https://github.com/alexklwong/subpixel-embedding-segmentation.},
+	urldate = {2026-03-05},
+	publisher = {arXiv},
+	author = {Wong, Alex and Chen, Allison and Wu, Yangchao and Cicek, Safa and Tiard, Alexandre and Hong, Byung-Woo and Soatto, Stefano},
+	year = {2021},
+	note = {Version Number: 1},
+	keywords = {Artificial Intelligence (cs.AI), Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV), Machine Learning (cs.LG)},
+}
+
+@article{guarnera_mslesseg_2025,
+	title = {{MSLesSeg}: baseline and benchmarking of a new {Multiple} {Sclerosis} {Lesion} {Segmentation} dataset},
+	volume = {12},
+	issn = {2052-4463},
+	shorttitle = {{MSLesSeg}},
+	url = {https://www.nature.com/articles/s41597-025-05250-y},
+	doi = {10.1038/s41597-025-05250-y},
+	language = {en},
+	number = {1},
+	urldate = {2026-03-05},
+	journal = {Scientific Data},
+	author = {Guarnera, Francesco and Rondinella, Alessia and Crispino, Elena and Russo, Giulia and Di Lorenzo, Clara and Maimone, Davide and Pappalardo, Francesco and Battiato, Sebastiano},
+	month = may,
+	year = {2025},
+	pages = {920},
+}
+
+@misc{ma_u-mamba_2024,
+	title = {U-{Mamba}: {Enhancing} {Long}-range {Dependency} for {Biomedical} {Image} {Segmentation}},
+	copyright = {Creative Commons Attribution Non Commercial No Derivatives 4.0 International},
+	shorttitle = {U-{Mamba}},
+	url = {https://arxiv.org/abs/2401.04722},
+	doi = {10.48550/ARXIV.2401.04722},
+	abstract = {Convolutional Neural Networks (CNNs) and Transformers have been the most popular architectures for biomedical image segmentation, but both of them have limited ability to handle long-range dependencies because of inherent locality or computational complexity. To address this challenge, we introduce U-Mamba, a general-purpose network for biomedical image segmentation. Inspired by the State Space Sequence Models (SSMs), a new family of deep sequence models known for their strong capability in handling long sequences, we design a hybrid CNN-SSM block that integrates the local feature extraction power of convolutional layers with the abilities of SSMs for capturing the long-range dependency. Moreover, U-Mamba enjoys a self-configuring mechanism, allowing it to automatically adapt to various datasets without manual intervention. We conduct extensive experiments on four diverse tasks, including the 3D abdominal organ segmentation in CT and MR images, instrument segmentation in endoscopy images, and cell segmentation in microscopy images. The results reveal that U-Mamba outperforms state-of-the-art CNN-based and Transformer-based segmentation networks across all tasks. This opens new avenues for efficient long-range dependency modeling in biomedical image analysis. The code, models, and data are publicly available at https://wanglab.ai/u-mamba.html.},
+	urldate = {2026-03-05},
+	publisher = {arXiv},
+	author = {Ma, Jun and Li, Feifei and Wang, Bo},
+	year = {2024},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV), Machine Learning (cs.LG)},
+}
+
+@misc{salehi_tversky_2017,
+	title = {Tversky loss function for image segmentation using {3D} fully convolutional deep networks},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	url = {https://arxiv.org/abs/1706.05721},
+	doi = {10.48550/ARXIV.1706.05721},
+	abstract = {Fully convolutional deep neural networks carry out excellent potential for fast and accurate image segmentation. One of the main challenges in training these networks is data imbalance, which is particularly problematic in medical imaging applications such as lesion segmentation where the number of lesion voxels is often much lower than the number of non-lesion voxels. Training with unbalanced data can lead to predictions that are severely biased towards high precision but low recall (sensitivity), which is undesired especially in medical applications where false negatives are much less tolerable than false positives. Several methods have been proposed to deal with this problem including balanced sampling, two step training, sample re-weighting, and similarity loss functions. In this paper, we propose a generalized loss function based on the Tversky index to address the issue of data imbalance and achieve much better trade-off between precision and recall in training 3D fully convolutional deep neural networks. Experimental results in multiple sclerosis lesion segmentation on magnetic resonance images show improved F2 score, Dice coefficient, and the area under the precision-recall curve in test data. Based on these results we suggest Tversky loss function as a generalized framework to effectively train deep neural networks.},
+	urldate = {2026-03-05},
+	publisher = {arXiv},
+	author = {Salehi, Seyed Sadegh Mohseni and Erdogmus, Deniz and Gholipour, Ali},
+	year = {2017},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences},
+}
+
+@misc{yang_3d-transunet_2024,
+	title = {{3D}-{TransUNet} for {Brain} {Metastases} {Segmentation} in the {BraTS2023} {Challenge}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	url = {https://arxiv.org/abs/2403.15735},
+	doi = {10.48550/ARXIV.2403.15735},
+	abstract = {Segmenting brain tumors is complex due to their diverse appearances and scales. Brain metastases, the most common type of brain tumor, are a frequent complication of cancer. Therefore, an effective segmentation model for brain metastases must adeptly capture local intricacies to delineate small tumor regions while also integrating global context to understand broader scan features. The TransUNet model, which combines Transformer self-attention with U-Net's localized information, emerges as a promising solution for this task. In this report, we address brain metastases segmentation by training the 3D-TransUNet model on the Brain Tumor Segmentation (BraTS-METS) 2023 challenge dataset. Specifically, we explored two architectural configurations: the Encoder-only 3D-TransUNet, employing Transformers solely in the encoder, and the Decoder-only 3D-TransUNet, utilizing Transformers exclusively in the decoder. For Encoder-only 3D-TransUNet, we note that Masked-Autoencoder pre-training is required for a better initialization of the Transformer Encoder and thus accelerates the training process. We identify that the Decoder-only 3D-TransUNet model should offer enhanced efficacy in the segmentation of brain metastases, as indicated by our 5-fold cross-validation on the training set. However, our use of the Encoder-only 3D-TransUNet model already yield notable results, with an average lesion-wise Dice score of 59.8{\textbackslash}\% on the test set, securing second place in the BraTS-METS 2023 challenge.},
+	urldate = {2024-10-15},
+	publisher = {arXiv},
+	author = {Yang, Siwei and Li, Xianhang and Mei, Jieru and Chen, Jieneng and Xie, Cihang and Zhou, Yuyin},
+	year = {2024},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV)},
+}
+
+@misc{hatamizadeh_unetr_2021-1,
+	title = {{UNETR}: {Transformers} for {3D} {Medical} {Image} {Segmentation}},
+	copyright = {Creative Commons Attribution Non Commercial No Derivatives 4.0 International},
+	shorttitle = {{UNETR}},
+	url = {https://arxiv.org/abs/2103.10504},
+	doi = {10.48550/ARXIV.2103.10504},
+	abstract = {Fully Convolutional Neural Networks (FCNNs) with contracting and expanding paths have shown prominence for the majority of medical image segmentation applications since the past decade. In FCNNs, the encoder plays an integral role by learning both global and local features and contextual representations which can be utilized for semantic output prediction by the decoder. Despite their success, the locality of convolutional layers in FCNNs, limits the capability of learning long-range spatial dependencies. Inspired by the recent success of transformers for Natural Language Processing (NLP) in long-range sequence learning, we reformulate the task of volumetric (3D) medical image segmentation as a sequence-to-sequence prediction problem. We introduce a novel architecture, dubbed as UNEt TRansformers (UNETR), that utilizes a transformer as the encoder to learn sequence representations of the input volume and effectively capture the global multi-scale information, while also following the successful "U-shaped" network design for the encoder and decoder. The transformer encoder is directly connected to a decoder via skip connections at different resolutions to compute the final semantic segmentation output. We have validated the performance of our method on the Multi Atlas Labeling Beyond The Cranial Vault (BTCV) dataset for multi-organ segmentation and the Medical Segmentation Decathlon (MSD) dataset for brain tumor and spleen segmentation tasks. Our benchmarks demonstrate new state-of-the-art performance on the BTCV leaderboard. Code: https://monai.io/research/unetr},
+	urldate = {2024-09-18},
+	publisher = {arXiv},
+	author = {Hatamizadeh, Ali and Tang, Yucheng and Nath, Vishwesh and Yang, Dong and Myronenko, Andriy and Landman, Bennett and Roth, Holger and Xu, Daguang},
+	year = {2021},
+	note = {Version Number: 3},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV), Machine Learning (cs.LG)},
+}
+
+@article{isensee_nnu-net_2021-1,
+	title = {{nnU}-{Net}: a self-configuring method for deep learning-based biomedical image segmentation},
+	volume = {18},
+	issn = {1548-7091, 1548-7105},
+	shorttitle = {{nnU}-{Net}},
+	url = {https://www.nature.com/articles/s41592-020-01008-z},
+	doi = {10.1038/s41592-020-01008-z},
+	language = {en},
+	number = {2},
+	urldate = {2025-05-19},
+	journal = {Nature Methods},
+	author = {Isensee, Fabian and Jaeger, Paul F. and Kohl, Simon A. A. and Petersen, Jens and Maier-Hein, Klaus H.},
+	month = feb,
+	year = {2021},
+	pages = {203--211},
+}
+
+@misc{wang_transbts_2021,
+	title = {{TransBTS}: {Multimodal} {Brain} {Tumor} {Segmentation} {Using} {Transformer}},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	shorttitle = {{TransBTS}},
+	url = {https://arxiv.org/abs/2103.04430},
+	doi = {10.48550/ARXIV.2103.04430},
+	abstract = {Transformer, which can benefit from global (long-range) information modeling using self-attention mechanisms, has been successful in natural language processing and 2D image classification recently. However, both local and global features are crucial for dense prediction tasks, especially for 3D medical image segmentation. In this paper, we for the first time exploit Transformer in 3D CNN for MRI Brain Tumor Segmentation and propose a novel network named TransBTS based on the encoder-decoder structure. To capture the local 3D context information, the encoder first utilizes 3D CNN to extract the volumetric spatial feature maps. Meanwhile, the feature maps are reformed elaborately for tokens that are fed into Transformer for global feature modeling. The decoder leverages the features embedded by Transformer and performs progressive upsampling to predict the detailed segmentation map. Extensive experimental results on both BraTS 2019 and 2020 datasets show that TransBTS achieves comparable or higher results than previous state-of-the-art 3D methods for brain tumor segmentation on 3D MRI scans. The source code is available at https://github.com/Wenxuan-1119/TransBTS},
+	urldate = {2025-05-19},
+	publisher = {arXiv},
+	author = {Wang, Wenxuan and Chen, Chen and Ding, Meng and Li, Jiangyun and Yu, Hong and Zha, Sen},
+	year = {2021},
+	note = {Version Number: 2},
+	keywords = {Artificial Intelligence (cs.AI), Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences},
+}
+
+@misc{hatamizadeh_swin_2022-1,
+	title = {Swin {UNETR}: {Swin} {Transformers} for {Semantic} {Segmentation} of {Brain} {Tumors} in {MRI} {Images}},
+	copyright = {Creative Commons Attribution Non Commercial No Derivatives 4.0 International},
+	shorttitle = {Swin {UNETR}},
+	url = {https://arxiv.org/abs/2201.01266},
+	doi = {10.48550/ARXIV.2201.01266},
+	abstract = {Semantic segmentation of brain tumors is a fundamental medical image analysis task involving multiple MRI imaging modalities that can assist clinicians in diagnosing the patient and successively studying the progression of the malignant entity. In recent years, Fully Convolutional Neural Networks (FCNNs) approaches have become the de facto standard for 3D medical image segmentation. The popular "U-shaped" network architecture has achieved state-of-the-art performance benchmarks on different 2D and 3D semantic segmentation tasks and across various imaging modalities. However, due to the limited kernel size of convolution layers in FCNNs, their performance of modeling long-range information is sub-optimal, and this can lead to deficiencies in the segmentation of tumors with variable sizes. On the other hand, transformer models have demonstrated excellent capabilities in capturing such long-range information in multiple domains, including natural language processing and computer vision. Inspired by the success of vision transformers and their variants, we propose a novel segmentation model termed Swin UNEt TRansformers (Swin UNETR). Specifically, the task of 3D brain tumor semantic segmentation is reformulated as a sequence to sequence prediction problem wherein multi-modal input data is projected into a 1D sequence of embedding and used as an input to a hierarchical Swin transformer as the encoder. The swin transformer encoder extracts features at five different resolutions by utilizing shifted windows for computing self-attention and is connected to an FCNN-based decoder at each resolution via skip connections. We have participated in BraTS 2021 segmentation challenge, and our proposed model ranks among the top-performing approaches in the validation phase. Code: https://monai.io/research/swin-unetr},
+	urldate = {2025-05-19},
+	publisher = {arXiv},
+	author = {Hatamizadeh, Ali and Nath, Vishwesh and Tang, Yucheng and Yang, Dong and Roth, Holger and Xu, Daguang},
+	year = {2022},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV), Machine Learning (cs.LG)},
+}
+
+@misc{farahani_towards_2025,
+	title = {Towards a {Multimodal} {MRI}-{Based} {Foundation} {Model} for {Multi}-{Level} {Feature} {Exploration} in {Segmentation}, {Molecular} {Subtyping}, and {Grading} of {Glioma}},
+	copyright = {Creative Commons Attribution Non Commercial No Derivatives 4.0 International},
+	url = {https://arxiv.org/abs/2503.06828},
+	doi = {10.48550/ARXIV.2503.06828},
+	abstract = {Accurate, noninvasive glioma characterization is crucial for effective clinical management. Traditional methods, dependent on invasive tissue sampling, often fail to capture the spatial heterogeneity of the tumor. While deep learning has improved segmentation and molecular profiling, few approaches simultaneously integrate tumor morphology and molecular features. Foundation deep learning models, which learn robust, task-agnostic representations from large-scale datasets, hold great promise but remain underutilized in glioma imaging biomarkers. We propose the Multi-Task SWIN-UNETR (MTS-UNET) model, a novel foundation-based framework built on the BrainSegFounder model, pretrained on large-scale neuroimaging data. MTS-UNET simultaneously performs glioma segmentation, histological grading, and molecular subtyping (IDH mutation and 1p/19q co-deletion). It incorporates two key modules: Tumor-Aware Feature Encoding (TAFE) for multi-scale, tumor-focused feature extraction and Cross-Modality Differential (CMD) for highlighting subtle T2-FLAIR mismatch signals associated with IDH mutation. The model was trained and validated on a diverse, multi-center cohort of 2,249 glioma patients from seven public datasets. MTS-UNET achieved a mean Dice score of 84\% for segmentation, along with AUCs of 90.58\% for IDH mutation, 69.22\% for 1p/19q co-deletion prediction, and 87.54\% for grading, significantly outperforming baseline models (p\&lt;=0.05). Ablation studies validated the essential contributions of the TAFE and CMD modules and demonstrated the robustness of the framework. The foundation-based MTS-UNET model effectively integrates tumor segmentation with multi-level classification, exhibiting strong generalizability across diverse MRI datasets. This framework shows significant potential for advancing noninvasive, personalized glioma management by improving predictive accuracy and interpretability.},
+	urldate = {2025-05-16},
+	publisher = {arXiv},
+	author = {Farahani, Somayeh and Hejazi, Marjaneh and Di Ieva, Antonio and Fatemizadeh, Emad and Liu, Sidong},
+	year = {2025},
+	note = {Version Number: 1},
+	keywords = {Artificial Intelligence (cs.AI), Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV)},
+}
+
+@misc{koleilat_medclip-samv2_2024,
+	title = {{MedCLIP}-{SAMv2}: {Towards} {Universal} {Text}-{Driven} {Medical} {Image} {Segmentation}},
+	copyright = {Creative Commons Attribution Non Commercial Share Alike 4.0 International},
+	shorttitle = {{MedCLIP}-{SAMv2}},
+	url = {https://arxiv.org/abs/2409.19483},
+	doi = {10.48550/ARXIV.2409.19483},
+	abstract = {Segmentation of anatomical structures and pathological regions in medical images is essential for modern clinical diagnosis, disease research, and treatment planning. While significant advancements have been made in deep learning-based segmentation techniques, many of these methods still suffer from limitations in data efficiency, generalizability, and interactivity. As a result, developing precise segmentation methods that require fewer labeled datasets remains a critical challenge in medical image analysis. Recently, the introduction of foundation models like CLIP and Segment-Anything-Model (SAM), with robust cross-domain representations, has paved the way for interactive and universal image segmentation. However, further exploration of these models for data-efficient segmentation in medical imaging is still needed and highly relevant. In this paper, we introduce MedCLIP-SAMv2, a novel framework that integrates the CLIP and SAM models to perform segmentation on clinical scans using text prompts, in both zero-shot and weakly supervised settings. Our approach includes fine-tuning the BiomedCLIP model with a new Decoupled Hard Negative Noise Contrastive Estimation (DHN-NCE) loss, and leveraging the Multi-modal Information Bottleneck (M2IB) to create visual prompts for generating segmentation masks from SAM in the zero-shot setting. We also investigate using zero-shot segmentation labels within a weakly supervised paradigm to enhance segmentation quality further. Extensive testing across four diverse segmentation tasks and medical imaging modalities (breast tumor ultrasound, brain tumor MRI, lung X-ray, and lung CT) demonstrates the high accuracy of our proposed framework. Our code is available at https://github.com/HealthX-Lab/MedCLIP-SAMv2.},
+	urldate = {2025-05-16},
+	publisher = {arXiv},
+	author = {Koleilat, Taha and Asgariandehkordi, Hojat and Rivaz, Hassan and Xiao, Yiming},
+	year = {2024},
+	note = {Version Number: 4},
+	keywords = {Computation and Language (cs.CL), Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences},
+}
+
+@misc{koleilat_medclip-sam_2024,
+	title = {{MedCLIP}-{SAM}: {Bridging} {Text} and {Image} {Towards} {Universal} {Medical} {Image} {Segmentation}},
+	copyright = {Creative Commons Attribution Non Commercial Share Alike 4.0 International},
+	shorttitle = {{MedCLIP}-{SAM}},
+	url = {https://arxiv.org/abs/2403.20253},
+	doi = {10.48550/ARXIV.2403.20253},
+	abstract = {Medical image segmentation of anatomical structures and pathology is crucial in modern clinical diagnosis, disease study, and treatment planning. To date, great progress has been made in deep learning-based segmentation techniques, but most methods still lack data efficiency, generalizability, and interactability. Consequently, the development of new, precise segmentation methods that demand fewer labeled datasets is of utmost importance in medical image analysis. Recently, the emergence of foundation models, such as CLIP and Segment-Anything-Model (SAM), with comprehensive cross-domain representation opened the door for interactive and universal image segmentation. However, exploration of these models for data-efficient medical image segmentation is still limited, but is highly necessary. In this paper, we propose a novel framework, called MedCLIP-SAM that combines CLIP and SAM models to generate segmentation of clinical scans using text prompts in both zero-shot and weakly supervised settings. To achieve this, we employed a new Decoupled Hard Negative Noise Contrastive Estimation (DHN-NCE) loss to fine-tune the BiomedCLIP model and the recent gScoreCAM to generate prompts to obtain segmentation masks from SAM in a zero-shot setting. Additionally, we explored the use of zero-shot segmentation labels in a weakly supervised paradigm to improve the segmentation quality further. By extensively testing three diverse segmentation tasks and medical image modalities (breast tumor ultrasound, brain tumor MRI, and lung X-ray), our proposed framework has demonstrated excellent accuracy. Code is available at https://github.com/HealthX-Lab/MedCLIP-SAM.},
+	urldate = {2025-05-16},
+	publisher = {arXiv},
+	author = {Koleilat, Taha and Asgariandehkordi, Hojat and Rivaz, Hassan and Xiao, Yiming},
+	year = {2024},
+	note = {Version Number: 2},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, Machine Learning (cs.LG)},
+}
+
+@misc{fan_foundation-model-boosted_2025,
+	title = {Foundation-{Model}-{Boosted} {Multimodal} {Learning} for {fMRI}-based {Neuropathic} {Pain} {Drug} {Response} {Prediction}},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	url = {https://arxiv.org/abs/2503.00210},
+	doi = {10.48550/ARXIV.2503.00210},
+	abstract = {Neuropathic pain, affecting up to 10\% of adults, remains difficult to treat due to limited therapeutic efficacy and tolerability. Although resting-state functional MRI (rs-fMRI) is a promising non-invasive measurement of brain biomarkers to predict drug response in therapeutic development, the complexity of fMRI demands machine learning models with substantial capacity. However, extreme data scarcity in neuropathic pain research limits the application of high-capacity models. To address the challenge of data scarcity, we propose FMM\$\_\{TC\}\$, a Foundation-Model-boosted Multimodal learning framework for fMRI-based neuropathic pain drug response prediction, which leverages both internal multimodal information in pain-specific data and external knowledge from large pain-agnostic data. Specifically, to maximize the value of limited pain-specific data, FMM\$\_\{TC\}\$ integrates complementary information from two rs-fMRI modalities: Time series and functional Connectivity. FMM\$\_\{TC\}\$ is further boosted by an fMRI foundation model with its external knowledge from extensive pain-agnostic fMRI datasets enriching limited pain-specific information. Evaluations with an in-house dataset and a public dataset from OpenNeuro demonstrate FMM\$\_\{TC\}\$'s superior representation ability, generalizability, and cross-dataset adaptability over existing unimodal fMRI models that only consider one of the rs-fMRI modalities. The ablation study validates the effectiveness of multimodal learning and foundation-model-powered external knowledge transfer in FMM\$\_\{TC\}\$. An integrated gradient-based interpretation study explains how FMM\$\_\{TC\}\$'s cross-dataset dynamic behaviors enhance its adaptability. In conclusion, FMM\$\_\{TC\}\$ boosts clinical trials in neuropathic pain therapeutic development by accurately predicting drug responses to improve the participant stratification efficiency.},
+	urldate = {2025-05-16},
+	publisher = {arXiv},
+	author = {Fan, Wenrui and Rizky, L. M. Riza and Zhang, Jiayang and Chen, Chen and Lu, Haiping and Teh, Kevin and Selvarajah, Dinesh and Zhou, Shuo},
+	year = {2025},
+	note = {Version Number: 1},
+	keywords = {Artificial Intelligence (cs.AI), Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Machine Learning (cs.LG), Signal Processing (eess.SP)},
+}
+
+@misc{barbano_anatomical_2024,
+	title = {Anatomical {Foundation} {Models} for {Brain} {MRIs}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	url = {https://arxiv.org/abs/2408.07079},
+	doi = {10.48550/ARXIV.2408.07079},
+	abstract = {Deep Learning (DL) in neuroimaging has become increasingly relevant for detecting neurological conditions and neurodegenerative disorders. One of the most predominant biomarkers in neuroimaging is represented by brain age, which has been shown to be a good indicator for different conditions, such as Alzheimer's Disease. Using brain age for weakly supervised pre-training of DL models in transfer learning settings has also recently shown promising results, especially when dealing with data scarcity of different conditions. On the other hand, anatomical information of brain MRIs (e.g. cortical thickness) can provide important information for learning good representations that can be transferred to many downstream tasks. In this work, we propose AnatCL, an anatomical foundation model for brain MRIs that i.) leverages anatomical information in a weakly contrastive learning approach, and ii.) achieves state-of-the-art performances across many different downstream tasks. To validate our approach we consider 12 different downstream tasks for the diagnosis of different conditions such as Alzheimer's Disease, autism spectrum disorder, and schizophrenia. Furthermore, we also target the prediction of 10 different clinical assessment scores using structural MRI data. Our findings show that incorporating anatomical information during pre-training leads to more robust and generalizable representations. Pre-trained models can be found at: https://github.com/EIDOSLAB/AnatCL.},
+	urldate = {2025-05-16},
+	publisher = {arXiv},
+	author = {Barbano, Carlo Alberto and Brunello, Matteo and Dufumier, Benoit and Grangetto, Marco},
+	year = {2024},
+	note = {Version Number: 3},
+	keywords = {68T07, Artificial Intelligence (cs.AI), Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, I.2.6, Image and Video Processing (eess.IV), Machine Learning (cs.LG)},
+}
+
+@misc{cox_brainsegfounder_2024,
+	title = {{BrainSegFounder}: {Towards} {3D} {Foundation} {Models} for {Neuroimage} {Segmentation}},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	shorttitle = {{BrainSegFounder}},
+	url = {https://arxiv.org/abs/2406.10395},
+	doi = {10.48550/ARXIV.2406.10395},
+	abstract = {The burgeoning field of brain health research increasingly leverages artificial intelligence (AI) to interpret and analyze neurological data. This study introduces a novel approach towards the creation of medical foundation models by integrating a large-scale multi-modal magnetic resonance imaging (MRI) dataset derived from 41,400 participants in its own. Our method involves a novel two-stage pretraining approach using vision transformers. The first stage is dedicated to encoding anatomical structures in generally healthy brains, identifying key features such as shapes and sizes of different brain regions. The second stage concentrates on spatial information, encompassing aspects like location and the relative positioning of brain structures. We rigorously evaluate our model, BrainFounder, using the Brain Tumor Segmentation (BraTS) challenge and Anatomical Tracings of Lesions After Stroke v2.0 (ATLAS v2.0) datasets. BrainFounder demonstrates a significant performance gain, surpassing the achievements of the previous winning solutions using fully supervised learning. Our findings underscore the impact of scaling up both the complexity of the model and the volume of unlabeled training data derived from generally healthy brains, which enhances the accuracy and predictive capabilities of the model in complex neuroimaging tasks with MRI. The implications of this research provide transformative insights and practical applications in healthcare and make substantial steps towards the creation of foundation models for Medical AI. Our pretrained models and training code can be found at https://github.com/lab-smile/GatorBrain.},
+	urldate = {2025-05-16},
+	publisher = {arXiv},
+	author = {Cox, Joseph and Liu, Peng and Stolte, Skylar E. and Yang, Yunchao and Liu, Kang and See, Kyle B. and Ju, Huiwen and Fang, Ruogu},
+	year = {2024},
+	note = {Version Number: 3},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Biological sciences, FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV), Neurons and Cognition (q-bio.NC)},
+}
+
+@misc{deng_brain_2025,
+	title = {Brain {Foundation} {Models} with {Hypergraph} {Dynamic} {Adapter} for {Brain} {Disease} {Analysis}},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	url = {https://arxiv.org/abs/2505.00627},
+	doi = {10.48550/ARXIV.2505.00627},
+	abstract = {Brain diseases, such as Alzheimer's disease and brain tumors, present profound challenges due to their complexity and societal impact. Recent advancements in brain foundation models have shown significant promise in addressing a range of brain-related tasks. However, current brain foundation models are limited by task and data homogeneity, restricted generalization beyond segmentation or classification, and inefficient adaptation to diverse clinical tasks. In this work, we propose SAM-Brain3D, a brain-specific foundation model trained on over 66,000 brain image-label pairs across 14 MRI sub-modalities, and Hypergraph Dynamic Adapter (HyDA), a lightweight adapter for efficient and effective downstream adaptation. SAM-Brain3D captures detailed brain-specific anatomical and modality priors for segmenting diverse brain targets and broader downstream tasks. HyDA leverages hypergraphs to fuse complementary multi-modal data and dynamically generate patient-specific convolutional kernels for multi-scale feature fusion and personalized patient-wise adaptation. Together, our framework excels across a broad spectrum of brain disease segmentation and classification tasks. Extensive experiments demonstrate that our method consistently outperforms existing state-of-the-art approaches, offering a new paradigm for brain disease analysis through multi-modal, multi-scale, and dynamic foundation modeling.},
+	urldate = {2025-05-16},
+	publisher = {arXiv},
+	author = {Deng, Zhongying and Wang, Haoyu and Huang, Ziyan and Zhang, Lipei and Aviles-Rivero, Angelica I. and Liu, Chaoyu and He, Junjun and Kourtzi, Zoe and Schönlieb, Carola-Bibiane},
+	year = {2025},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences},
+}
+
+@misc{bourigault_ukbob_2025,
+	title = {{UKBOB}: {One} {Billion} {MRI} {Labeled} {Masks} for {Generalizable} {3D} {Medical} {Image} {Segmentation}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	shorttitle = {{UKBOB}},
+	url = {https://arxiv.org/abs/2504.06908},
+	doi = {10.48550/ARXIV.2504.06908},
+	abstract = {In medical imaging, the primary challenge is collecting large-scale labeled data due to privacy concerns, logistics, and high labeling costs. In this work, we present the UK Biobank Organs and Bones (UKBOB), the largest labeled dataset of body organs, comprising 51,761 MRI 3D samples (equivalent to 17.9 million 2D images) and more than 1.37 billion 2D segmentation masks of 72 organs, all based on the UK Biobank MRI dataset. We utilize automatic labeling, introduce an automated label cleaning pipeline with organ-specific filters, and manually annotate a subset of 300 MRIs with 11 abdominal classes to validate the quality (referred to as UKBOB-manual). This approach allows for scaling up the dataset collection while maintaining confidence in the labels. We further confirm the validity of the labels by demonstrating zero-shot generalization of trained models on the filtered UKBOB to other small labeled datasets from similar domains (e.g., abdominal MRI). To further mitigate the effect of noisy labels, we propose a novel method called Entropy Test-time Adaptation (ETTA) to refine the segmentation output. We use UKBOB to train a foundation model, Swin-BOB, for 3D medical image segmentation based on the Swin-UNetr architecture, achieving state-of-the-art results in several benchmarks in 3D medical imaging, including the BRATS brain MRI tumor challenge (with a 0.4\% improvement) and the BTCV abdominal CT scan benchmark (with a 1.3\% improvement). The pre-trained models and the code are available at https://emmanuelleb985.github.io/ukbob , and the filtered labels will be made available with the UK Biobank.},
+	urldate = {2025-05-16},
+	publisher = {arXiv},
+	author = {Bourigault, Emmanuelle and Jamaludin, Amir and Hamdi, Abdullah},
+	year = {2025},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, Machine Learning (cs.LG)},
+}
+
+@misc{wang_brainmorph_2024,
+	title = {{BrainMorph}: {A} {Foundational} {Keypoint} {Model} for {Robust} and {Flexible} {Brain} {MRI} {Registration}},
+	copyright = {Creative Commons Zero v1.0 Universal},
+	shorttitle = {{BrainMorph}},
+	url = {https://arxiv.org/abs/2405.14019},
+	doi = {10.48550/ARXIV.2405.14019},
+	abstract = {We present a keypoint-based foundation model for general purpose brain MRI registration, based on the recently-proposed KeyMorph framework. Our model, called BrainMorph, serves as a tool that supports multi-modal, pairwise, and scalable groupwise registration. BrainMorph is trained on a massive dataset of over 100,000 3D volumes, skull-stripped and non-skull-stripped, from nearly 16,000 unique healthy and diseased subjects. BrainMorph is robust to large misalignments, interpretable via interrogating automatically-extracted keypoints, and enables rapid and controllable generation of many plausible transformations with different alignment types and different degrees of nonlinearity at test-time. We demonstrate the superiority of BrainMorph in solving 3D rigid, affine, and nonlinear registration on a variety of multi-modal brain MRI scans of healthy and diseased subjects, in both the pairwise and groupwise setting. In particular, we show registration accuracy and speeds that surpass current state-of-the-art methods, especially in the context of large initial misalignments and large group settings. All code and models are available at https://github.com/alanqrwang/brainmorph.},
+	urldate = {2025-05-16},
+	publisher = {arXiv},
+	author = {Wang, Alan Q. and Saluja, Rachit and Kim, Heejong and He, Xinzi and Dalca, Adrian and Sabuncu, Mert R.},
+	year = {2024},
+	note = {Version Number: 2},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences},
+}
+
+@article{marcus_open_2010,
+	title = {Open {Access} {Series} of {Imaging} {Studies}: {Longitudinal} {MRI} {Data} in {Nondemented} and {Demented} {Older} {Adults}},
+	volume = {22},
+	issn = {0898-929X, 1530-8898},
+	shorttitle = {Open {Access} {Series} of {Imaging} {Studies}},
+	url = {https://direct.mit.edu/jocn/article/22/12/2677/4983/Open-Access-Series-of-Imaging-Studies-Longitudinal},
+	doi = {10.1162/jocn.2009.21407},
+	abstract = {Abstract
+            The Open Access Series of Imaging Studies is a series of neuroimaging data sets that are publicly available for study and analysis. The present MRI data set consists of a longitudinal collection of 150 subjects aged 60 to 96 years all acquired on the same scanner using identical sequences. Each subject was scanned on two or more visits, separated by at least 1 year for a total of 373 imaging sessions. Subjects were characterized using the Clinical Dementia Rating (CDR) as either nondemented or with very mild to mild Alzheimer's disease. Seventy-two of the subjects were characterized as nondemented throughout the study. Sixty-four of the included subjects were characterized as demented at the time of their initial visits and remained so for subsequent scans, including 51 individuals with CDR 0.5 similar level of impairment to individuals elsewhere considered to have “mild cognitive impairment.” Another 14 subjects were characterized as nondemented at the time of their initial visit (CDR 0) and were subsequently characterized as demented at a later visit (CDR \&gt; 0). The subjects were all right-handed and include both men (n = 62) and women (n = 88). For each scanning session, three or four individual T1-weighted MRI scans were obtained. Multiple within-session acquisitions provide extremely high contrast to noise, making the data amenable to a wide range of analytic approaches including automated computational analysis. Automated calculation of whole-brain volume is presented to demonstrate use of the data for measuring differences associated with normal aging and Alzheimer's disease.},
+	language = {en},
+	number = {12},
+	urldate = {2025-04-15},
+	journal = {Journal of Cognitive Neuroscience},
+	author = {Marcus, Daniel S. and Fotenos, Anthony F. and Csernansky, John G. and Morris, John C. and Buckner, Randy L.},
+	month = dec,
+	year = {2010},
+	pages = {2677--2684},
+}
+
+@article{marcus_open_2007,
+	title = {Open {Access} {Series} of {Imaging} {Studies} ({OASIS}): {Cross}-sectional {MRI} {Data} in {Young}, {Middle} {Aged}, {Nondemented}, and {Demented} {Older} {Adults}},
+	volume = {19},
+	issn = {0898-929X, 1530-8898},
+	shorttitle = {Open {Access} {Series} of {Imaging} {Studies} ({OASIS})},
+	url = {https://direct.mit.edu/jocn/article/19/9/1498/4427/Open-Access-Series-of-Imaging-Studies-OASIS-Cross},
+	doi = {10.1162/jocn.2007.19.9.1498},
+	abstract = {Abstract
+            The Open Access Series of Imaging Studies is a series of magnetic resonance imaging data sets that is publicly available for study and analysis. The initial data set consists of a cross-sectional collection of 416 subjects aged 18 to 96 years. One hundred of the included subjects older than 60 years have been clinically diagnosed with very mild to moderate Alzheimer's disease. The subjects are all right-handed and include both men and women. For each subject, three or four individual T1-weighted magnetic resonance imaging scans obtained in single imaging sessions are included. Multiple within-session acquisitions provide extremely high contrast-to-noise ratio, making the data amenable to a wide range of analytic approaches including automated computational analysis. Additionally, a reliability data set is included containing 20 subjects without dementia imaged on a subsequent visit within 90 days of their initial session. Automated calculation of whole-brain volume and estimated total intracranial volume are presented to demonstrate use of the data for measuring differences associated with normal aging and Alzheimer's disease.},
+	language = {en},
+	number = {9},
+	urldate = {2025-04-15},
+	journal = {Journal of Cognitive Neuroscience},
+	author = {Marcus, Daniel S. and Wang, Tracy H. and Parker, Jamie and Csernansky, John G. and Morris, John C. and Buckner, Randy L.},
+	month = sep,
+	year = {2007},
+	pages = {1498--1507},
+}
+
+@misc{isensee_nnu-net_2024,
+	title = {{nnU}-{Net} {Revisited}: {A} {Call} for {Rigorous} {Validation} in {3D} {Medical} {Image} {Segmentation}},
+	shorttitle = {{nnU}-{Net} {Revisited}},
+	url = {http://arxiv.org/abs/2404.09556},
+	doi = {10.48550/arXiv.2404.09556},
+	abstract = {The release of nnU-Net marked a paradigm shift in 3D medical image segmentation, demonstrating that a properly configured U-Net architecture could still achieve state-of-the-art results. Despite this, the pursuit of novel architectures, and the respective claims of superior performance over the U-Net baseline, continued. In this study, we demonstrate that many of these recent claims fail to hold up when scrutinized for common validation shortcomings, such as the use of inadequate baselines, insufficient datasets, and neglected computational resources. By meticulously avoiding these pitfalls, we conduct a thorough and comprehensive benchmarking of current segmentation methods including CNN-based, Transformer-based, and Mamba-based approaches. In contrast to current beliefs, we find that the recipe for state-of-the-art performance is 1) employing CNN-based U-Net models, including ResNet and ConvNeXt variants, 2) using the nnU-Net framework, and 3) scaling models to modern hardware resources. These results indicate an ongoing innovation bias towards novel architectures in the field and underscore the need for more stringent validation standards in the quest for scientific progress.},
+	urldate = {2025-03-26},
+	publisher = {arXiv},
+	author = {Isensee, Fabian and Wald, Tassilo and Ulrich, Constantin and Baumgartner, Michael and Roy, Saikat and Maier-Hein, Klaus and Jaeger, Paul F.},
+	month = jul,
+	year = {2024},
+	note = {arXiv:2404.09556 [cs]},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition},
+}
+
+@misc{wald_openmind_2024,
+	title = {An {OpenMind} for {3D} medical vision self-supervised learning},
+	copyright = {Creative Commons Attribution 4.0 International},
+	url = {https://arxiv.org/abs/2412.17041},
+	doi = {10.48550/ARXIV.2412.17041},
+	abstract = {The field of 3D medical vision self-supervised learning lacks consistency and standardization. While many methods have been developed it is impossible to identify the current state-of-the-art, due to i) varying and small pre-training datasets, ii) varying architectures, and iii) being evaluated on differing downstream datasets. In this paper we bring clarity to this field and lay the foundation for further method advancements: We a) publish the largest publicly available pre-training dataset comprising 114k 3D brain MRI volumes and b) benchmark existing SSL methods under common architectures and c) provide the code of our framework publicly to facilitate rapid adoption and reproduction. This pre-print {\textbackslash}textit\{only describes\} the dataset contribution (a); Data, benchmark, and codebase will be made available shortly.},
+	urldate = {2025-03-22},
+	publisher = {arXiv},
+	author = {Wald, Tassilo and Ulrich, Constantin and Suprijadi, Jonathan and Nohel, Michal and Peretzke, Robin and Maier-Hein, Klaus H.},
+	year = {2024},
+	note = {Version Number: 1},
+	keywords = {Artificial Intelligence (cs.AI), Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV), Machine Learning (cs.LG)},
+}
+
+@misc{das_self_2025,
+	title = {Self {Pre}-training with {Adaptive} {Mask} {Autoencoders} for {Variable}-{Contrast} {3D} {Medical} {Imaging}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	url = {https://arxiv.org/abs/2501.09096},
+	doi = {10.48550/ARXIV.2501.09096},
+	abstract = {The Masked Autoencoder (MAE) has recently demonstrated effectiveness in pre-training Vision Transformers (ViT) for analyzing natural images. By reconstructing complete images from partially masked inputs, the ViT encoder gathers contextual information to predict the missing regions. This capability to aggregate context is especially important in medical imaging, where anatomical structures are functionally and mechanically linked to surrounding regions. However, current methods do not consider variations in the number of input images, which is typically the case in real-world Magnetic Resonance (MR) studies. To address this limitation, we propose a 3D Adaptive Masked Autoencoders (AMAE) architecture that accommodates a variable number of 3D input contrasts per subject. A magnetic resonance imaging (MRI) dataset of 45,364 subjects was used for pretraining and a subset of 1648 training, 193 validation and 215 test subjects were used for finetuning. The performance demonstrates that self pre-training of this adaptive masked autoencoders can enhance the infarct segmentation performance by 2.8\%-3.7\% for ViT-based segmentation models.},
+	urldate = {2025-03-21},
+	publisher = {arXiv},
+	author = {Das, Badhan Kumar and Zhao, Gengyan and Liu, Han and Re, Thomas J. and Comaniciu, Dorin and Gibson, Eli and Maier, Andreas},
+	year = {2025},
+	note = {Version Number: 2},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV)},
+}
+
+@article{liu_m3ae_2023,
+	title = {{M3AE}: {Multimodal} {Representation} {Learning} for {Brain} {Tumor} {Segmentation} with {Missing} {Modalities}},
+	copyright = {Creative Commons Attribution Non Commercial No Derivatives 4.0 International},
+	shorttitle = {{M3AE}},
+	url = {https://arxiv.org/abs/2303.05302},
+	doi = {10.48550/ARXIV.2303.05302},
+	abstract = {Multimodal magnetic resonance imaging (MRI) provides complementary information for sub-region analysis of brain tumors. Plenty of methods have been proposed for automatic brain tumor segmentation using four common MRI modalities and achieved remarkable performance. In practice, however, it is common to have one or more modalities missing due to image corruption, artifacts, acquisition protocols, allergy to contrast agents, or simply cost. In this work, we propose a novel two-stage framework for brain tumor segmentation with missing modalities. In the first stage, a multimodal masked autoencoder (M3AE) is proposed, where both random modalities (i.e., modality dropout) and random patches of the remaining modalities are masked for a reconstruction task, for self-supervised learning of robust multimodal representations against missing modalities. To this end, we name our framework M3AE. Meanwhile, we employ model inversion to optimize a representative full-modal image at marginal extra cost, which will be used to substitute for the missing modalities and boost performance during inference. Then in the second stage, a memory-efficient self distillation is proposed to distill knowledge between heterogenous missing-modal situations while fine-tuning the model for supervised segmentation. Our M3AE belongs to the 'catch-all' genre where a single model can be applied to all possible subsets of modalities, thus is economic for both training and deployment. Extensive experiments on BraTS 2018 and 2020 datasets demonstrate its superior performance to existing state-of-the-art methods with missing modalities, as well as the efficacy of its components. Our code is available at: https://github.com/ccarliu/m3ae.},
+	urldate = {2025-03-21},
+	publisher = {arXiv},
+	author = {Liu, Hong and Wei, Dong and Lu, Donghuan and Sun, Jinghan and Wang, Liansheng and Zheng, Yefeng},
+	year = {2023},
+	note = {Version Number: 1},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV)},
+}
+
+@article{xie_rethinking_2024,
+	title = {Rethinking masked image modelling for medical image representation},
+	volume = {98},
+	issn = {13618415},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1361841524002299},
+	doi = {10.1016/j.media.2024.103304},
+	language = {en},
+	urldate = {2025-03-19},
+	journal = {Medical Image Analysis},
+	author = {Xie, Yutong and Gu, Lin and Harada, Tatsuya and Zhang, Jianpeng and Xia, Yong and Wu, Qi},
+	month = dec,
+	year = {2024},
+	pages = {103304},
+}
+
+@misc{jiang_m4oe_2024,
+	title = {M\${\textasciicircum}4\${oE}: {A} {Foundation} {Model} for {Medical} {Multimodal} {Image} {Segmentation} with {Mixture} of {Experts}},
+	shorttitle = {M\${\textasciicircum}4\${oE}},
+	url = {http://arxiv.org/abs/2405.09446},
+	doi = {10.48550/arXiv.2405.09446},
+	abstract = {Medical imaging data is inherently heterogeneous across different modalities and clinical centers, posing unique challenges for developing generalizable foundation models. Conventional entails training distinct models per dataset or using a shared encoder with modality-specific decoders. However, these approaches incur heavy computational overheads and suffer from poor scalability. To address these limitations, we propose the Medical Multimodal Mixture of Experts (M\${\textasciicircum}4\$oE) framework, leveraging the SwinUNet architecture. Specifically, M\${\textasciicircum}4\$oE comprises modality-specific experts; each separately initialized to learn features encoding domain knowledge. Subsequently, a gating network is integrated during fine-tuning to modulate each expert's contribution to the collective predictions dynamically. This enhances model interpretability and generalization ability while retaining expertise specialization. Simultaneously, the M\${\textasciicircum}4\$oE architecture amplifies the model's parallel processing capabilities, and it also ensures the model's adaptation to new modalities with ease. Experiments across three modalities reveal that M\${\textasciicircum}4\$oE can achieve 3.45\% over STU-Net-L, 5.11\% over MED3D, and 11.93\% over SAM-Med2D across the MICCAI FLARE22, AMOS2022, and ATLAS2023 datasets. Moreover, M\${\textasciicircum}4\$oE showcases a significant reduction in training duration with 7 hours less while maintaining a parameter count that is only 30\% of its compared methods. The code is available at https://github.com/JefferyJiang-YF/M4oE.},
+	urldate = {2025-03-09},
+	publisher = {arXiv},
+	author = {Jiang, Yufeng and Shen, Yiqing},
+	month = may,
+	year = {2024},
+	note = {arXiv:2405.09446 [eess]},
+	keywords = {Electrical Engineering and Systems Science - Image and Video Processing},
+}
+
+@misc{zhang_foundation_2024,
+	title = {A {Foundation} {Model} for {Brain} {Lesion} {Segmentation} with {Mixture} of {Modality} {Experts}},
+	url = {http://arxiv.org/abs/2405.10246},
+	doi = {10.48550/arXiv.2405.10246},
+	abstract = {Brain lesion segmentation plays an essential role in neurological research and diagnosis. As brain lesions can be caused by various pathological alterations, different types of brain lesions tend to manifest with different characteristics on different imaging modalities. Due to this complexity, brain lesion segmentation methods are often developed in a task-specific manner. A specific segmentation model is developed for a particular lesion type and imaging modality. However, the use of task-specific models requires predetermination of the lesion type and imaging modality, which complicates their deployment in real-world scenarios. In this work, we propose a universal foundation model for 3D brain lesion segmentation, which can automatically segment different types of brain lesions for input data of various imaging modalities. We formulate a novel Mixture of Modality Experts (MoME) framework with multiple expert networks attending to different imaging modalities. A hierarchical gating network combines the expert predictions and fosters expertise collaboration. Furthermore, we introduce a curriculum learning strategy during training to avoid the degeneration of each expert network and preserve their specialization. We evaluated the proposed method on nine brain lesion datasets, encompassing five imaging modalities and eight lesion types. The results show that our model outperforms state-of-the-art universal models and provides promising generalization to unseen datasets.},
+	urldate = {2025-03-09},
+	publisher = {arXiv},
+	author = {Zhang, Xinru and Ou, Ni and Basaran, Berke Doga and Visentin, Marco and Qiao, Mengyun and Gu, Renyang and Ouyang, Cheng and Liu, Yaou and Matthew, Paul M. and Ye, Chuyang and Bai, Wenjia},
+	month = jul,
+	year = {2024},
+	note = {arXiv:2405.10246 [eess]},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Electrical Engineering and Systems Science - Image and Video Processing},
+}
+
+@article{rondinella_boosting_2023,
+	title = {Boosting multiple sclerosis lesion segmentation through attention mechanism},
+	volume = {161},
+	issn = {00104825},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0010482523004869},
+	doi = {10.1016/j.compbiomed.2023.107021},
+	language = {en},
+	urldate = {2025-03-07},
+	journal = {Computers in Biology and Medicine},
+	author = {Rondinella, Alessia and Crispino, Elena and Guarnera, Francesco and Giudice, Oliver and Ortis, Alessandro and Russo, Giulia and Di Lorenzo, Clara and Maimone, Davide and Pappalardo, Francesco and Battiato, Sebastiano},
+	month = jul,
+	year = {2023},
+	pages = {107021},
+}
+
+@misc{ali_m_muslim_brain_2022,
+	title = {Brain {MRI} {Dataset} of {Multiple} {Sclerosis} with {Consensus} {Manual} {Lesion} {Segmentation} and {Patient} {Meta} {Information}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	url = {https://data.mendeley.com/datasets/8bctsm8jz7/1},
+	doi = {10.17632/8BCTSM8JZ7.1},
+	abstract = {Magnetic resonance imaging (MRI) provides a significant key to diagnose and monitor the progression of Multiple Sclerosis (MS) disease. Manual MS-Lesion segmentation, Expanded Disability Status Scale (EDSS) and patient’s meta information can provide a gold standard for research in terms of automated MS-lesion quantification, automated EDSS prediction and identification of the correlation between MS-lesion and patient disability. In this dataset, we provide a novel multi-sequence MRI dataset of 60 MS patients with consensus manual lesion segmentation, EDSS, general patient information and clinical information. On this dataset, three radiologists and neurologist experts segmented and validated the manual MS-lesion segmentation for three MRI sequences T1-weighted, T2-weighted and fluid-attenuated inversion recovery (FLAIR). The dataset can be used to study the relationship between MS-lesion, EDSS and patient clinical information. Furthermore, it also can be used to development of automated MS-lesion segmentation, patient disability prediction using MRI and correlation analysis between patient disability and MRI brain abnormalities include MS lesion location, size, number and type.},
+	urldate = {2025-03-07},
+	publisher = {Mendeley},
+	author = {{Ali M Muslim}},
+	collaborator = {{Ali M Muslim}},
+	month = mar,
+	year = {2022},
+}
+
+@misc{perez-garcia_episurg_2020,
+	title = {{EPISURG}: a dataset of postoperative magnetic resonance images ({MRI}) for quantitative analysis of resection neurosurgery for refractory epilepsy},
+	copyright = {Creative Commons Attribution Non Commercial Share Alike 4.0 International},
+	shorttitle = {{EPISURG}},
+	url = {https://rdr.ucl.ac.uk/articles/dataset/EPISURG_a_dataset_of_postoperative_magnetic_resonance_images_MRI_for_quantitative_analysis_of_resection_neurosurgery_for_refractory_epilepsy/9996158/1},
+	doi = {10.5522/04/9996158.V1},
+	abstract = {EPISURG is a clinical dataset of T$_{\textrm{1}}$-weighted magnetic resonance images (MRI) from 430 epileptic patients who underwent resective brain surgery at the National Hospital of Neurology and Neurosurgery (Queen Square, London, United Kingdom) between 1990 and 2018.{\textless}br{\textgreater}{\textless}br{\textgreater}The NIfTI files are anonymised and the images have been defaced to further protect the patients' identity.{\textless}br{\textgreater}The dataset comprises 430 postoperative MRI. The corresponding preoperative MRI is present for 269 subjects.{\textless}br{\textgreater}Three human raters segmented the resection cavity on partially overlapping subsets of EPISURG:{\textless}br{\textgreater}- Rater 1: 133 subjects (researcher in neuroimaging)- Rater 2: 34 subjects (clinical scientist)- Rater 3: 33 subjects (neurologist){\textless}br{\textgreater}{\textless}br{\textgreater}\textbf{Acknowledgements}{\textless}br{\textgreater}If you use this dataset for your research please cite the following publications:{\textless}br{\textgreater}\textit{Pérez-García F., Rodionov R., Alim-Marvasti A., Sparks R., Duncan J.S., Ourselin S. (2020) Simulation of Brain Resection for Cavity Segmentation Using Self-supervised and Semi-supervised Learning. In: Martel A.L. et al. (eds) Medical Image Computing and Computer Assisted Intervention – MICCAI 2020. Lecture Notes in Computer Science, vol 12263. Springer, Cham. https://doi.org/10.1007/978-3-030-59716-0\_12}{\textless}br{\textgreater}\textit{Pérez-García F., Rodionov R., Alim-Marvasti A., Sparks R., Duncan J.S., Ourselin S. EPISURG: MRI dataset for quantitative analysis of resective neurosurgery for refractory epilepsy. University College London (2020). DOI 10.5522/04/9996158.v1}{\textless}br{\textgreater}{\textless}br{\textgreater}\textbf{Graphical user interface (GUI)}{\textless}br{\textgreater}\textbf{{\textless}br{\textgreater}}The 3D Slicer extension EPISURG may be used to visualise the dataset: https://github.com/fepegar/SlicerEPISURG{\textless}br{\textgreater}{\textless}br{\textgreater}\textbf{Data use agreement}{\textless}br{\textgreater}The EPISURG data are distributed to the greater scientific community under the following terms:{\textless}br{\textgreater}1. You will not attempt to establish the identity or to make contact with any of the included subjects.2. You will acknowledge the use of EPISURG data and data derived from EPISURG data when publicly presenting any results or algorithms that benefitted from their use. Papers, book chapters, books, posters, oral presentations, and all other printed and digital presentations of results derived from EPISURG data should cite the publications listed above.3. You will not further disclose these data beyond the uses outlined in this agreement and understand that redistribution of data in any manner is prohibited.4. You will require anyone on your team who uses these data, or anyone with whom you share these data to comply with this data use agreement.{\textless}br{\textgreater}},
+	urldate = {2025-03-04},
+	publisher = {University College London},
+	author = {Pérez-García, Fernando and Rodionov, Roman and Alim-Marvasti, Ali and Sparks, Rachel and Duncan, John and Ourselin, Sebastien},
+	year = {2020},
+	note = {Artwork Size: 5772779439 Bytes
+Pages: 5772779439 Bytes},
+	keywords = {110323 Surgery, Artificial Intelligence and Image Processing, FOS: Clinical medicine, FOS: Computer and information sciences},
+}
+
+@misc{alves_brain_2023,
+	title = {Brain {MRI} {Glioma}},
+	copyright = {Closed Access},
+	url = {https://zenodo.org/record/8054721},
+	doi = {10.5281/ZENODO.8054721},
+	abstract = {This data set is part of the public development data for the 2023 Automated Universal Classification Challenge (AUC23). The data set concerns the prediction of the world health organization (WHO) subtype of patients with glioma in magnetic resonance imaging (MRI). The data set was previously introduced and described by van der Voort et al. (2021).Data was restructured in compliance with the AUC23 challenge format. Images are 4D tensors: 0: T1-weighted, 1: post-contrast T1-weighted 2: T2-weighted 3: T2-weighted FLAIR Classification labels: 0: WHO grade 2 1: WHO grade 3 2: WHO grade 4 imagesTr (root folder with all patients and studies){\textless}br{\textgreater} ├── whogliomagrade\_0289\_0000.mha (4D MRI for study 289){\textless}br{\textgreater} ├── whogliomagrade\_0505\_0000.mha (4D MRI for study 0505){\textless}br{\textgreater} ├── ... Please cite the following data set if you are using the kidney CT abnormality data : van der Voort SR, Incekara F, Wijnenga MMJ, Kapsas G, Gahrmann R, Schouten JW, Dubbink HJ, Vincent AJPE, van den Bent MJ, French PJ, Klein S, Smits M. The Erasmus Glioma Database (EGD): Structural MRI scans, WHO 2016 subtypes, and segmentations of 774 patients with glioma. Data Brief. 2021 Jun 2;37:107191. doi: 10.1016/j.dib.2021.107191. PMID: 34159239; PMCID: PMC8203723.},
+	urldate = {2025-03-04},
+	publisher = {Zenodo},
+	author = {Alves, Natalia and Boulogne, Luuk},
+	month = jun,
+	year = {2023},
+}
+
+@misc{santiago_silva_ixi_2022,
+	title = {{IXI} {Sample} {Dataset}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	url = {https://data.mendeley.com/datasets/7kd5wj7v7p/3},
+	doi = {10.17632/7KD5WJ7V7P.3},
+	abstract = {This project is a modified version of the IXI Dataset adapted for particular cases of use where each subject is represented by a directory containing all the modalities associated with them.},
+	urldate = {2025-03-04},
+	publisher = {Mendeley},
+	author = {{Santiago Silva}},
+	collaborator = {{Santiago Silva} and {Marco Lorenzi} and {Samy-Safwan Ayed}},
+	month = may,
+	year = {2022},
+}
+
+@misc{wald_revisiting_2024,
+	title = {Revisiting {MAE} pre-training for {3D} medical image segmentation},
+	url = {http://arxiv.org/abs/2410.23132},
+	doi = {10.48550/arXiv.2410.23132},
+	abstract = {Self-Supervised Learning (SSL) presents an exciting opportunity to unlock the potential of vast, untapped clinical datasets, for various downstream applications that suffer from the scarcity of labeled data. While SSL has revolutionized fields like natural language processing and computer vision, its adoption in 3D medical image computing has been limited by three key pitfalls: Small pre-training dataset sizes, architectures inadequate for 3D medical image analysis, and insufficient evaluation practices. In this paper, we address these issues by i) leveraging a large-scale dataset of 39k 3D brain MRI volumes and ii) using a Residual Encoder U-Net architecture within the state-of-the-art nnU-Net framework. iii) A robust development framework, incorporating 5 development and 8 testing brain MRI segmentation datasets, allowed performance-driven design decisions to optimize the simple concept of Masked Auto Encoders (MAEs) for 3D CNNs. The resulting model not only surpasses previous SSL methods but also outperforms the strong nnU-Net baseline by an average of approximately 3 Dice points setting a new state-of-the-art. Our code and models are made available here.},
+	urldate = {2025-02-17},
+	publisher = {arXiv},
+	author = {Wald, Tassilo and Ulrich, Constantin and Lukyanenko, Stanislav and Goncharov, Andrei and Paderno, Alberto and Maerkisch, Leander and Jäger, Paul F. and Maier-Hein, Klaus},
+	month = dec,
+	year = {2024},
+	note = {arXiv:2410.23132 [cs]},
+	keywords = {Computer Science - Artificial Intelligence, Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning},
+}
+
+@misc{zhang_challenges_2023,
+	title = {On the {Challenges} and {Perspectives} of {Foundation} {Models} for {Medical} {Image} {Analysis}},
+	copyright = {Creative Commons Attribution 4.0 International},
+	url = {https://arxiv.org/abs/2306.05705},
+	doi = {10.48550/ARXIV.2306.05705},
+	abstract = {This article discusses the opportunities, applications and future directions of large-scale pre-trained models, i.e., foundation models, for analyzing medical images. Medical foundation models have immense potential in solving a wide range of downstream tasks, as they can help to accelerate the development of accurate and robust models, reduce the large amounts of required labeled data, preserve the privacy and confidentiality of patient data. Specifically, we illustrate the "spectrum" of medical foundation models, ranging from general vision models, modality-specific models, to organ/task-specific models, highlighting their challenges, opportunities and applications. We also discuss how foundation models can be leveraged in downstream medical tasks to enhance the accuracy and efficiency of medical image analysis, leading to more precise diagnosis and treatment decisions.},
+	urldate = {2025-02-14},
+	publisher = {arXiv},
+	author = {Zhang, Shaoting and Metaxas, Dimitris},
+	year = {2023},
+	note = {Version Number: 2},
+	keywords = {Computer Vision and Pattern Recognition (cs.CV), FOS: Computer and information sciences, FOS: Electrical engineering, electronic engineering, information engineering, Image and Video Processing (eess.IV)},
+}
+
+@article{zhao_foundation_2025,
+	title = {A foundation model for joint segmentation, detection and recognition of biomedical objects across nine modalities},
+	volume = {22},
+	issn = {1548-7091, 1548-7105},
+	url = {https://www.nature.com/articles/s41592-024-02499-w},
+	doi = {10.1038/s41592-024-02499-w},
+	language = {en},
+	number = {1},
+	urldate = {2025-01-13},
+	journal = {Nature Methods},
+	author = {Zhao, Theodore and Gu, Yu and Yang, Jianwei and Usuyama, Naoto and Lee, Ho Hin and Kiblawi, Sid and Naumann, Tristan and Gao, Jianfeng and Crabtree, Angela and Abel, Jacob and Moung-Wen, Christine and Piening, Brian and Bifulco, Carlo and Wei, Mu and Poon, Hoifung and Wang, Sheng},
+	month = jan,
+	year = {2025},
+	pages = {166--176},
+}
+
+@misc{liu_vision-mae_2024,
+	title = {{VISION}-{MAE}: {A} {Foundation} {Model} for {Medical} {Image} {Segmentation} and {Classification}},
+	shorttitle = {{VISION}-{MAE}},
+	url = {http://arxiv.org/abs/2402.01034},
+	doi = {10.48550/arXiv.2402.01034},
+	abstract = {Artificial Intelligence (AI) has the potential to revolutionize diagnosis and segmentation in medical imaging. However, development and clinical implementation face multiple challenges including limited data availability, lack of generalizability, and the necessity to incorporate multi-modal data effectively. A foundation model, which is a large-scale pre-trained AI model, offers a versatile base that can be adapted to a variety of specific tasks and contexts. Here, we present a novel foundation model, VISION-MAE, specifically designed for medical imaging. Specifically, VISION-MAE is trained on a dataset of 2.5 million unlabeled images from various modalities (CT, MR, PET, X-rays, and ultrasound), using self-supervised learning techniques. It is then adapted to classification and segmentation tasks using explicit labels. VISION-MAE has high label efficiency, outperforming several benchmark models in both in-domain and out-of-domain applications, and achieves high performance even with reduced availability of labeled data. This model represents a significant advancement in medical imaging AI, offering a generalizable and robust solution for improving segmentation and classification tasks while reducing the data annotation workload.},
+	urldate = {2024-12-14},
+	publisher = {arXiv},
+	author = {Liu, Zelong and Tieu, Andrew and Patel, Nikhil and Zhou, Alexander and Soultanidis, George and Fayad, Zahi A. and Deyer, Timothy and Mei, Xueyan},
+	month = feb,
+	year = {2024},
+	note = {arXiv:2402.01034 [eess]},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Electrical Engineering and Systems Science - Image and Video Processing},
+}
+
+@misc{biderman_lora_2024,
+	title = {{LoRA} {Learns} {Less} and {Forgets} {Less}},
+	url = {http://arxiv.org/abs/2405.09673},
+	doi = {10.48550/arXiv.2405.09673},
+	abstract = {Low-Rank Adaptation (LoRA) is a widely-used parameter-efficient finetuning method for large language models. LoRA saves memory by training only low rank perturbations to selected weight matrices. In this work, we compare the performance of LoRA and full finetuning on two target domains, programming and mathematics. We consider both the instruction finetuning (approximately 100K prompt-response pairs) and continued pretraining (20B unstructured tokens) data regimes. Our results show that, in the standard low-rank settings, LoRA substantially underperforms full finetuning. Nevertheless, LoRA better maintains the base model's performance on tasks outside the target domain. We show that LoRA mitigates forgetting more than common regularization techniques such as weight decay and dropout; it also helps maintain more diverse generations. Finally, we show that full finetuning learns perturbations with a rank that is 10-100X greater than typical LoRA configurations, possibly explaining some of the reported gaps. We conclude by proposing best practices for finetuning with LoRA.},
+	urldate = {2024-12-15},
+	publisher = {arXiv},
+	author = {Biderman, Dan and Portes, Jacob and Ortiz, Jose Javier Gonzalez and Paul, Mansheej and Greengard, Philip and Jennings, Connor and King, Daniel and Havens, Sam and Chiley, Vitaliy and Frankle, Jonathan and Blakeney, Cody and Cunningham, John P.},
+	month = sep,
+	year = {2024},
+	note = {arXiv:2405.09673 [cs]},
+	keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Machine Learning},
+}
+
+@article{sun_foundation_2024,
+	title = {A foundation model for enhancing magnetic resonance images and downstream segmentation, registration and diagnostic tasks},
+	issn = {2157-846X},
+	url = {https://www.nature.com/articles/s41551-024-01283-7},
+	doi = {10.1038/s41551-024-01283-7},
+	language = {en},
+	urldate = {2024-12-15},
+	journal = {Nature Biomedical Engineering},
+	author = {Sun, Yue and Wang, Limei and Li, Gang and Lin, Weili and Wang, Li},
+	month = dec,
+	year = {2024},
+}
+
+@misc{munk_amaes_2024,
+	title = {{AMAES}: {Augmented} {Masked} {Autoencoder} {Pretraining} on {Public} {Brain} {MRI} {Data} for {3D}-{Native} {Segmentation}},
+	shorttitle = {{AMAES}},
+	url = {http://arxiv.org/abs/2408.00640},
+	doi = {10.48550/arXiv.2408.00640},
+	abstract = {This study investigates the impact of self-supervised pretraining of 3D semantic segmentation models on a large-scale, domain-specific dataset. We introduce BRAINS-45K, a dataset of 44,756 brain MRI volumes from public sources, the largest public dataset available, and revisit a number of design choices for pretraining modern segmentation architectures by simplifying and optimizing state-of-the-art methods, and combining them with a novel augmentation strategy. The resulting AMAES framework is based on masked-image-modeling and intensity-based augmentation reversal and balances memory usage, runtime, and finetuning performance. Using the popular U-Net and the recent MedNeXt architecture as backbones, we evaluate the effect of pretraining on three challenging downstream tasks, covering single-sequence, low-resource settings, and out-of-domain generalization. The results highlight that pretraining on the proposed dataset with AMAES significantly improves segmentation performance in the majority of evaluated cases, and that it is beneficial to pretrain the model with augmentations, despite pretraing on a large-scale dataset. Code and model checkpoints for reproducing results, as well as the BRAINS-45K dataset are available at {\textbackslash}url\{https://github.com/asbjrnmunk/amaes\}.},
+	urldate = {2024-12-15},
+	publisher = {arXiv},
+	author = {Munk, Asbjørn and Ambsdorf, Jakob and Llambias, Sebastian and Nielsen, Mads},
+	month = aug,
+	year = {2024},
+	note = {arXiv:2408.00640 [eess]},
+	keywords = {Computer Science - Artificial Intelligence, Computer Science - Computer Vision and Pattern Recognition, Electrical Engineering and Systems Science - Image and Video Processing},
+}
+
+@misc{xu_swin_2023,
+	title = {Swin {MAE}: {Masked} {Autoencoders} for {Small} {Datasets}},
+	shorttitle = {Swin {MAE}},
+	url = {http://arxiv.org/abs/2212.13805},
+	doi = {10.48550/arXiv.2212.13805},
+	abstract = {The development of deep learning models in medical image analysis is majorly limited by the lack of large-sized and well-annotated datasets. Unsupervised learning does not require labels and is more suitable for solving medical image analysis problems. However, most of the current unsupervised learning methods need to be applied to large datasets. To make unsupervised learning applicable to small datasets, we proposed Swin MAE, which is a masked autoencoder with Swin Transformer as its backbone. Even on a dataset of only a few thousand medical images and without using any pre-trained models, Swin MAE is still able to learn useful semantic features purely from images. It can equal or even slightly outperform the supervised model obtained by Swin Transformer trained on ImageNet in terms of the transfer learning results of downstream tasks. The code is publicly available at https://github.com/Zian-Xu/Swin-MAE.},
+	urldate = {2024-12-14},
+	publisher = {arXiv},
+	author = {Xu, Zi'an and Dai, Yin and Liu, Fayu and Chen, Weibing and Liu, Yue and Shi, Lifu and Liu, Sheng and Zhou, Yuhang},
+	month = jan,
+	year = {2023},
+	note = {arXiv:2212.13805 [cs]},
+	keywords = {Computer Science - Artificial Intelligence, Computer Science - Computer Vision and Pattern Recognition},
+}
+
+@incollection{linguraru_approach_2024,
+	address = {Cham},
+	title = {An {Approach} to {Building} {Foundation} {Models} for {Brain} {Image} {Analysis}},
+	volume = {15012},
+	isbn = {978-3-031-72389-6 978-3-031-72390-2},
+	url = {https://link.springer.com/10.1007/978-3-031-72390-2_40},
+	doi = {10.1007/978-3-031-72390-2_40},
+	language = {en},
+	urldate = {2024-12-14},
+	booktitle = {Medical {Image} {Computing} and {Computer} {Assisted} {Intervention} – {MICCAI} 2024},
+	publisher = {Springer Nature Switzerland},
+	author = {Karimi, Davood},
+	editor = {Linguraru, Marius George and Dou, Qi and Feragen, Aasa and Giannarou, Stamatia and Glocker, Ben and Lekadir, Karim and Schnabel, Julia A.},
+	year = {2024},
+	note = {Series Title: Lecture Notes in Computer Science},
+	pages = {421--431},
+}
+
+@misc{azad_foundational_2023,
+	title = {Foundational {Models} in {Medical} {Imaging}: {A} {Comprehensive} {Survey} and {Future} {Vision}},
+	shorttitle = {Foundational {Models} in {Medical} {Imaging}},
+	url = {http://arxiv.org/abs/2310.18689},
+	doi = {10.48550/arXiv.2310.18689},
+	abstract = {Foundation models, large-scale, pre-trained deep-learning models adapted to a wide range of downstream tasks have gained significant interest lately in various deep-learning problems undergoing a paradigm shift with the rise of these models. Trained on large-scale dataset to bridge the gap between different modalities, foundation models facilitate contextual reasoning, generalization, and prompt capabilities at test time. The predictions of these models can be adjusted for new tasks by augmenting the model input with task-specific hints called prompts without requiring extensive labeled data and retraining. Capitalizing on the advances in computer vision, medical imaging has also marked a growing interest in these models. To assist researchers in navigating this direction, this survey intends to provide a comprehensive overview of foundation models in the domain of medical imaging. Specifically, we initiate our exploration by providing an exposition of the fundamental concepts forming the basis of foundation models. Subsequently, we offer a methodical taxonomy of foundation models within the medical domain, proposing a classification system primarily structured around training strategies, while also incorporating additional facets such as application domains, imaging modalities, specific organs of interest, and the algorithms integral to these models. Furthermore, we emphasize the practical use case of some selected approaches and then discuss the opportunities, applications, and future directions of these large-scale pre-trained models, for analyzing medical images. In the same vein, we address the prevailing challenges and research pathways associated with foundational models in medical imaging. These encompass the areas of interpretability, data management, computational requirements, and the nuanced issue of contextual comprehension.},
+	urldate = {2024-12-10},
+	publisher = {arXiv},
+	author = {Azad, Bobby and Azad, Reza and Eskandari, Sania and Bozorgpour, Afshin and Kazerouni, Amirhossein and Rekik, Islem and Merhof, Dorit},
+	month = oct,
+	year = {2023},
+	note = {arXiv:2310.18689 [cs]},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition},
+}

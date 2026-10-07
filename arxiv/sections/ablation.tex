@@ -1,0 +1,86 @@
+To better understand the contribution of each component in the proposed
+objective, we conduct two controlled ablation experiments under the same
+training and evaluation protocol.
+
+\paragraph{Experimental Setup.}
+All ablation experiments are performed using the same \texttt{nnUNet}
+configuration, data splits, preprocessing, and training schedule as in
+the main experiments. All models are evaluated using voxel-level and lesion-level metrics,
+including Dice, HD95, lesion-wise F1, small lesion recall, and false
+positive characteristics, to provide a comprehensive assessment of model
+behavior in the sparse lesion regime.
+
+\subsection*{Ablation I: Contribution of CAT and MIL Terms}
+
+To isolate the effect of each component, we compare three variants:
+(i) nnUNet-CAT, which incorporates only the structure-level
+component-adaptive term,
+(ii) nnUNet-MIL, which incorporates only the lesion-level supervision
+term, and
+(iii) nnUNet-CATMIL, which combines both terms into a unified objective.
+
+Table~\ref{tab:ablation_cat_mil} reports the mean performance across
+5-fold cross-validation. The results reveal a clear trade-off between the
+two terms. nnUNet-CAT achieves the highest lesion-wise F1 (0.8386) but
+lower small lesion recall (0.8230), indicating stronger structural
+consistency but limited sensitivity to small lesions. In contrast,
+nnUNet-MIL improves small lesion recall (0.8712) but degrades boundary
+accuracy (HD95 = 9.2375 mm) and lesion-wise F1 (0.7492), reflecting less
+precise segmentation. The combined nnUNet-CATMIL achieves the most balanced performance. It
+obtains the best Dice (0.7834) and lowest HD95 (7.9817 mm), while also
+achieving the highest small lesion recall (0.8730) and the lowest FP blob
+fraction (0.2094). This indicates that combining CAT and MIL mitigates
+their individual limitations, improving both detection of small lesions
+and overall segmentation quality without increasing false positives.
+
+\begin{table}[H]
+\centering
+\caption{Ablation study on the contribution of CAT and MIL terms.}
+\label{tab:ablation_cat_mil}
+\begin{tabular}{lcccccc}
+\hline
+Model & Dice & HD95 $\downarrow$ & Lesion F1 & Small Lesion Recall & FP Vol & FP Blob \\
+\hline
+nnUNet-CAT    & 0.7812 & 8.6844 & 0.8386 & 0.8230 & 1528.72 & 0.2277 \\
+nnUNet-MIL    & 0.7805 & 9.2375 & 0.7492 & 0.8712 & 1539.77 & 0.2195 \\
+nnUNet-CATMIL & \textbf{0.7834} & \textbf{7.9817} & 0.7571 & \textbf{0.8730} & 1536.88 & \textbf{0.2094} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection*{Ablation II: Sensitivity to Loss Weights}
+
+We analyze the impact of different weighting coefficients
+$\lambda_{\text{CAT}}$ and $\lambda_{\text{MIL}}$ on model performance.
+The results in Table~\ref{tab:ablation_lambda} reveal a clear trade-off
+between segmentation accuracy and lesion-level detection.
+
+\begin{table}[H]
+\centering
+\caption{Sensitivity analysis of $\lambda_{\text{CAT}}$ and $\lambda_{\text{MIL}}$.}
+\label{tab:ablation_lambda}
+\begin{tabular}{lccccc}
+\hline
+Model & Dice & HD95 $\downarrow$ & Lesion F1 & Small Recall & FP Vol $\downarrow$ \\
+\hline
+CATMIL0101 & 0.7675 & 9.3881 & 0.7720 & 0.8514 & 2292.17 \\
+CATMIL0102 & \textbf{0.7954} & \textbf{5.9771} & 0.7452 & 0.8711 & 1345.83 \\
+CATMIL0201 & \underline{0.7921} & \underline{6.7964} & \textbf{0.7754} & \textbf{0.8784} & \textbf{1233.92} \\
+CATMIL0202 & 0.7663 & 9.4507 & 0.7632 & \underline{0.8699} & \underline{1729.42} \\
+\hline
+\end{tabular}
+\end{table}
+
+Lower weights (CATMIL0102) lead to the best global segmentation
+performance, achieving the highest Dice (0.7954) and lowest HD95
+(5.9771 mm), indicating improved overlap and boundary accuracy. However,
+this comes with reduced lesion-wise F1 (0.7452), suggesting weaker
+instance-level consistency. In contrast, higher weights (CATMIL0201) improve lesion-level behavior,
+achieving the highest lesion F1 (0.7754), highest small lesion recall
+(0.8784), and lowest FP volume (1233.92 mm$^3$). This indicates stronger
+detection of small and sparse lesions with better control of false
+positives, albeit with slightly reduced Dice and boundary accuracy. These results confirm that $\lambda_{\text{CAT}}$ and
+$\lambda_{\text{MIL}}$ control the balance between voxel-level accuracy
+and lesion-level sensitivity. Moderate weighting provides a balanced
+solution, while higher weights emphasize detection and lower weights
+favor precise segmentation.
