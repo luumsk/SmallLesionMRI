@@ -75,139 +75,53 @@ DSC is dominated by large lesions (\cref{eq:sl_missed_lesion}) and does not
 reflect whether individual, clinically relevant lesions are
 found~\cite{basit_rethinking_2026,jaus_every_2025}.
 
-\paragraph{Voxel-level Metrics.}
-Let $P$ and $G$ denote the sets of predicted and ground-truth lesion
-voxels, and $|\cdot|$ the number of voxels in a set.
+\paragraph{Voxel-level metrics.}
+Overall segmentation quality is measured with the DSC~\cite{dice_measures_1945}
+and the 95th-percentile Hausdorff distance (HD95, in
+mm)~\cite{taha_metrics_2015}. The name Dice is kept only for the Dice loss
+and the DiceCE baseline, which use the differentiable form of the
+coefficient.
 
-\begin{itemize}
-    \item \textbf{DSC}~\cite{dice_measures_1945} measures the overlap
-    between prediction and ground truth, from 0 (no overlap) to 1 (perfect
-    overlap):
-    \begin{equation}
-    \mathrm{DSC} =
-    \frac{2|P \cap G|}{|P| + |G|}.
-    \end{equation}
-    The name Dice is kept only for the Dice loss and the DiceCE baseline,
-    which use the differentiable form of this coefficient.
-
-    \item \textbf{HD95}~\cite{taha_metrics_2015} measures the boundary
-    discrepancy; lower is better. With $S_P$ and $S_G$ the surface voxels
-    of the two masks and $d(p, S_G) = \min_{g \in S_G} \lVert p - g \rVert_2$,
-    \begin{equation}
-    \mathrm{HD}_{95}(P,G) =
-    \max \left\{
-    \underset{p \in S_P}{\mathrm{percentile}_{95}}\, d(p, S_G),\;
-    \underset{g \in S_G}{\mathrm{percentile}_{95}}\, d(g, S_P)
-    \right\}.
-    \end{equation}
-\end{itemize}
-
-\paragraph{Lesion-level Metrics.}
+\paragraph{Lesion definition and detection.}
 A lesion is a 3D connected component of the binary mask under
-6-connectivity, the same definition as in the proposed loss. Let
-$\mathcal{G}$ and $\mathcal{P}$ denote the sets of ground-truth and
-predicted lesions. A lesion is detected if it overlaps at least one lesion
-of the other mask, which gives the subsets
-$\mathcal{G}_{\mathrm{det}} \subseteq \mathcal{G}$ of detected ground-truth
-lesions and $\mathcal{P}_{\mathrm{det}} \subseteq \mathcal{P}$ of correctly
-predicted lesions. In all formulas below, $\varepsilon=10^{-8}$ prevents
-division by zero.
+6-connectivity, the same definition as in the proposed loss. A reference
+lesion counts as detected if at least one predicted voxel overlaps it, and
+a predicted component counts as correct if it overlaps at least one
+reference lesion. This any-overlap criterion is lenient: a prediction that
+covers only part of a lesion still counts as a detection. To test whether
+the results depend on it, lesion recall was also computed with stricter
+criteria that require at least 10\%, 25\%, or 50\% of the lesion voxels to
+be covered (\cref{appendix:strict-detection}).
 
-\begin{itemize}
-    \item \textbf{Lesion-wise F1 Score} balances lesion-wise precision and
-    recall:
-    \begin{equation}
-    \begin{gathered}
-    \mathrm{Precision}_{\mathrm{les}} =
-    \frac{|\mathcal{P}_{\mathrm{det}}|}
-    {|\mathcal{P}| + \varepsilon},
-    \qquad
-    \mathrm{Recall}_{\mathrm{les}} =
-    \frac{|\mathcal{G}_{\mathrm{det}}|}
-    {|\mathcal{G}| + \varepsilon},
-    \\[1ex]
-    \mathrm{F1}_{\mathrm{les}} =
-    \frac{
-        2 \, \mathrm{Precision}_{\mathrm{les}} \, \mathrm{Recall}_{\mathrm{les}}
-    }{
-        \mathrm{Precision}_{\mathrm{les}} + \mathrm{Recall}_{\mathrm{les}} + \varepsilon
-    }.
-    \end{gathered}
-    \end{equation}
+\paragraph{Lesion-level metrics.}
+Lesion-wise recall is the fraction of reference lesions that are detected,
+lesion-wise precision is the fraction of predicted components that are
+correct, and the lesion-wise F1 score combines the two. Because precision
+counts components regardless of their size, many small false-positive
+components lower it substantially even when their total volume is small.
+Small Lesion Recall is the lesion-wise recall restricted to reference
+lesions of at most 150 voxels, which corresponds to 150~mm$^3$ at the 1~mm
+isotropic spacing of MSLesSeg and to about 26~mm$^3$ on 3D-MR-MS. The FN
+Count is the number of reference lesions that are completely missed. The
+recall of lesions of at least 3~mm is the lesion-wise recall restricted to
+lesions above the size used in clinical MRI reading: current consensus
+recommendations state that multiple sclerosis lesions should generally be
+at least 3~mm in longest diameter, with exceptions in specific locations
+such as the corpus callosum and the floor of the fourth
+ventricle~\cite{barkhof_2024_2025,filippi_mri_2016}. The longest diameter
+of a reference lesion is measured as its largest in-plane extent over all
+axial, coronal, and sagittal slices.
 
-    \item \textbf{Small Lesion Recall} is the fraction of small ground-truth
-    lesions that are detected. A lesion is small if it has at most
-    $\tau=150$ voxels, that is, 150~mm$^3$ at the 1~mm isotropic spacing of
-    MSLesSeg:
-    \begin{equation}
-    \mathrm{Recall}_{\mathrm{small}} =
-    \frac{
-        |\mathcal{G}_{\mathrm{small}} \cap \mathcal{G}_{\mathrm{det}}|
-    }{
-        |\mathcal{G}_{\mathrm{small}}| + \varepsilon
-    },
-    \qquad
-    \mathcal{G}_{\mathrm{small}} =
-    \left\{
-        g \in \mathcal{G} : |g| \leq \tau
-    \right\}.
-    \end{equation}
+\paragraph{Error-volume metrics.}
+The FP Volume is the physical volume of the false-positive voxels. The FP
+Blob Fraction is the share of this volume that lies in false-positive
+components more than 2~mm from any reference lesion, separating detached
+false alarms from extensions of true lesions. The FN Volume Fraction is
+the share of the total reference lesion volume that belongs to missed
+lesions.
 
-    \item \textbf{False Negative Lesion Count} is the number of
-    ground-truth lesions that are completely missed:
-    \begin{equation}
-    \text{FN Lesion Count} =
-    |\mathcal{G}| - |\mathcal{G}_{\mathrm{det}}|.
-    \end{equation}
-
-    \item \textbf{Recall of lesions of at least 3~mm} is the lesion recall
-    restricted to lesions above the size used for lesion identification in
-    clinical MRI. Current consensus recommendations state that multiple
-    sclerosis lesions should generally be at least 3~mm in longest
-    diameter, with exceptions in specific locations such as the corpus
-    callosum and the floor of the fourth
-    ventricle~\cite{barkhof_2024_2025,filippi_mri_2016}. The longest
-    diameter of each ground-truth lesion is measured as its largest
-    in-plane extent over all axial, coronal, and sagittal slices, from edge
-    to edge: the distance between the two furthest voxel centers plus one
-    voxel width.
-\end{itemize}
-
-\paragraph{Error Volume Metrics.}
-These metrics quantify over-segmentation and under-segmentation by volume.
-Let $\mathrm{FP} = P \setminus G$ denote the false-positive voxels.
-
-\begin{itemize}
-    \item \textbf{False Positive Volume} is the physical volume of the
-    false-positive voxels, with $s_x, s_y, s_z$ the voxel spacing along each
-    axis:
-    \begin{equation}
-    V_{\mathrm{FP}} =
-    |\mathrm{FP}| \cdot s_x s_y s_z.
-    \end{equation}
-
-    \item \textbf{False Positive Blob Fraction} separates false positives
-    that extend a true lesion from those detached from any lesion. The
-    voxels of $\mathrm{FP}$ are grouped into connected components. A
-    component is a boundary extension if its minimum distance to the
-    ground-truth mask is at most 2~mm, and a blob otherwise. With
-    $\mathcal{B}$ the set of blobs, the metric is the fraction of the
-    false-positive volume that belongs to blobs:
-    \begin{equation}
-    \mathrm{FP}_{\mathrm{blob}}^{\mathrm{frac}}
-    =
-    \frac{\sum_{c \in \mathcal{B}} |c|}{|\mathrm{FP}| + \varepsilon}.
-    \end{equation}
-
-    \item \textbf{False Negative Volume Fraction} is the fraction of the
-    total lesion volume that belongs to missed lesions:
-    \begin{equation}
-    V_{\mathrm{FN}}^{\mathrm{frac}}
-    =
-    \frac{\sum_{g \in \mathcal{G} \setminus \mathcal{G}_{\mathrm{det}}} |g|}
-    {|G| + \varepsilon}.
-    \end{equation}
-\end{itemize}
+All metrics are computed per test case and averaged over cases; their
+exact definitions are given in \cref{appendix:metrics}.
 
 \subsection{Statistical Analysis}
 \label{sec:stats}

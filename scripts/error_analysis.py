@@ -13,6 +13,7 @@ Outputs
   isolation.csv           recall of small lesions by distance to the nearest other lesion
   clinical_size.csv       recall below / above the MAGNIMS 3 mm size (largest in-plane
                           diameter, from lesion_extent.py)
+  strict_detection.csv    recall when detection requires >= 10/25/50% lesion coverage
   fold_stability.csv      lesions found by only 1-4 of the 5 fold models (unstable)
   recall_vs_size.{pdf,jpeg}, miss_proximity.{pdf,jpeg}
 
@@ -36,6 +37,7 @@ PROB_BINS = [(0, 0.1, "no signal (<0.1)"), (0.1, 0.3, "weak (0.1–0.3)"), (0.3,
 ISOLATION_BINS = [(0, 5, "≤5 mm"), (5, 10, "5–10 mm"), (10, 20, "10–20 mm"), (20, np.inf, ">20 mm")]
 SMALL_VOXELS = 150
 CLINICAL_DIAMETER_MM = 3.0
+COVERAGE_THRESHOLDS = [0, 0.1, 0.25, 0.5]  # 0 = any overlap (the default criterion)
 STYLE = {"CATMIL": ("#e3a000", "o", "-"), "DiceCE": ("#404040", "s", "--"),
          "Tversky": ("#808080", "^", "-."), "FocalTversky": ("#a8a8a8", "D", ":")}
 KEY = ["dataset", "case", "lesion_id"]
@@ -145,10 +147,33 @@ def clinical_size(pl, les):
     return pd.DataFrame(rows)
 
 
-def fold_arrays(les, lesions, model):
-    """Detection as array[fold, lesion] for the given lesions (rows of the per-lesion table)."""
-    piv = les[les.model == model].pivot_table(index=KEY, columns="fold", values="detected")
+def fold_arrays(les, lesions, model, value="detected"):
+    """Detection (or another per-lesion value) as array[fold, lesion] for the given lesions."""
+    piv = les[les.model == model].pivot_table(index=KEY, columns="fold", values=value)
     return piv.loc[pd.MultiIndex.from_frame(lesions[KEY])].to_numpy(float).T
+
+
+def strict_detection(pl, les):
+    """Recall when a lesion counts as detected only if a minimum fraction of its voxels is
+    covered by the prediction (default criterion: any overlap)."""
+    rows = []
+    for dataset in DATASETS:
+        for name, sel in [("small (<=150 vox)", pl.size_vox <= SMALL_VOXELS), ("all", pl.size_vox > 0)]:
+            g = pl[(pl.dataset == dataset) & sel]
+            patients = g.case.map(patient_of).tolist()
+            cov = {m: fold_arrays(les, g, m, "coverage") for m in MODELS}
+            for thr in COVERAGE_THRESHOLDS:
+                det = {m: (c > 0) if thr == 0 else (c >= thr) for m, c in cov.items()}
+                row = dict(dataset=dataset, lesions=name, n=len(g), min_coverage=thr)
+                for m in MODELS:
+                    row[f"recall_{m}"] = det[m].mean()
+                a, b = det["CATMIL"].astype(float), det["DiceCE"].astype(float)
+                w_scan, w_fold = boot_weights(patients, np.random.default_rng(SEED))
+                boot = weighted_mean(a, w_scan, w_fold) - weighted_mean(b, w_scan, w_fold)
+                row["delta_vs_DiceCE"] = a.mean() - b.mean()
+                row["ci_low"], row["ci_high"] = np.nanpercentile(boot, [2.5, 97.5])
+                rows.append(row)
+    return pd.DataFrame(rows)
 
 
 def fold_stability(pl):
@@ -226,6 +251,7 @@ def main(table_dir, out_dir):
     pd.set_option("display.width", 200)
     for name, df in [("rescue_by_size", rescue_by_size(pl)), ("miss_proximity", miss_proximity(les)),
                      ("isolation", isolation(pl)), ("clinical_size", clinical_size(pl, les)),
+                     ("strict_detection", strict_detection(pl, les)),
                      ("fold_stability", fold_stability(pl)),
                      ("missed_by_all", missed_by_all(pl))]:
         df.to_csv(f"{out_dir}/{name}.csv", index=False)

@@ -1,3 +1,78 @@
+\section{Definitions of Evaluation Metrics}
+\label{appendix:metrics}
+
+Let $P$ and $G$ denote the sets of predicted and reference lesion voxels of
+a test case, and $|\cdot|$ the number of voxels in a set. Let
+$\mathcal{G}$ and $\mathcal{P}$ denote the sets of reference and predicted
+lesions (6-connected components), and
+$\mathcal{G}_{\mathrm{det}} \subseteq \mathcal{G}$ and
+$\mathcal{P}_{\mathrm{det}} \subseteq \mathcal{P}$ the reference lesions
+that overlap at least one predicted lesion and the predicted lesions that
+overlap at least one reference lesion. In all formulas,
+$\varepsilon = 10^{-8}$ prevents division by zero. Every metric is computed
+per test case and then averaged over cases.
+
+\paragraph{Voxel-level metrics.}
+\begin{equation}
+\mathrm{DSC} = \frac{2|P \cap G|}{|P| + |G|}.
+\end{equation}
+With $S_P$ and $S_G$ the surface voxels of the two masks and
+$d(p, S_G) = \min_{g \in S_G} \lVert p - g \rVert_2$ in mm,
+\begin{equation}
+\mathrm{HD}_{95}(P,G) =
+\max \left\{
+\underset{p \in S_P}{\mathrm{percentile}_{95}}\, d(p, S_G),\;
+\underset{g \in S_G}{\mathrm{percentile}_{95}}\, d(g, S_P)
+\right\}.
+\end{equation}
+
+\paragraph{Lesion-level metrics.}
+\begin{equation}
+\mathrm{Precision}_{\mathrm{les}} =
+\frac{|\mathcal{P}_{\mathrm{det}}|}{|\mathcal{P}| + \varepsilon},
+\qquad
+\mathrm{Recall}_{\mathrm{les}} =
+\frac{|\mathcal{G}_{\mathrm{det}}|}{|\mathcal{G}| + \varepsilon},
+\qquad
+\mathrm{F1}_{\mathrm{les}} =
+\frac{2 \, \mathrm{Precision}_{\mathrm{les}} \, \mathrm{Recall}_{\mathrm{les}}}
+{\mathrm{Precision}_{\mathrm{les}} + \mathrm{Recall}_{\mathrm{les}} + \varepsilon}.
+\end{equation}
+With $\tau = 150$ voxels and
+$\mathcal{G}_{\mathrm{small}} = \{ g \in \mathcal{G} : |g| \leq \tau \}$,
+\begin{equation}
+\mathrm{Recall}_{\mathrm{small}} =
+\frac{|\mathcal{G}_{\mathrm{small}} \cap \mathcal{G}_{\mathrm{det}}|}
+{|\mathcal{G}_{\mathrm{small}}| + \varepsilon},
+\qquad
+\text{FN Count} = |\mathcal{G}| - |\mathcal{G}_{\mathrm{det}}|.
+\end{equation}
+The recall of lesions of at least 3~mm is $\mathrm{Recall}_{\mathrm{les}}$
+restricted to reference lesions whose longest diameter is at least 3~mm.
+The longest diameter of a lesion is the maximum, over all axial, coronal,
+and sagittal slices that intersect it, of the largest distance between two
+of its voxel centers in that slice, plus one voxel width (the mean in-plane
+spacing), so that it is measured from edge to edge.
+
+\paragraph{Error-volume metrics.}
+Let $\mathrm{FP} = P \setminus G$ denote the false-positive voxels and
+$s_x, s_y, s_z$ the voxel spacing. The false-positive volume is
+\begin{equation}
+V_{\mathrm{FP}} = |\mathrm{FP}| \cdot s_x s_y s_z.
+\end{equation}
+The voxels of $\mathrm{FP}$ are grouped into connected components; a
+component is a boundary extension if its minimum distance to the reference
+mask is at most 2~mm, and a blob otherwise. With $\mathcal{B}$ the set of
+blobs,
+\begin{equation}
+\mathrm{FP}_{\mathrm{blob}}^{\mathrm{frac}}
+= \frac{\sum_{c \in \mathcal{B}} |c|}{|\mathrm{FP}| + \varepsilon},
+\qquad
+V_{\mathrm{FN}}^{\mathrm{frac}}
+= \frac{\sum_{g \in \mathcal{G} \setminus \mathcal{G}_{\mathrm{det}}} |g|}
+{|G| + \varepsilon}.
+\end{equation}
+
 \section{Ablation I: Contribution of CAT and MIL Terms}
 \label{appendix:catmil-components}
 
@@ -325,6 +400,60 @@ with no response falls from 57--58\% for the baselines to 39\% for CATMIL.
     \cref{fig:max_prob_by_size}.}
     \label{fig:max_prob_by_size_3dmrms}
 \end{figure}
+
+\section{Robustness to the Detection Criterion}
+\label{appendix:strict-detection}
+
+All lesion-level results in the main text count a reference lesion as
+detected if any predicted voxel overlaps it. Under this criterion, a
+prediction that covers a single voxel of a lesion counts as a detection,
+and the case-based analysis shows that CATMIL often covers only part of
+the lesions it recovers. \Cref{tab:strict_detection} therefore recomputes
+small-lesion recall with stricter criteria, which require a minimum
+fraction of the lesion voxels to be covered by the default segmentation
+($p > 0.5$).
+
+\begin{table}[htbp]
+\centering
+\caption{Small-lesion recall ($\leq 150$ voxels) under detection criteria
+of increasing strictness. A lesion counts as detected if the prediction
+covers any of its voxels, or at least the stated fraction of them. Recall
+is pooled over the reference lesions of the test set and averaged over the
+five fold models, so the any-overlap values differ slightly from the
+case-averaged Small Lesion Recall in the main tables. $\Delta$: CATMIL
+minus DiceCE with 95\% patient-level bootstrap CI; differences whose CI
+excludes zero are shown in \textbf{bold}.}
+\label{tab:strict_detection}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccl}
+\toprule
+\textbf{Dataset} & \textbf{Criterion} & \textbf{CATMIL} & \textbf{DiceCE} & \textbf{Tversky} & \textbf{FocalTversky} & $\Delta$ vs.\ DiceCE \\
+\midrule
+MSLesSeg & any overlap & 0.883 & 0.779 & 0.829 & 0.833 & \textbf{+0.104 [+0.046, +0.176]} \\
+ & $\geq$ 10\% & 0.865 & 0.767 & 0.818 & 0.818 & \textbf{+0.098 [+0.039, +0.170]} \\
+ & $\geq$ 25\% & 0.836 & 0.743 & 0.802 & 0.799 & \textbf{+0.093 [+0.032, +0.162]} \\
+ & $\geq$ 50\% & 0.760 & 0.679 & 0.750 & 0.748 & \textbf{+0.081 [+0.029, +0.138]} \\
+\midrule
+3D-MR-MS & any overlap & 0.654 & 0.548 & 0.564 & 0.562 & \textbf{+0.107 [+0.046, +0.129]} \\
+ & $\geq$ 10\% & 0.630 & 0.538 & 0.555 & 0.556 & \textbf{+0.092 [+0.029, +0.114]} \\
+ & $\geq$ 25\% & 0.595 & 0.509 & 0.534 & 0.538 & \textbf{+0.086 [+0.009, +0.108]} \\
+ & $\geq$ 50\% & 0.550 & 0.449 & 0.493 & 0.500 & \textbf{+0.101 [+0.028, +0.129]} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+The gain over DiceCE does not depend on the lenient criterion. On both
+datasets it stays between 8 and 11 percentage points at every coverage
+level, and its CI excludes zero in every case. The margin over the
+Tversky-based losses narrows as the criterion becomes stricter: at 50\%
+coverage on MSLesSeg, CATMIL detects 76.0\% of small lesions against
+74.8--75.0\%. This agrees with the case-based analysis, in which CATMIL
+recovers lesions that the baselines miss but often covers only part of
+them; the lesion-level term ensures that a lesion is detected, whereas its
+full extent still depends on the voxel-wise terms. Lesion-wise precision
+cannot be recomputed with a coverage criterion from the stored lesion
+tables, so this analysis is limited to recall.
 
 \section{Gradient and Boundedness Properties of the CATMIL Objective}
 \label{appendix:catmil-properties}

@@ -119,7 +119,11 @@ CATMIL detects approximately 87\% of small lesions, whereas the competing
 methods detect approximately 80--83\%. The gain is present in every test
 patient against every baseline, and its 95\% CI excludes zero in each
 comparison (\cref{tab:paired_differences}): +0.077 [+0.030, +0.157] against
-DiceCE and +0.039 [+0.004, +0.093] against Tversky.
+DiceCE and +0.039 [+0.004, +0.093] against Tversky. The gain over DiceCE
+does not depend on the lenient any-overlap detection criterion: when at
+least half of a lesion's voxels must be covered, it remains 8 percentage
+points on MSLesSeg and 10 on 3D-MR-MS, with CIs that exclude zero
+(\cref{appendix:strict-detection}).
 
 \textbf{CATMIL misses fewer lesions and less lesion tissue.} CATMIL
 produces an average FN Count of $2.57 \pm 0.15$, compared with
