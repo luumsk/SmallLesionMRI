@@ -1,0 +1,9 @@
+dataset,model,n_small,all_5,unstable_1_to_4,none
+MSLesSeg,CATMIL,249,209,21,19
+MSLesSeg,DiceCE,249,176,36,37
+MSLesSeg,Tversky,249,190,33,26
+MSLesSeg,FocalTversky,249,190,31,28
+3D-MR-MS,CATMIL,276,162,37,77
+3D-MR-MS,DiceCE,276,130,38,108
+3D-MR-MS,Tversky,276,141,26,109
+3D-MR-MS,FocalTversky,276,139,33,104

@@ -57,13 +57,17 @@ size, and that the MIL term gives every lesion the same detection signal.
 \item We show that CATMIL reduces the omission of small lesions. The
 improvement is concentrated in the lesion sizes at which the standard
 losses fail, it is a net gain in detected lesions rather than a trade
-between lesion sizes, and it holds across test cases, across trained
-models, and on a second dataset. On MSLesSeg, CATMIL also preserves the
-voxel-level overlap and boundary accuracy of the standard losses.
+between lesion sizes, and it holds across test patients, across trained
+models, on a second dataset, and for lesions above the size used in
+clinical reading. On MSLesSeg, CATMIL also preserves the voxel-level
+overlap and boundary accuracy of the standard losses. An ablation shows
+that the lesion-level detection term accounts for the gain.
 \item We identify why standard losses miss small lesions. The baselines do
 not miss them by a narrow margin: they produce no response to most of
 them, so no choice of decision threshold can recover these lesions. We
 also characterize the cost of the increased sensitivity, a larger number
 of small false-positive components, and show that a simple
-component-size filter controls it while keeping the sensitivity gain.
+component-size filter controls it while keeping the sensitivity gain: at
+the lesion-wise precision of the standard nnU-Net loss, CATMIL detects more
+small lesions.
 \end{itemize}

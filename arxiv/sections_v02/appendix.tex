@@ -9,20 +9,38 @@ component-adaptive term to the base loss, (ii) MIL, which adds only the
 lesion-level supervision term, and (iii) CATMIL, which combines both terms.
 
 \Cref{tab:ablation_cat_mil} reports the mean performance of the five fold
-models on the MSLesSeg test set. The results reveal a clear trade-off
-between the two terms. CAT achieves the highest lesion-wise F1 (0.8386) but
-lower small lesion recall (0.8230), indicating stronger structural
-consistency but limited sensitivity to small lesions. In contrast, MIL
-improves small lesion recall (0.8712) but degrades boundary accuracy
-(HD95 = 9.2375~mm) and lesion-wise F1 (0.7492), reflecting less precise
-segmentation. The combined CATMIL achieves the most balanced performance.
-It obtains the best DSC (0.7834) and lowest HD95 (7.9817~mm), while also
-achieving the highest small lesion recall (0.8730) and the lowest
-false-positive blob fraction (0.2094), that is, the smallest share of
-false-positive volume detached from any true lesion. Combining CAT and MIL
-therefore mitigates their individual limitations, improving both detection
-of small lesions and overall segmentation quality, with a false-positive
-volume similar to that of either term alone.
+models on the MSLesSeg test set, and the differences below are given with
+95\% patient-level CIs as in \cref{tab:paired_differences}.
+
+\textbf{The MIL term accounts for the detection gain.} MIL alone raises
+small-lesion recall from 0.7956 (DiceCE) to 0.8712 (+0.076 [+0.033,
++0.148]) and reduces missed lesions per case by 2.42 [0.87, 5.26], in all
+six patients. These gains are as large as those of CATMIL, and CATMIL and
+MIL do not differ on any metric: small-lesion recall differs by +0.002
+[$-0.012$, +0.019], lesion-wise F1 by +0.008 [$-0.020$, +0.031], DSC by
++0.003 [$-0.016$, +0.021], and HD95 by $-1.26$~mm [$-6.82$, +1.55]. The
+lower lesion-wise F1 of CATMIL is also already present with MIL alone
+(0.7492).
+
+\textbf{The CAT term alone changes lesion detection little.} CAT alone
+reaches a small-lesion recall of 0.8230, a difference from DiceCE of
++0.027 [$-0.010$, +0.081] whose CI includes zero, and it keeps the
+lesion-wise F1 of DiceCE (0.8386 against 0.8433). Its effect on detection
+is thus close to that of the Tversky-based losses, consistent with a term
+that rebalances voxel weights between lesions but, unlike the MIL term,
+does not require each lesion to be detected.
+
+The mean DSC and HD95 of CATMIL are the best of the three variants, and
+CATMIL has the lowest false-positive blob fraction, but these differences
+lie within the variation between patients and fold models. On this test
+set, the ablation therefore supports the MIL term as the source of the
+detection gain, and it does not show a measurable benefit of adding the
+CAT term to it. The CAT term is kept in CATMIL because of its design
+rationale, size-balanced voxel supervision within each lesion
+(\cref{appendix:catmil-properties}), and because the loss-weight analysis
+below shows that its weight shifts the balance between voxel-level accuracy
+and lesion-wise precision; whether it contributes measurably on other data
+remains to be tested.
 
 \begin{table}[H]
 \centering
@@ -179,7 +197,45 @@ budget of at least 3.3 components per case, a filtered CATMIL model
 therefore detects more lesions than any of the baselines. Raising the
 probability threshold is less effective than a size filter, because most
 of the false-positive components are confident predictions rather than
-borderline ones.
+borderline ones. The margin over the Tversky-based losses at a fixed
+false-alarm level is small, however, and is not supported by the
+patient-level analysis at matched precision (\cref{tab:matched_precision}).
+
+\paragraph{Joint variation of threshold and filter size.}
+\Cref{fig:operating_grid} varies the probability threshold and the minimum
+component size jointly and plots lesion recall against lesion-wise
+precision, the two quantities that make up lesion-wise F1. Each faint point
+is one setting; the lines connect the settings that are not outperformed
+in both precision and recall by another setting of the same loss. On
+MSLesSeg, the CATMIL frontier lies above that of DiceCE over most of the
+precision range and close to those of the Tversky-based losses, which is
+the pattern quantified in \cref{tab:matched_precision}. On 3D-MR-MS, the
+default output of CATMIL (filled circle) lies far to the left of its
+frontier: its precision of 0.37 is due to the many small components, and
+the frontier reaches the precision of the baselines with similar recall.
+In this analysis, the minimum component size is given in voxels on both
+datasets. Expressing it in mm$^3$ instead, that is, removing components of
+the same physical volume on both datasets, transfers poorly: because the
+voxels of 3D-MR-MS are 5.7 times smaller, a filter of 15~mm$^3$ removes
+85 voxels and with them most of the small lesions. The false-positive
+components of CATMIL are therefore small in voxels rather than in
+millimeters, and the filter size should be chosen for each image
+resolution.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/operating_grid.pdf}
+    \caption{Lesion recall against lesion-wise precision for all
+    combinations of probability threshold ($t = 0.1, \dots, 0.9$) and
+    minimum component size ($s = 1$ to 170 voxels). Top: small-lesion
+    recall ($\leq 150$ voxels); bottom: recall of all lesions. Faint
+    points: individual settings; lines: settings not outperformed in both
+    precision and recall by another setting of the same loss. Filled
+    markers: default output ($t = 0.5$, $s = 1$); open markers: PP5
+    ($t = 0.5$, $s = 5$), shown for CATMIL and DiceCE. Metrics are computed
+    per case and averaged over cases and the five fold models.}
+    \label{fig:operating_grid}
+\end{figure}
 
 \begin{figure}[htbp]
     \centering

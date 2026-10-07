@@ -32,7 +32,8 @@ independent test set; for 3D-MR-MS, six of the 30 patients are held out.
 The remaining patients (47 and 24, respectively) are divided into five
 folds following the nnU-Net cross-validation strategy. Each of the five
 fold models is evaluated on the test set, and results are reported as the
-mean and sample standard deviation across the five models. All training
+mean and sample standard deviation across the five models; statistical
+comparisons are described in \cref{sec:stats}. All training
 settings, including the CATMIL loss weights, are identical for the two
 datasets, so 3D-MR-MS was not used to tune the objective.
 
@@ -158,6 +159,18 @@ division by zero.
     \text{FN Lesion Count} =
     |\mathcal{G}| - |\mathcal{G}_{\mathrm{det}}|.
     \end{equation}
+
+    \item \textbf{Recall of lesions of at least 3~mm} is the lesion recall
+    restricted to lesions above the size used for lesion identification in
+    clinical MRI. Current consensus recommendations state that multiple
+    sclerosis lesions should generally be at least 3~mm in longest
+    diameter, with exceptions in specific locations such as the corpus
+    callosum and the floor of the fourth
+    ventricle~\cite{barkhof_2024_2025,filippi_mri_2016}. The longest
+    diameter of each ground-truth lesion is measured as its largest
+    in-plane extent over all axial, coronal, and sagittal slices, from edge
+    to edge: the distance between the two furthest voxel centers plus one
+    voxel width.
 \end{itemize}
 
 \paragraph{Error Volume Metrics.}
@@ -195,3 +208,33 @@ Let $\mathrm{FP} = P \setminus G$ denote the false-positive voxels.
     {|G| + \varepsilon}.
     \end{equation}
 \end{itemize}
+
+\subsection{Statistical Analysis}
+\label{sec:stats}
+
+The standard deviations in the result tables describe the variation
+between the five fold models. They do not describe the uncertainty that
+comes from the small test sets, so the differences between CATMIL and each
+baseline are also tested with the patient as the independent unit. This
+matters for MSLesSeg, whose 12 test cases are longitudinal scans of six
+patients.
+
+For each metric, the difference between CATMIL and a baseline is computed
+in the same way as the table values: the mean over test cases of the
+five-model mean. Its 95\% confidence interval (CI) is obtained with a
+two-level bootstrap with 10{,}000 resamples. Each resample draws patients
+with replacement, together with all their scans, and draws fold models with
+replacement. The fold models are drawn jointly for both losses, because
+fold $k$ of every loss is trained on the same data split. For lesion-level
+recall, the same bootstrap is applied to the pooled reference lesions of
+the resampled patients. A paired exact Wilcoxon signed-rank test is applied
+to the per-patient differences, with the Holm correction over the three
+baselines.
+
+With six patients, the smallest possible two-sided $p$-value of the exact
+test is $1/32 \approx 0.031$ before correction and $0.094$ after it, so no
+comparison can reach $p < 0.05$ after correction. A difference is
+therefore regarded as supported when its 95\% CI excludes zero, and the
+number of patients in which CATMIL is better is reported with it. These
+analyses describe the consistency of an effect across the available
+patients; they are not population-level estimates.
