@@ -66,8 +66,9 @@ for bib in $(grep -oE '\\bibliography\{[^}]+\}' "$ROOT/$MAIN.tex" | sed -E 's/\\
     cp "$ROOT/${bib%.bib}.bib" "$SRC/"
 done
 cp -R "$ROOT/figures" "$SRC/"
-find "$SRC" -name .DS_Store -delete
-tar -czf "$OUT/arxiv_source_${VERSION}.tar.gz" -C "$SRC" .
+find "$SRC" \( -name .DS_Store -o -name '._*' \) -delete
+# Keep macOS metadata out of the bundle (otherwise bsdtar adds ._* AppleDouble entries)
+COPYFILE_DISABLE=1 tar --no-mac-metadata --no-xattrs -czf "$OUT/arxiv_source_${VERSION}.tar.gz" -C "$SRC" .
 
 # ---------- summary ----------
 undefined=$(grep -cE "undefined" "$BUILD/$MAIN.log" || true)
