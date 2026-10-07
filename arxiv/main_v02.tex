@@ -1,0 +1,109 @@
+\documentclass[11pt]{article}
+
+% =====================================================================
+% Version 02 -- merges v01 (arXiv) with the J-BHI submission draft:
+%   - second dataset (3D-MR-MS) + external evaluation section/table
+%   - held-out test protocol (MSLesSeg: 6 test / 47 CV; 3D-MR-MS: 6 / 24)
+%   - merged MSLesSeg table (with/without post-processing, mean +/- std)
+%   - LCNR definition, rewritten abstract and conclusion, short model names
+%   - RSF funding + language-editing disclosure
+% Updated from the dissertation chapter (sections/small_lesions):
+%   - problem formulation, related work, discussion sections
+%   - method with hyperparameters, lesion-weight/gradient analysis
+%   - corrected optimizer (SGD), metric definitions (FN vol. frac., FP blob)
+%   - new figures (recall-size curve, lesion fate, max-prob, per-case,
+%     lesion gallery, probability maps, operating curves, 3D-MR-MS)
+%   - appendix: ablations, test-case profile, extra analyses, proofs
+% Sections live in sections_v02/ so that main_v01.tex remains reproducible.
+% =====================================================================
+
+% ---------- Encoding & layout ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{microtype} % arXiv-safe; improves spacing
+
+% ---------- Math & symbols ----------
+\usepackage{amsmath,amssymb,amsfonts}
+\numberwithin{equation}{section}
+\renewcommand{\labelitemi}{--}
+
+% ---------- Figures & tables ----------
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+% ---------- References (arXiv-friendly) ----------
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{url}
+% \usepackage[hidelinks]{hyperref}
+\usepackage{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+% ---------- Author/affil (simple & arXiv-safe) ----------
+\usepackage{authblk}
+\usepackage{orcidlink}
+
+% ---------- Title ----------
+\title{Component-Adaptive and Lesion-Level Supervision for Improved Small Structure Segmentation in Brain MRI}
+\author[1]{Minh Sao Khue Luu\,\orcidlink{0000-0002-6766-4966}}
+\author[1]{Evgeniy N. Pavlovskiy\,\orcidlink{0000-0001-6976-1885}}
+\author[1]{Bair N. Tuchinov\,\orcidlink{0000-0002-8931-9848}}
+\affil[1]{The Artificial Intelligence Research Center of Novosibirsk State University, Novosibirsk 630090, Russia}
+\affil[ ]{\texttt{luumsk@gmail.com}}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ---------- Abstract ----------
+\begin{abstract}
+\input{sections_v02/abstract}
+\end{abstract}
+
+% ---------- Keywords ----------
+\paragraph{Keywords:} brain MRI; component-adaptive loss; multiple instance learning; small lesions segmentation
+
+\section{Introduction}
+\label{sec:intro}
+\input{sections_v02/introduction}
+
+\section{Related Work}
+\label{sec:related}
+\input{sections_v02/related_work}
+
+\section{Method}
+\label{sec:method}
+\input{sections_v02/method}
+
+\section{Experiments}
+\label{sec:experiments}
+\input{sections_v02/experiments}
+
+\section{Results}
+\label{sec:results}
+\input{sections_v02/results}
+
+\section{Discussion}
+\label{sec:discussion}
+\input{sections_v02/discussion}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{sections_v02/conclusion}
+
+\paragraph{Acknowledgements.}
+\input{sections_v02/acknowledgements}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references_v02}
+
+\clearpage
+\appendix
+\crefalias{section}{appendix}
+\input{sections_v02/appendix}
+
+\end{document}

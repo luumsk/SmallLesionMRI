@@ -1,0 +1,85 @@
+This study shows that modifying the training objective is an effective and
+controlled way to influence model behavior in sparse lesion segmentation.
+Instead of increasing architectural complexity, the proposed approach
+changes how supervision is distributed across lesions, which makes the
+effect of the loss design directly interpretable.
+
+\paragraph{Why standard losses miss small lesions.}
+The probability analysis shows that the baselines do not miss small lesions
+by a narrow margin: for most of them, the network produces no response at
+all. A lower decision threshold therefore cannot recover these lesions, and
+the omission has to be addressed during training. The comparison with the
+Tversky-based losses locates the cause. Tversky and FocalTversky penalize
+false-negative voxels more heavily than DiceCE and recover part of the
+lesions that DiceCE misses, but they remain behind CATMIL in the cases with
+many small lesions. Because Tversky weighting applies to all false-negative
+voxels alike, a lesion of a few voxels is still a negligible fraction of
+the loss. Only when each lesion is treated as a unit, as in the CAT and MIL
+terms, does every lesion contribute to the objective regardless of its
+size. The gain of CATMIL therefore comes from lesion-level supervision
+rather than from a stronger penalty on false negatives, and on MSLesSeg it
+is obtained without loss of voxel-level overlap or boundary accuracy. The
+ablation in \cref{appendix:catmil-components} is consistent with this
+interpretation: the MIL term alone already raises small-lesion recall,
+whereas the combination with the CAT term is needed to keep DSC and HD95.
+
+\paragraph{The trade-off and its control.}
+The greater sensitivity of CATMIL comes with more false-positive components
+and a lower lesion-wise F1. These components are small, lie mostly close to
+true lesions, and contribute little false-positive volume. They reflect the
+same responsiveness to weak signals that allows CATMIL to detect small
+lesions, extended to ambiguous patterns that resemble lesions. Because they
+are small, a component-size filter removes most of them while the
+sensitivity gain is retained, so the trade-off can be adjusted after
+training without retraining the model. In addition, the MIL term requires
+only one confident voxel per lesion and does not enforce full lesion
+coverage, which explains why some recovered lesions are detected but only
+partly delineated.
+
+\paragraph{Clinical implications.}
+In multiple sclerosis, the number of lesions and the appearance of new
+lesions on follow-up scans are central to diagnosis and to the monitoring
+of disease activity. A small lesion that is never detected cannot be
+counted, whereas a false-positive component can be dismissed by a reader
+when the segmentation is reviewed. For this setting, reducing missed
+lesions at the cost of additional small false positives is a favorable
+direction for the trade-off, particularly when the automatic segmentation
+supports rather than replaces the radiologist. The component-size filter
+then allows the operating point to be chosen for the intended use: a small
+filter for screening and follow-up, where sensitivity matters most, and a
+larger filter where a cleaner lesion map is needed.
+
+\paragraph{Limitations.}
+Several limitations should be noted. First, the evaluation is restricted to
+multiple sclerosis, and the applicability of the proposed objective to
+other brain pathologies remains to be validated; all experiments also use
+the nnU-Net framework, so the effect of CATMIL on other architectures
+remains to be tested. Second, the 3D-MR-MS dataset was evaluated with the
+same training configuration as the main experiments to keep the comparison
+consistent, so some hyperparameters may not be optimal for its
+characteristics; the false-positive cost of CATMIL is larger on this
+dataset, and a larger filter is required to control it. The filter size is
+thus chosen after training and depends on the data, rather than being
+controlled within the objective. Third, the connected components used by
+the loss are computed within each training patch, so a lesion cut by the
+patch border is weighted according to the part visible in the patch rather
+than its full size. Fourth, the test sets are small (six patients each),
+so the per-case observations describe a consistent within-dataset pattern
+rather than a population-level estimate. Finally, lesions of only a few
+voxels and lesions with low contrast or diffuse boundaries remain difficult
+for every loss: the objective increases the influence of small lesions
+during training, but it cannot compensate for missing evidence in the
+image.
+
+\paragraph{Future work.}
+These limitations suggest several directions. The objective should be
+evaluated on other conditions with small focal lesions, such as brain
+metastases, satellite glioma lesions, or microbleeds, where missed lesions
+are also clinically important, and with other segmentation architectures.
+Methodologically, constraints on lesion coverage, boundary consistency, or
+structural connectivity could reduce fragmented predictions and isolated
+false positives, and could move the control of the precision trade-off
+from post-processing into the objective itself. Finally, an analysis of the
+learned features could show how the objective changes the internal
+representation of small lesions, beyond the output-level effects reported
+here.

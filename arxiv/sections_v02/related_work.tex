@@ -1,0 +1,93 @@
+The training objective for small-lesion segmentation has to satisfy two
+requirements (\cref{sec:problem}): a lesion's contribution should not
+scale with its size (balance), and a missed lesion should be penalized at
+the lesion level (detection). This section reviews prior work according
+to the extent to which it meets these requirements.
+
+\paragraph{Voxel- and class-level reweighting.}
+Early approaches primarily address the imbalance between foreground and
+background. Generalised Dice loss weights each class by the inverse square
+of its volume~\cite{sudre_generalised_2017}, whereas Tversky loss assigns a
+greater penalty to false negatives than to false
+positives~\cite{salehi_tversky_2017}. Focal loss down-weights easy
+voxels~\cite{lin_focal_2017}, Focal Tversky loss combines the two
+approaches~\cite{abraham_novel_2019}, and DSC++ reduces the overconfidence
+associated with Dice loss~\cite{yeung_calibrating_2023}. Region-wise losses
+also vary the penalty spatially, either across image
+subregions~\cite{chen_adaptive_2023} or through rectified region-wise
+maps~\cite{valverde_region-wise_2023}. Large-scale comparisons have found
+compound losses to be the most robust choice~\cite{ma_loss_2021,azad_loss_2023}.
+However, these methods weight voxels according to their class, difficulty,
+or position rather than the lesion to which they belong. Consequently, a
+lesion's influence on training remains proportional to its size
+(\cref{eq:sl_voxel_loss}), and neither requirement is satisfied.
+
+\paragraph{Instance-level balancing.}
+A second group of methods explicitly represents lesions as connected
+components. Inverse weighting~\cite{shirokikh_universal_2020} assigns each
+voxel a weight inversely proportional to the volume of its lesion. When
+applied to Dice, Focal, and asymmetric similarity losses, this approach
+improved the detection of liver tumors, lung nodules, and brain metastases,
+although delineation quality decreased on the liver dataset. Blob
+loss~\cite{kofler_blob_2023}, by contrast, evaluates a base loss separately
+for each lesion after masking all other lesions from the domain, and then
+averages the resulting losses. With Dice as the base loss, it improved the
+lesion-wise F1 score for MS lesions by 5\% relative to soft Dice loss.
+CC-DiceCE~\cite{bouteille_learning_2026} builds the same kind of
+per-lesion loss on the component-wise evaluation protocol of
+CC-Metrics~\cite{jaus_every_2025} and achieves higher recall than blob loss,
+albeit with a dataset-dependent reduction in precision. Regularizing both
+predictions and labels has also been proposed as a means of addressing
+instance imbalance~\cite{aqib_javed_novel_2025}. These methods satisfy the
+balance requirement, and the component-adaptive term introduced in this
+work follows the same inverse-weighting principle. Nevertheless, they
+remain overlap-based: each lesion is assessed according to the quality of
+its delineation, coupling detection and delineation within a single term.
+None of these methods considers only whether a lesion has been detected.
+
+\paragraph{Lesion-level detection and multiple instance learning.}
+Few loss functions directly supervise detection. ALL-Net~\cite{zhang_all-net_2021}
+introduces a lesion-wise loss that models MS lesions as equal-sized spheres,
+whereas ICI loss~\cite{rachmadi_improving_2024} adds a center-of-instance
+term that represents each instance as a fixed-size cube centered at its
+center of mass. Both methods remove lesion size from the detection signal,
+but rely on surrogate shapes that the prediction must still match.
+MIL~\cite{dietterich_solving_1997,ilse_attention-based_2018} expresses the
+detection requirement more directly: a bag is considered positive if at
+least one of its instances is positive, just as a lesion can be considered
+detected if at least one of its voxels is predicted as foreground with high
+confidence. In segmentation, however, MIL has been used almost exclusively
+to compensate for missing voxel-level labels: pixel scores are pooled to
+match image-level labels~\cite{pinheiro_image-level_2015} or bounding-box
+constraints~\cite{hsu_weakly_2019}, while recent medical applications have
+similarly focused on weakly supervised
+segmentation~\cite{liu_object_2026,huang_geometric_2026,pal_deep_2021}. To
+the best of our knowledge, MIL has not been used as a per-lesion existence
+constraint when full voxel-level annotations are available.
+
+\paragraph{MS lesion segmentation.}
+Recent advances in MS lesion segmentation have been driven primarily by
+architectural design, ensembling, and training data, while retaining
+voxel-level objectives. Examples include a 3D FC-DenseNet trained with an
+asymmetric similarity loss~\cite{hashemi_asymmetric_2019}, LST-AI, an
+ensemble of three 3D U-Nets trained with Tversky and cross-entropy
+loss~\cite{wiltgen_lst-ai_2024}, and the nnU-Net-based
+FLAMeS~\cite{dereskewicz_flames_2025}. Although these methods generalize
+well across centers, small lesions remain a major source of error: most
+lesions missed by FLAMeS were smaller than
+10~mm$^3$~\cite{dereskewicz_flames_2025}.
+
+\paragraph{Remaining gap.}
+This review highlights three limitations. First, voxel-, class-, and
+region-level losses do not explicitly operate on individual lesions.
+Second, instance-level losses balance the contributions of lesions of
+different sizes but still evaluate each lesion through overlap. They
+therefore do not distinguish between detecting a lesion and delineating it
+accurately. Third, although MIL directly expresses this detection
+criterion, its use in segmentation has largely been confined to weakly
+supervised settings. No existing objective combines size-balanced overlap
+with an explicit, overlap-independent detection term for each lesion.
+\Cref{sec:method} introduces such an objective by adding a
+component-adaptive Tversky term for balance and a lesion-level MIL term for
+detection to the standard nnU-Net loss~\cite{isensee_nnu-net_2021},
+without modifying the architecture.

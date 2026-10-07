@@ -1,0 +1,602 @@
+\subsection{Quantitative Evaluation of Segmentation Performance}
+
+\begin{table}[t]
+\centering
+\caption{Comparison of CATMIL with standard losses on the MSLesSeg test
+set, without post-processing. Values are the mean $\pm$ sample standard
+deviation over the five fold models. Best values are shown in
+\textbf{bold}; second-best values are \underline{underlined}.}
+\label{tab:loss_comparison_small_lesion}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Metric}
+& \textbf{CATMIL (ours)}
+& \textbf{DiceCE}
+& \textbf{Tversky}
+& \textbf{FocalTversky} \\
+\midrule
+Small Lesion Recall $\uparrow$
+& \textbf{0.8730 $\pm$ 0.01}
+& 0.7956 $\pm$ 0.03
+& \underline{0.8336 $\pm$ 0.02}
+& 0.8313 $\pm$ 0.02 \\
+FN Count $\downarrow$
+& \textbf{2.5667 $\pm$ 0.15}
+& 4.9500 $\pm$ 0.40
+& 3.7667 $\pm$ 0.23
+& \underline{3.7000 $\pm$ 0.24} \\
+FN Volume Fraction $\downarrow$
+& \textbf{0.0214 $\pm$ 0.003}
+& 0.0341 $\pm$ 0.01
+& 0.0257 $\pm$ 0.01
+& \underline{0.0250 $\pm$ 0.005} \\
+\midrule
+DSC $\uparrow$
+& \textbf{0.7834 $\pm$ 0.01}
+& 0.7796 $\pm$ 0.01
+& 0.7706 $\pm$ 0.01
+& \underline{0.7802 $\pm$ 0.01} \\
+HD95 (mm) $\downarrow$
+& \textbf{7.9817 $\pm$ 1.84}
+& 9.0372 $\pm$ 1.34
+& 10.2408 $\pm$ 0.15
+& \underline{8.2060 $\pm$ 1.93} \\
+Lesion F1 $\uparrow$
+& 0.7571 $\pm$ 0.02
+& \underline{0.8433 $\pm$ 0.01}
+& 0.8402 $\pm$ 0.01
+& \textbf{0.8455 $\pm$ 0.01} \\
+FP Volume (mm$^3$) $\downarrow$
+& \textbf{1537 $\pm$ 245}
+& \underline{1819 $\pm$ 654}
+& 2621 $\pm$ 559
+& 2282 $\pm$ 710 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\Cref{tab:loss_comparison_small_lesion} summarizes the quantitative
+performance of the evaluated loss functions on the independent MSLesSeg
+test set. CATMIL achieves the best mean result in six of the seven reported
+metrics, indicating that its main advantage is not limited to a single
+measure but is observed across lesion detection, voxel-level segmentation,
+and volumetric error control.
+
+\textbf{CATMIL is more sensitive to small lesions than all three standard
+loss functions.} It achieves a Small Lesion Recall of $0.8730 \pm 0.01$,
+compared with $0.7956 \pm 0.03$ for DiceCE, $0.8336 \pm 0.02$ for Tversky,
+and $0.8313 \pm 0.02$ for FocalTversky. CATMIL therefore improves
+small-lesion recall by 7.74 percentage points over DiceCE and by 3.94
+percentage points over the next-best baseline, Tversky. In practical terms,
+CATMIL detects approximately 87\% of small lesions, whereas the competing
+methods detect approximately 80--83\%.
+
+\textbf{CATMIL misses fewer lesions and less lesion tissue.} CATMIL
+produces an average FN Count of $2.57 \pm 0.15$, compared with
+$4.95 \pm 0.40$ for DiceCE, corresponding to approximately 48\% fewer
+completely missed lesions. It also achieves the lowest FN Volume Fraction
+($0.0214 \pm 0.003$), compared with $0.0341 \pm 0.01$ for DiceCE. Thus, the
+remaining false-negative regions are fewer in number and occupy less total
+volume. The relatively small standard deviations further indicate that
+this improvement is consistently observed across the five trained models
+rather than being produced by one particularly favorable fold.
+
+\textbf{CATMIL improves detection without increasing false-alarm volume.}
+It produces the lowest FP Volume ($1537 \pm 245$~mm$^3$), compared with
+$1819 \pm 654$~mm$^3$ for DiceCE, $2621 \pm 559$~mm$^3$ for Tversky, and
+$2282 \pm 710$~mm$^3$ for FocalTversky. CATMIL therefore does not improve
+recall by indiscriminately predicting a substantially larger volume of
+lesion tissue.
+
+\textbf{CATMIL achieves the best overlap and boundary accuracy.} It
+achieves the highest DSC ($0.7834 \pm 0.01$) and the lowest HD95
+($7.98 \pm 1.84$~mm), compared with $9.04 \pm 1.34$~mm for DiceCE,
+$10.24 \pm 0.15$~mm for Tversky, and $8.21 \pm 1.93$~mm for FocalTversky.
+The simultaneous improvement in small-lesion recall, DSC, and HD95
+indicates that the additional lesion detections are not obtained at the
+cost of poorer segmentation overlap or less accurate boundaries.
+
+\textbf{CATMIL's main limitation is its lesion-wise precision--recall
+balance rather than its ability to detect or segment lesions.} CATMIL
+achieves a Lesion F1 score of $0.7571 \pm 0.02$, which is lower than
+$0.8433 \pm 0.01$ for DiceCE, $0.8402 \pm 0.01$ for Tversky, and
+$0.8455 \pm 0.01$ for FocalTversky, that is, 8.84 percentage points below
+the best result. Because Lesion F1 is affected by the number of
+false-positive lesion components, multiple small disconnected predictions
+can reduce this metric substantially even when their total volume is
+limited. The combination of high small-lesion recall, low FP Volume, and
+comparatively low Lesion F1 therefore suggests that CATMIL produces
+numerous small false-positive components rather than large over-segmented
+regions. This hypothesis is examined in \cref{sec:fp_pp}.
+
+\subsection{Analysis of Missed Lesion Errors Across Sizes}
+
+CATMIL leaves the fewest lesions completely undetected. In relative terms,
+CATMIL misses 9.2\% of the reference lesions, compared with 12.0\% for
+Tversky and FocalTversky and 15.3\% for DiceCE. This subsection examines
+which lesions account for this difference and whether the reduction holds
+consistently across test cases.
+
+\Cref{fig:recall_vs_size_curve} shows lesion recall as a function of lesion
+size. The CATMIL curve lies above all three baselines over the whole
+small-lesion range, and the gap is widest where the baselines fail most.
+For lesions of 5--30~mm$^3$, CATMIL detects 87\% of lesions, compared with
+57\% for DiceCE and 72\% for Tversky and FocalTversky. Over the bins of the
+size analysis, CATMIL raises recall from 0.12--0.29 to 0.45 for lesions of
+at most 10~mm$^3$ and from 0.74--0.82 to 0.89 for lesions of
+11--50~mm$^3$. Above about 100~mm$^3$ all curves converge near 1, so the
+gain on small lesions is not paid for with large ones. CATMIL therefore
+shifts the size at which lesions become reliably detectable toward smaller
+lesions: it reaches a recall of 0.8 at about 13~mm$^3$, whereas Tversky and
+FocalTversky reach it only at about 25~mm$^3$ and DiceCE at about
+40~mm$^3$. The smallest lesions, of at most 5~mm$^3$, remain difficult for
+every loss, and the size bias of voxel-wise training is reduced but not
+removed.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/recall_vs_size_curve.pdf}
+    \caption{Lesion recall against lesion size on the MSLesSeg test set.
+    Upper panel: fraction of reference lesions detected in each size
+    interval (logarithmic axis); lines are the mean over the five fold
+    models and shaded bands span the fold minimum to maximum. Lower panel:
+    number of reference lesions per interval. Dotted vertical lines mark
+    10, 50, and 200~mm$^3$. A lesion counts as detected if any predicted
+    voxel overlaps it.}
+    \label{fig:recall_vs_size_curve}
+\end{figure}
+
+A higher recall could in principle hide a trade, in which CATMIL gains some
+lesions but loses others that a baseline detects.
+\Cref{fig:lesion_fate} tests this by pairing every reference lesion between
+CATMIL and each baseline trained on the same fold. The comparison is
+strongly one-sided. Against DiceCE, CATMIL detects 30.6 lesions per fold
+model that DiceCE misses, while DiceCE detects only 2.0 that CATMIL misses.
+Against Tversky and FocalTversky the ratios are 17.2 to 2.8 and 17.0 to
+3.4. About two thirds of the lesions recovered by CATMIL are at most
+50~mm$^3$, and no lesion above 200~mm$^3$ is detected by a baseline but
+missed by CATMIL. The recall gain is therefore a net gain in detected
+lesions, not a redistribution of errors between lesion sizes.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/lesion_fate.pdf}
+    \caption{Lesions detected by only one of two losses on the MSLesSeg
+    test set, by lesion size. Each panel pairs every reference lesion
+    between CATMIL and one baseline trained on the same fold. Bars to the
+    right: lesions detected by CATMIL but not by the baseline; bars to the
+    left: lesions detected by the baseline but not by CATMIL. Grey text:
+    lesions detected by both or by neither. Values are means over the five
+    fold models.}
+    \label{fig:lesion_fate}
+\end{figure}
+
+The recovered lesions raise the question of why the baselines miss them:
+the baseline output may contain a weak response that falls just below the
+decision threshold, or no response at all. \Cref{fig:max_prob_by_size}
+distinguishes the two cases by assigning the maximum foreground
+probability inside every reference lesion to one of three levels: below
+0.1 (no response), between 0.1 and 0.5 (a weak response below the
+threshold), or at least 0.5 (detected).
+
+For the smallest lesions, the baselines produce no response to most of
+them. Under DiceCE, 82\% of lesions of at most 10~mm$^3$ have a maximum
+probability below 0.1, and under the Tversky-based losses 65--68\%. CATMIL
+reduces this fraction to 47\%, and for lesions of 11--50~mm$^3$ from
+17--21\% to 8\%. The intermediate level is small for every loss (at most
+8\%), so the lesions missed by the baselines cannot be recovered by
+lowering the threshold. CATMIL therefore does not merely push weak
+responses over the threshold: it makes the network respond to small
+lesions that a voxel-wise objective leaves invisible. This is the effect
+that the two terms of CATMIL are designed to produce: the CAT term gives
+small and large lesions comparable total weight, and the MIL term
+penalizes any lesion in which no voxel receives a high probability.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/max_prob_by_size.pdf}
+    \caption{Maximum foreground probability inside each reference lesion on
+    the MSLesSeg test set, by lesion size. Bars give the fraction of
+    lesions whose maximum probability is below 0.1 (no response), between
+    0.1 and 0.5 (weak response below the threshold), or at least 0.5
+    (detected). Each lesion contributes once per fold model; $n$ is the
+    number of reference lesions in the bin.}
+    \label{fig:max_prob_by_size}
+\end{figure}
+
+Averages over the test set can hide whether an improvement is shared
+across patients or produced by a few favorable cases.
+\Cref{fig:fn_per_case_paired} compares CATMIL with each baseline case by
+case. CATMIL does not trade errors between cases. Against DiceCE, no test
+case becomes worse. Against the Tversky-based losses, the few cases in
+which CATMIL misses more lesions differ by less than half a lesion, well
+within the variation between trained models. The gain is instead
+concentrated in the high-burden cases P47\_T1, P49\_T1, and P13\_T2, which
+contain many tiny and small lesions (\cref{tab:test_case_lesion_profile}).
+About 78\% of the lesions that CATMIL recovers relative to DiceCE in these
+cases are at most 50 voxels in size. The same cases also explain why this
+effect is barely visible in DSC. In P47\_T1, CATMIL recovers about 11
+lesions on average relative to DiceCE, while the case-level DSC remains
+unchanged at 0.85, because the recovered lesions are too small to change a
+volume-overlap score. Because the 12 test cases come from six patients,
+with several follow-up scans of the same patient, these observations
+describe a consistent within-dataset pattern rather than a
+population-level statistical estimate.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fn_per_case_paired.pdf}
+    \caption{Missed lesions per test case for CATMIL compared with DiceCE,
+    Tversky, and FocalTversky. Each point is one test case, placed at the
+    mean FN lesion count over the five fold models; error bars span the
+    fold minimum to maximum. Points below the dashed diagonal (shaded
+    region) are cases in which CATMIL misses fewer lesions than the
+    baseline. The text in each panel gives the number of cases in which
+    CATMIL misses fewer, the same number, or more lesions, and the mean
+    number of missed lesions per case for the baseline and for CATMIL.}
+    \label{fig:fn_per_case_paired}
+\end{figure}
+
+\subsection{Case-Based Qualitative Analysis of Lesion Segmentation}
+
+The size analysis shows how many lesions CATMIL recovers, but not which
+lesions they are or why the baselines lose them. This subsection therefore
+examines individual lesions rather than whole slices: at full-slice scale,
+the lesions that separate the losses occupy only a few pixels.
+\Cref{fig:qual_lesion_gallery} shows each lesion in a 24~mm crop centred on
+it, and \cref{fig:qual_probability_maps} shows the lesion probabilities
+that each loss assigns to the same regions.
+
+The lesions were selected by a fixed rule applied to the per-lesion
+detection results of all five fold models, not by visual inspection. A
+\emph{recovered} lesion has at most 50 voxels, is detected by at least four
+of the five CATMIL models, and is detected by at most one of the five
+models of each baseline. Four such lesions are shown, from cases P47\_T1
+and P26\_T1, both of which contain many small lesions. A lesion
+\emph{missed by all} is detected by none of the twenty models. The
+\emph{CATMIL false positive} is a predicted component produced by all five
+CATMIL models and by none of the fifteen baseline models. Each lesion is
+characterized by its size, its axial extent, its local FLAIR contrast
+(computed as in \cref{appendix:test-case-lesion-profile}), its distance to
+the nearest other lesion, and its position relative to the cortex.
+Contrast values are also expressed as percentiles among the 84 test lesions
+of 5--50 voxels.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/qual_lesion_gallery.pdf}
+    \caption{Lesion-centered comparison of the four losses on the MSLesSeg
+    test set. Each row shows one lesion (or one CATMIL false-positive
+    component), selected by the rule described in the text. From left to
+    right: the full axial slice with the crop location (cyan box); a 24~mm
+    FLAIR crop with the target marked by a cyan arrow; the reference
+    contour (white); and the predictions of the fold-0 model of each loss.
+    Green indicates correctly segmented lesion voxels, red indicates missed
+    lesion voxels (false negatives), and yellow indicates false-positive
+    voxels. The number at the bottom left of each prediction panel is the
+    number of the five fold models that detect the lesion; $p$ at the
+    bottom right is the maximum lesion probability inside the lesion,
+    averaged over the five fold models. The models receive T1-w, T2-w, and
+    FLAIR images; only FLAIR is shown.}
+    \label{fig:qual_lesion_gallery}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/qual_probability_maps.pdf}
+    \caption{Lesion probability maps for the lesions in
+    \cref{fig:qual_lesion_gallery}, averaged over the five fold models of
+    each loss. The cyan contour marks the reference lesion and the yellow
+    contour marks the CATMIL false-positive component. Values of $p$ are as
+    in \cref{fig:qual_lesion_gallery}.}
+    \label{fig:qual_probability_maps}
+\end{figure}
+
+\textbf{The baselines do not narrowly miss the recovered lesions; they do
+not respond to them.} For three of the four recovered lesions, the maximum
+DiceCE probability inside the lesion is at most 0.01, and for the 13- and
+21-voxel lesions in P47\_T1, the Tversky and FocalTversky models also
+assign a probability of 0.00 (\cref{fig:qual_probability_maps}). A lower
+decision threshold would therefore not recover these lesions, because the
+omission is already present in the network output rather than being
+introduced by the decision rule. CATMIL assigns a probability between 0.93
+and 0.99 to the same lesions and detects each of them in all five fold
+models, so the recovery is not the effect of one favorable training run.
+Measured over the whole case, the 13-voxel lesion in P47\_T1 accounts for
+0.07\% of the 18,736 lesion voxels of that case. Omitting it therefore has
+almost no effect on a voxel-wise overlap term. Under the component-balanced
+term and the lesion-level term of CATMIL, however, the same lesion is one
+of 59 lesions and carries a comparable share of the lesion-level signal.
+Training uses patches rather than whole volumes, so the exact proportions
+differ during optimization, but the imbalance is of the same kind.
+
+\textbf{The difficulty of each recovered lesion has a different source.}
+
+\emph{Row~1: a 5-voxel lesion adjacent to another lesion (P47\_T1).} This
+lesion is at the resolution limit of the data. It occupies a single axial
+slice, and its local contrast of 2.22 is lower than that of 87\% of the
+small test lesions. It also lies 3~mm from a larger neighboring lesion, so
+its signal is partly mixed with the neighbor's hyperintensity. The Tversky
+and FocalTversky models show a weak response ($p \approx 0.25$) and detect
+the lesion in one of five models. This is the regime of lesions of at most
+10 voxels, in which baseline recall is only 0.12--0.29
+(\cref{fig:recall_vs_size_curve}). CATMIL detects the lesion in every model
+with $p = 0.99$. The detection is not a clean delineation, however. In
+three of the five CATMIL models, the predicted component extends across the
+3~mm gap and joins this lesion to its neighbor, and the lesion-wise DSC is
+0.28. At this scale, CATMIL establishes that a lesion is present, but not
+where its boundary lies relative to an adjacent lesion.
+
+\emph{Row~2: a clearly visible but isolated 13-voxel lesion (P47\_T1).} The
+contrast of this lesion (3.62) is at the median of the small test lesions,
+and the focal hyperintensity is visible in the FLAIR crop. Its difficulty
+is that it is small and isolated: the nearest other lesion is 19~mm away,
+so no neighboring lesion provides spatial context, and the lesion
+contributes very few voxels to the training signal. All fifteen baseline
+models miss it with $p \leq 0.01$. This lesion shows that the baselines'
+omission is a size effect rather than a visibility effect. CATMIL detects
+it in every model, but its predicted component has on average only 4
+voxels, compared with 13 in the reference (lesion-wise DSC 0.42).
+
+\emph{Row~3: a faint 21-voxel lesion next to a detected large lesion
+(P47\_T1).} This lesion's contrast (2.56) is in the lowest quartile of the
+small lesions. The same crop contains a large lesion, which all four
+losses segment; the baselines' omission is specific to the small, faint
+component, which receives a probability of 0.00 from all fifteen baseline
+models. This lesion illustrates the gain in the 11--50 voxel range, where
+CATMIL raises recall from 0.74--0.82 to 0.89. The high-probability region
+of CATMIL lies on the upper part of the reference lesion, and its mean
+predicted component has 7.6 voxels: CATMIL again localizes the lesion
+correctly but covers only part of it.
+
+\emph{Row~4: a juxtacortical lesion (P26\_T1).} This 37-voxel lesion spans
+four slices and has median contrast (3.52), but it lies 7~mm from the brain
+surface, directly beneath the cortex, which is itself relatively bright on
+FLAIR. The ring around this lesion has a median normalized intensity of
+0.48, compared with approximately zero for the other recovered lesions, so
+the lesion must be separated from cortex-like signal rather than from dark
+white matter. DiceCE and Tversky assign $p \approx 0.3$ and detect the
+lesion in one of five models, and FocalTversky assigns $p = 0.04$. CATMIL
+detects the lesion in every model with $p = 0.98$. Juxtacortical lesions
+are one of the lesion locations used to establish dissemination in space in
+the diagnostic criteria for multiple sclerosis~\cite{thompson_diagnosis_2018},
+so recovering such lesions is clinically relevant beyond the lesion count.
+
+\textbf{The remaining misses are limited by image evidence rather than by
+the loss.} The lesion in row~5 (P52\_T2, 18 voxels) is located in the
+posterior fossa and is missed by all twenty models, each of which assigns
+it a probability of 0.00. Its contrast of 1.49 is lower than that of 99\%
+of the small test lesions, and it is surrounded by relatively bright tissue
+(median ring intensity 0.95). Both time points are registered to the same
+1~mm template space, and the P52\_T1 reference has no lesion within 5~mm of
+this location; the lesion is therefore either new at follow-up or an
+annotation that is not supported by the earlier scan. CATMIL increases the
+weight of each annotated lesion during training but cannot create image
+evidence that the input does not contain. The test set as a whole shows
+the same pattern: among the 84 lesions of 5--50 voxels, those that CATMIL
+still misses (detected by fewer than three of the five models) have a
+median contrast of 1.86, compared with 3.65 for the lesions it detects.
+
+\textbf{The false positive results from the same mechanism as the recovered
+lesions.} The component in row~6 (P52\_T1) has only 3 voxels, but all five
+CATMIL models predict it with $p = 0.90$, whereas no baseline model
+predicts it. The FLAIR crop shows a small focal hyperintensity at this
+location. The follow-up scan P52\_T2 contains no annotated lesion within
+5.8~mm of this location. The component may be a tiny unannotated
+hyperintensity or a non-lesional focus such as a vessel or noise; the
+reference annotation cannot distinguish between these possibilities. The
+property that recovers the lesions in rows~1--4 is a strong response to
+compact focal hyperintensities, independent of their volume; the false
+positive is the same response at a location where the reference contains
+no lesion. Because this component contains fewer than 5 voxels, it is
+removed by the connected-component filter evaluated in \cref{sec:fp_pp}.
+
+\textbf{CATMIL extends detection toward smaller and fainter lesions, and it
+mainly corrects lesion omission rather than boundary delineation.} Among
+the small lesions of 5--50 voxels, the 15 lesions detected by at least
+three CATMIL models but by fewer than three DiceCE models have a median
+size of 15 voxels and a median contrast of 2.85, whereas the 58 lesions
+detected by both losses have a median size of 35 voxels and a median
+contrast of 3.83. CATMIL's predictions for the recovered lesions cover only
+part of each lesion (lesion-wise DSC 0.28--0.52), and in row~1 they merge
+adjacent lesions. The lesion-level term mainly affects whether a lesion is
+detected, whereas boundary accuracy continues to depend on the voxel-wise
+overlap terms. Consequently, CATMIL changes the dominant error from a
+missed lesion to a detected lesion with inaccurate extent, or to a small
+additional component.
+
+\subsection{Analysis of False Positives and Post-Processing}
+\label{sec:fp_pp}
+
+As shown in \cref{tab:loss_comparison_small_lesion}, CATMIL achieves the
+best performance in DSC, HD95, and small-lesion recall, but its lesion F1 is
+lower than those of the competing methods. CATMIL achieves a high
+lesion-level recall of 0.9085, whereas its lesion-level precision is
+0.6738: most true lesions are detected, but additional false-positive
+components are also introduced.
+
+At first glance, this behavior may suggest over-segmentation. However,
+CATMIL produces the lowest false-positive volume among all models while
+predicting a considerably larger number of connected components,
+approximately 51 on average compared with roughly 30 components in the
+ground truth. CATMIL therefore does not primarily produce large,
+incorrectly segmented lesion regions; it introduces many small
+disconnected components, consistent with increased sensitivity to weak
+lesion-like signals. The spatial distribution of these false positives
+supports this interpretation: when the distance from each false-positive
+voxel to the nearest ground-truth lesion is measured, the near-voxel
+fraction is approximately 0.7--0.8 and the median distance is only
+1--2~mm. Many of the false positives are thus local fragments near lesion
+boundaries or lesion-like regions rather than large, remote false alarms.
+
+Based on this analysis, the predictions of all models are post-processed by
+removing predicted connected components smaller than 5 voxels, and the
+evaluation metrics are recomputed. This analysis is hereafter referred to
+as PP5; its results are reported in
+\cref{tab:loss_comparison_small_lesion_pp5}.
+
+\begin{table}[t]
+\centering
+\caption{Comparison of CATMIL with standard losses on the MSLesSeg test
+set after post-processing with a minimum connected-component size of 5
+voxels (PP5). Best values are shown in \textbf{bold}; second-best values
+are \underline{underlined}.}
+\label{tab:loss_comparison_small_lesion_pp5}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Metric}
+& \textbf{CATMIL (ours)}
+& \textbf{DiceCE}
+& \textbf{Tversky}
+& \textbf{FocalTversky} \\
+\midrule
+Small Lesion Recall $\uparrow$
+& \textbf{0.8554 $\pm$ 0.01}
+& 0.7853 $\pm$ 0.03
+& \underline{0.8223 $\pm$ 0.02}
+& 0.8196 $\pm$ 0.02 \\
+FN Count $\downarrow$
+& \textbf{3.1333 $\pm$ 0.21}
+& 5.2333 $\pm$ 0.52
+& \underline{4.0667 $\pm$ 0.24}
+& 4.0833 $\pm$ 0.24 \\
+FN Volume Fraction $\downarrow$
+& \textbf{0.0238 $\pm$ 0.004}
+& 0.0353 $\pm$ 0.01
+& 0.0277 $\pm$ 0.01
+& \underline{0.0270 $\pm$ 0.01} \\
+\midrule
+DSC $\uparrow$
+& \textbf{0.7842 $\pm$ 0.01}
+& 0.7797 $\pm$ 0.01
+& 0.7707 $\pm$ 0.01
+& \underline{0.7803 $\pm$ 0.01} \\
+HD95 (mm) $\downarrow$
+& \textbf{8.1028 $\pm$ 1.76}
+& 9.0895 $\pm$ 1.37
+& 10.3585 $\pm$ 0.21
+& \underline{8.2297 $\pm$ 1.95} \\
+Lesion F1 $\uparrow$
+& 0.8415 $\pm$ 0.01
+& \textbf{0.8586 $\pm$ 0.01}
+& 0.8532 $\pm$ 0.01
+& \underline{0.8582 $\pm$ 0.005} \\
+FP Volume (mm$^3$) $\downarrow$
+& \textbf{1515 $\pm$ 244}
+& \underline{1815 $\pm$ 654}
+& 2618 $\pm$ 558
+& 2279 $\pm$ 710 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+PP5 improves lesion F1 for all four methods, with a substantially larger
+effect on CATMIL. CATMIL's lesion F1 increases from 0.7571 to 0.8415, an
+improvement of 8.44 percentage points, whereas the other methods improve by
+only 1.27--1.53 percentage points. Although CATMIL's small-lesion recall
+decreases by 1.76 percentage points, from 0.8730 to 0.8554, it remains the
+highest among all methods. CATMIL already has the lowest false-positive
+volume before post-processing, and PP5 reduces it only slightly, from 1537
+to 1515~mm$^3$, while producing a large improvement in lesion F1. The false
+positives introduced by CATMIL therefore consist primarily of small
+disconnected components that contribute little to the total false-positive
+volume but have a considerable effect on lesion-level evaluation.
+
+After PP5, CATMIL's lesion F1 gap relative to the best-performing method
+decreases from 8.84 to 1.71 percentage points. CATMIL also retains the best
+DSC, the lowest HD95, and the highest small-lesion recall. Simple
+post-processing thus substantially mitigates CATMIL's main limitation
+without removing its principal advantage. \Cref{appendix:lesion-level-analyses}
+extends this analysis from the single filter size of PP5 to a range of
+filter sizes and probability thresholds.
+
+\subsection{Evaluation on a Second Dataset: 3D-MR-MS}
+
+\begin{table}[t]
+\centering
+\caption{Comparison of CATMIL with standard losses on the 3D-MR-MS test
+set. Best values are shown in \textbf{bold}; second-best values are
+\underline{underlined}.}
+\label{tab:external_eval_3dmrms}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Metric} & \textbf{CATMIL (ours)} & \textbf{DiceCE} & \textbf{Tversky} & \textbf{FocalTversky} \\
+\midrule
+Small Lesion Recall $\uparrow$
+& \textbf{0.618 $\pm$ 0.03}
+& 0.537 $\pm$ 0.01
+& \underline{0.564 $\pm$ 0.02}
+& 0.563 $\pm$ 0.02 \\
+FN Count $\downarrow$
+& \textbf{16.9 $\pm$ 0.64}
+& 22.0 $\pm$ 0.94
+& \underline{21.3 $\pm$ 1.15}
+& \underline{21.3 $\pm$ 1.20} \\
+HD95 (mm) $\downarrow$
+& \textbf{11.55 $\pm$ 1.27}
+& \underline{11.94 $\pm$ 1.79}
+& 13.38 $\pm$ 3.65
+& 12.27 $\pm$ 3.10 \\
+FP Volume (mm$^3$) $\downarrow$
+& \textbf{1232 $\pm$ 165}
+& \underline{1234 $\pm$ 213}
+& 1994 $\pm$ 284
+& 1958 $\pm$ 269 \\
+\midrule
+DSC $\uparrow$
+& 0.718 $\pm$ 0.01
+& \underline{0.730 $\pm$ 0.02}
+& 0.726 $\pm$ 0.01
+& \textbf{0.734 $\pm$ 0.01} \\
+Lesion F1 $\uparrow$
+& 0.471 $\pm$ 0.04
+& \textbf{0.668 $\pm$ 0.02}
+& \underline{0.640 $\pm$ 0.02}
+& 0.637 $\pm$ 0.03 \\
+FN Volume Fraction $\downarrow$
+& 0.085 $\pm$ 0.03
+& \textbf{0.068 $\pm$ 0.01}
+& 0.082 $\pm$ 0.03
+& \underline{0.074 $\pm$ 0.03} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The results in \cref{tab:external_eval_3dmrms} show that CATMIL
+consistently provides the strongest performance on the metrics most
+directly associated with detecting small lesions. CATMIL achieves the
+highest small-lesion recall ($0.618 \pm 0.03$), substantially exceeding
+DiceCE ($0.537 \pm 0.01$) and both Tversky-based losses ($\approx0.564$).
+It also produces the lowest false-negative lesion count
+($16.9 \pm 0.64$), reducing the number of completely missed lesions by
+approximately 23\% compared with DiceCE ($22.0 \pm 0.94$). In addition,
+CATMIL obtains the lowest HD95 ($11.55 \pm 1.27$~mm) and a false-positive
+volume ($1232 \pm 165$~mm$^3$) similar to that of DiceCE
+($1234 \pm 213$~mm$^3$), so the improved sensitivity is not obtained by
+over-segmenting large regions.
+
+The cost of this sensitivity is larger on this dataset than on MSLesSeg.
+CATMIL has the lowest lesion-wise F1 ($0.471 \pm 0.04$, against
+0.637--0.668 for the baselines) and a slightly lower DSC. Lesion-wise F1
+falls when the prediction contains components that overlap no reference
+lesion, and without filtering CATMIL produces about 150 such components per
+case, against 14--19 for the baselines
+(\cref{appendix:lesion-level-analyses}). These components are small, so
+they add little false-positive volume, but they lower lesion-wise
+precision substantially. CATMIL also has the highest FN Volume Fraction
+($0.085 \pm 0.03$), although it misses the fewest lesions; the lesions it
+still misses therefore account for a larger share of the lesion volume.
+
+The lesion-level analyses of the previous subsections were repeated on
+this dataset (\cref{appendix:lesion-level-analyses}). They show the same
+pattern: CATMIL detects about 33 lesions per fold model that DiceCE
+misses, against 2.4 in the opposite direction, and almost all of these
+recovered lesions are at most 50~mm$^3$. On both datasets, CATMIL improves
+the detection of small and sparse lesions without increasing
+false-positive volume, and on both the gain is accompanied by additional
+small false-positive components. On 3D-MR-MS this cost is large enough
+that a component-size filter larger than PP5 is needed to control it.

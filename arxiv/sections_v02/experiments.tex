@@ -1,0 +1,194 @@
+\subsection{Datasets}
+
+\paragraph{MSLesSeg.}
+The primary experiments use the MSLesSeg
+dataset~\cite{guarnera_mslesseg_2025} of longitudinal brain MRI scans of
+patients with multiple sclerosis. Of its 75 subjects, the 53 with manual
+lesion annotations are used here, as the official test set is unlabeled.
+Each subject has one to four timepoints, each with T1-weighted (T1-w),
+T2-weighted (T2-w), and Fluid-Attenuated Inversion Recovery (FLAIR)
+images. The dataset organizers provide the images skull-stripped,
+co-registered to the MNI152 template, and resampled to 1~mm isotropic
+spacing.
+
+\paragraph{3D-MR-MS.}
+To assess whether the behavior of CATMIL carries over to other data, the
+four losses are also trained and evaluated on a second multiple sclerosis
+dataset, 3D-MR-MS~\cite{lesjak_novel_2018}, which was acquired at a
+different center with different imaging conditions. It contains 30
+patients with consensus-based white matter lesion annotations, provided
+co-registered and bias-field corrected. Of the available modalities, only
+T1-w, T2-w, and FLAIR are used, to keep the input configuration identical
+to MSLesSeg. The voxels of this dataset are anisotropic
+($0.47 \times 0.47 \times 0.8$~mm), so lesion sizes on 3D-MR-MS are given
+in mm$^3$ rather than in voxels.
+
+\subsection{Data Split}
+
+Data are partitioned at the patient level, so that scans of one patient
+never appear in both training and evaluation sets. For MSLesSeg, six
+patients, with all their timepoints (12 test cases), are held out as an
+independent test set; for 3D-MR-MS, six of the 30 patients are held out.
+The remaining patients (47 and 24, respectively) are divided into five
+folds following the nnU-Net cross-validation strategy. Each of the five
+fold models is evaluated on the test set, and results are reported as the
+mean and sample standard deviation across the five models. All training
+settings, including the CATMIL loss weights, are identical for the two
+datasets, so 3D-MR-MS was not used to tune the objective.
+
+\subsection{Compared Losses}
+
+Four configurations of nnU-Net are compared, differing only in the loss
+function:
+\begin{itemize}
+    \item \textbf{DiceCE}: the default Dice and cross-entropy loss;
+    \item \textbf{Tversky}~\cite{salehi_tversky_2017}: Tversky loss, with
+    $\alpha=0.3$ and $\beta=0.7$ weighting false positives and false
+    negatives;
+    \item \textbf{FocalTversky}~\cite{abraham_novel_2019}: Focal Tversky
+    loss, $\mathcal{L}_{\mathrm{Tversky}}^{1/\gamma_{\mathrm{F}}}$, with the
+    same $\alpha$ and $\beta$ and focal exponent $\gamma_{\mathrm{F}}=4/3$;
+    \item \textbf{CATMIL}: the proposed loss.
+\end{itemize}
+Tversky and FocalTversky replace the DiceCE loss, whereas CATMIL adds its
+two terms to it. Ablations of the two CATMIL terms and of their weights are
+reported in \cref{appendix:catmil-components,appendix:catmil-loss-weights}.
+
+\subsection{Implementation}
+
+All models use nnU-Net (version 2.1.1)~\cite{isensee_nnu-net_2021} with
+its default preprocessing, patch-based training, and optimizer: stochastic
+gradient descent with Nesterov momentum of 0.99, weight decay of
+$3\times10^{-5}$, and an initial learning rate of 0.01 with polynomial
+decay. Training runs for 150 epochs with a batch size of 2 on an NVIDIA
+Quadro RTX 8000 GPU. The loss implementation and evaluation code are
+available at \url{https://github.com/luumsk/SmallLesionMRI}.
+
+\subsection{Evaluation Metrics}
+
+Three groups of metrics are used: voxel-level metrics for overall
+segmentation quality, lesion-level metrics for detection, in particular of
+small lesions, and error-volume metrics for the extent of false-positive
+and false-negative errors.
+
+\paragraph{Voxel-level Metrics.}
+Let $P$ and $G$ denote the sets of predicted and ground-truth lesion
+voxels, and $|\cdot|$ the number of voxels in a set.
+
+\begin{itemize}
+    \item \textbf{DSC}~\cite{dice_measures_1945} measures the overlap
+    between prediction and ground truth, from 0 (no overlap) to 1 (perfect
+    overlap):
+    \begin{equation}
+    \mathrm{DSC} =
+    \frac{2|P \cap G|}{|P| + |G|}.
+    \end{equation}
+    The name Dice is kept only for the Dice loss and the DiceCE baseline,
+    which use the differentiable form of this coefficient.
+
+    \item \textbf{HD95}~\cite{taha_metrics_2015} measures the boundary
+    discrepancy; lower is better. With $S_P$ and $S_G$ the surface voxels
+    of the two masks and $d(p, S_G) = \min_{g \in S_G} \lVert p - g \rVert_2$,
+    \begin{equation}
+    \mathrm{HD}_{95}(P,G) =
+    \max \left\{
+    \underset{p \in S_P}{\mathrm{percentile}_{95}}\, d(p, S_G),\;
+    \underset{g \in S_G}{\mathrm{percentile}_{95}}\, d(g, S_P)
+    \right\}.
+    \end{equation}
+\end{itemize}
+
+\paragraph{Lesion-level Metrics.}
+A lesion is a 3D connected component of the binary mask under
+6-connectivity, the same definition as in the proposed loss. Let
+$\mathcal{G}$ and $\mathcal{P}$ denote the sets of ground-truth and
+predicted lesions. A lesion is detected if it overlaps at least one lesion
+of the other mask, which gives the subsets
+$\mathcal{G}_{\mathrm{det}} \subseteq \mathcal{G}$ of detected ground-truth
+lesions and $\mathcal{P}_{\mathrm{det}} \subseteq \mathcal{P}$ of correctly
+predicted lesions. In all formulas below, $\varepsilon=10^{-8}$ prevents
+division by zero.
+
+\begin{itemize}
+    \item \textbf{Lesion-wise F1 Score} balances lesion-wise precision and
+    recall:
+    \begin{equation}
+    \begin{gathered}
+    \mathrm{Precision}_{\mathrm{les}} =
+    \frac{|\mathcal{P}_{\mathrm{det}}|}
+    {|\mathcal{P}| + \varepsilon},
+    \qquad
+    \mathrm{Recall}_{\mathrm{les}} =
+    \frac{|\mathcal{G}_{\mathrm{det}}|}
+    {|\mathcal{G}| + \varepsilon},
+    \\[1ex]
+    \mathrm{F1}_{\mathrm{les}} =
+    \frac{
+        2 \, \mathrm{Precision}_{\mathrm{les}} \, \mathrm{Recall}_{\mathrm{les}}
+    }{
+        \mathrm{Precision}_{\mathrm{les}} + \mathrm{Recall}_{\mathrm{les}} + \varepsilon
+    }.
+    \end{gathered}
+    \end{equation}
+
+    \item \textbf{Small Lesion Recall} is the fraction of small ground-truth
+    lesions that are detected. A lesion is small if it has at most
+    $\tau=150$ voxels, that is, 150~mm$^3$ at the 1~mm isotropic spacing of
+    MSLesSeg:
+    \begin{equation}
+    \mathrm{Recall}_{\mathrm{small}} =
+    \frac{
+        |\mathcal{G}_{\mathrm{small}} \cap \mathcal{G}_{\mathrm{det}}|
+    }{
+        |\mathcal{G}_{\mathrm{small}}| + \varepsilon
+    },
+    \qquad
+    \mathcal{G}_{\mathrm{small}} =
+    \left\{
+        g \in \mathcal{G} : |g| \leq \tau
+    \right\}.
+    \end{equation}
+
+    \item \textbf{False Negative Lesion Count} is the number of
+    ground-truth lesions that are completely missed:
+    \begin{equation}
+    \text{FN Lesion Count} =
+    |\mathcal{G}| - |\mathcal{G}_{\mathrm{det}}|.
+    \end{equation}
+\end{itemize}
+
+\paragraph{Error Volume Metrics.}
+These metrics quantify over-segmentation and under-segmentation by volume.
+Let $\mathrm{FP} = P \setminus G$ denote the false-positive voxels.
+
+\begin{itemize}
+    \item \textbf{False Positive Volume} is the physical volume of the
+    false-positive voxels, with $s_x, s_y, s_z$ the voxel spacing along each
+    axis:
+    \begin{equation}
+    V_{\mathrm{FP}} =
+    |\mathrm{FP}| \cdot s_x s_y s_z.
+    \end{equation}
+
+    \item \textbf{False Positive Blob Fraction} separates false positives
+    that extend a true lesion from those detached from any lesion. The
+    voxels of $\mathrm{FP}$ are grouped into connected components. A
+    component is a boundary extension if its minimum distance to the
+    ground-truth mask is at most 2~mm, and a blob otherwise. With
+    $\mathcal{B}$ the set of blobs, the metric is the fraction of the
+    false-positive volume that belongs to blobs:
+    \begin{equation}
+    \mathrm{FP}_{\mathrm{blob}}^{\mathrm{frac}}
+    =
+    \frac{\sum_{c \in \mathcal{B}} |c|}{|\mathrm{FP}| + \varepsilon}.
+    \end{equation}
+
+    \item \textbf{False Negative Volume Fraction} is the fraction of the
+    total lesion volume that belongs to missed lesions:
+    \begin{equation}
+    V_{\mathrm{FN}}^{\mathrm{frac}}
+    =
+    \frac{\sum_{g \in \mathcal{G} \setminus \mathcal{G}_{\mathrm{det}}} |g|}
+    {|G| + \varepsilon}.
+    \end{equation}
+\end{itemize}

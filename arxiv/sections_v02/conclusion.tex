@@ -1,0 +1,29 @@
+This work studied small lesion segmentation in brain MRI as a problem of
+learning from sparse pathological signals. In multiple sclerosis MRI, small
+lesions occupy a negligible fraction of the image volume, so a model
+trained with a voxel-wise overlap objective can reach a high DSC while
+leaving many of them undetected. The proposed CATMIL objective targets this
+failure without any change to the network architecture: a
+component-adaptive Tversky term gives small and large lesions comparable
+weight, and a multiple-instance term penalizes any lesion in which no voxel
+is detected.
+
+CATMIL reduces the omission of small lesions. The improvement is
+concentrated in the lesion sizes at which the standard losses fail, it is a
+net gain in detected lesions rather than a trade between lesion sizes, and
+it holds across test cases, across trained models, and on a second dataset
+trained with the same loss weights. On MSLesSeg, CATMIL also preserves the
+voxel-level overlap and boundary accuracy of the standard losses; on
+3D-MR-MS its DSC is slightly lower. The analysis of predicted probabilities
+shows why standard losses miss small lesions: they produce no response to
+most of them, so no choice of decision threshold can recover these lesions.
+The omission is therefore a consequence of how supervision is distributed
+across lesions, rather than an inherent limitation of the network.
+
+The cost of this sensitivity is a larger number of small false-positive
+components, which lowers lesion-wise F1. These components are small and
+localized, and a simple component-size filter removes most of them while
+keeping the sensitivity gain. CATMIL is therefore most useful where missing
+a lesion is a more serious error than a small false-positive component,
+provided that the operating point is chosen after training for the
+intended use.

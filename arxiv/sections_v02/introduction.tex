@@ -1,0 +1,69 @@
+Small lesions in brain magnetic resonance imaging (MRI) are sparse,
+spatially localized, and clinically important targets embedded within a
+large volume of normal-appearing tissue. In multiple sclerosis (MS), lesions
+occupy little of the image and vary widely in size, yet missing them can
+underestimate disease activity and lesion
+burden~\cite{filippi_quantitative_1996,wang_survey_1997}. The number of
+lesions and the appearance of new lesions on follow-up scans are central to
+diagnosis and to the monitoring of disease activity, so a small lesion that
+is never detected is a clinically relevant error.
+
+Deep learning methods, particularly convolutional neural networks (CNNs),
+have substantially advanced medical image segmentation. Architectures
+such as U-Net and its 3D extensions have become standard for volumetric
+analysis~\cite{navab_u-net_2015}, while automated frameworks such as
+nnU-Net have demonstrated strong performance across a wide range of
+biomedical datasets through systematic pipeline
+adaptation~\cite{isensee_nnu-net_2021}. More recently, transformer-based
+and hybrid CNN--transformer models have further expanded the design space
+for medical segmentation~\cite{hatamizadeh_unetr_2021,
+hatamizadeh_swin_2022}. However, despite these advances, segmentation of
+small pathological structures remains challenging even for
+state-of-the-art models: in the nnU-Net-based FLAMeS, for example, most
+missed lesions were smaller than
+10~mm$^3$~\cite{dereskewicz_flames_2025}.
+
+A primary difficulty lies in the training objective. In voxel-wise
+optimization, background and large lesions dominate the learning signal,
+so small lesions have little influence on the learned representation. A
+model trained with a voxel-wise overlap objective can therefore reach a
+high Dice similarity coefficient (DSC) while leaving many small lesions
+undetected. Existing losses for class imbalance reweight voxels by class,
+difficulty, or position, and instance-level losses balance lesions of
+different sizes, but each lesion is still assessed through overlap.
+No existing objective combines size-balanced overlap with an explicit,
+overlap-independent detection term for each lesion
+(\cref{sec:related}).
+
+In this work, rather than adding architectural complexity to the strong
+nnU-Net baseline, we redesign the objective to give sparse lesions greater
+influence during training. The proposed loss, CATMIL, adds two terms to
+the standard nnU-Net loss: a \emph{Component-Adaptive Tversky (CAT)} term,
+which gives small and large lesions comparable weight, and a lesion-level
+\emph{Multiple Instance Learning (MIL)} term, which penalizes any lesion in
+which no voxel is detected. Its practical aim is to reduce false negatives
+without changing the segmentation architecture; performance is therefore
+assessed with both voxel- and lesion-level metrics, on the MSLesSeg dataset
+and on a second dataset, 3D-MR-MS, trained with the same loss weights.
+
+The main contributions of this study are threefold:
+\begin{itemize}
+\item We propose CATMIL, a loss objective that targets the omission of
+small lesions without any change to the network architecture. Because it
+acts only on the training objective, it can be applied to existing
+segmentation pipelines. We show analytically that the CAT term gives each
+lesion a total weight and gradient that are nearly independent of its
+size, and that the MIL term gives every lesion the same detection signal.
+\item We show that CATMIL reduces the omission of small lesions. The
+improvement is concentrated in the lesion sizes at which the standard
+losses fail, it is a net gain in detected lesions rather than a trade
+between lesion sizes, and it holds across test cases, across trained
+models, and on a second dataset. On MSLesSeg, CATMIL also preserves the
+voxel-level overlap and boundary accuracy of the standard losses.
+\item We identify why standard losses miss small lesions. The baselines do
+not miss them by a narrow margin: they produce no response to most of
+them, so no choice of decision threshold can recover these lesions. We
+also characterize the cost of the increased sensitivity, a larger number
+of small false-positive components, and show that a simple
+component-size filter controls it while keeping the sensitivity gain.
+\end{itemize}

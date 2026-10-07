@@ -1,0 +1,374 @@
+\section{Ablation I: Contribution of CAT and MIL Terms}
+\label{appendix:catmil-components}
+
+Unless stated otherwise, all ablation experiments use the same nnU-Net
+configuration, data splits, preprocessing, and training schedule as the
+main experiments. To isolate the effect of each component, three variants
+are compared: (i) CAT, which adds only the structure-level
+component-adaptive term to the base loss, (ii) MIL, which adds only the
+lesion-level supervision term, and (iii) CATMIL, which combines both terms.
+
+\Cref{tab:ablation_cat_mil} reports the mean performance of the five fold
+models on the MSLesSeg test set. The results reveal a clear trade-off
+between the two terms. CAT achieves the highest lesion-wise F1 (0.8386) but
+lower small lesion recall (0.8230), indicating stronger structural
+consistency but limited sensitivity to small lesions. In contrast, MIL
+improves small lesion recall (0.8712) but degrades boundary accuracy
+(HD95 = 9.2375~mm) and lesion-wise F1 (0.7492), reflecting less precise
+segmentation. The combined CATMIL achieves the most balanced performance.
+It obtains the best DSC (0.7834) and lowest HD95 (7.9817~mm), while also
+achieving the highest small lesion recall (0.8730) and the lowest
+false-positive blob fraction (0.2094), that is, the smallest share of
+false-positive volume detached from any true lesion. Combining CAT and MIL
+therefore mitigates their individual limitations, improving both detection
+of small lesions and overall segmentation quality, with a false-positive
+volume similar to that of either term alone.
+
+\begin{table}[H]
+\centering
+\caption{Ablation study on the individual and combined contribution of the
+CAT and MIL terms on the MSLesSeg test set. FP Vol: false-positive volume
+(mm$^3$); FP Blob: false-positive blob fraction.}
+\label{tab:ablation_cat_mil}
+\begin{tabular}{lcccccc}
+\toprule
+Model & DSC & HD95 $\downarrow$ & Lesion F1 & Small Lesion Recall & FP Vol $\downarrow$ & FP Blob $\downarrow$ \\
+\midrule
+CAT    & 0.7812 & 8.6844 & \textbf{0.8386} & 0.8230 & \textbf{1528.72} & 0.2277 \\
+MIL    & 0.7805 & 9.2375 & 0.7492 & 0.8712 & 1539.77 & 0.2195 \\
+CATMIL & \textbf{0.7834} & \textbf{7.9817} & 0.7571 & \textbf{0.8730} & 1536.88 & \textbf{0.2094} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Ablation II: Sensitivity to Loss Weights}
+\label{appendix:catmil-loss-weights}
+
+This section analyzes the impact of the weighting coefficients
+$\lambda_{\text{CAT}}$ and $\lambda_{\text{MIL}}$. The configurations are
+named CATMIL$xy$, where $\lambda_{\text{CAT}}=0.x$ and
+$\lambda_{\text{MIL}}=0.y$; CATMIL0102 is the configuration used in the
+main experiments. Its weights were fixed before this analysis was run, and
+the analysis was not used to select them: it is a post hoc check of how
+sensitive the results are to the choice of weights. Unlike in the other
+experiments, each configuration in this analysis was trained once on the
+complete development set, without cross-validation, and evaluated on the
+same test set. The values of CATMIL0102 therefore differ from those of
+CATMIL in \cref{tab:loss_comparison_small_lesion,tab:ablation_cat_mil},
+which are means over the five cross-validation models.
+
+\begin{table}[H]
+\centering
+\caption{Sensitivity of the CATMIL objective to $\lambda_{\text{CAT}}$ and
+$\lambda_{\text{MIL}}$ on the MSLesSeg test set.}
+\label{tab:ablation_lambda}
+\begin{tabular}{lccccc}
+\toprule
+Model & DSC & HD95 $\downarrow$ & Lesion F1 & Small Recall & FP Vol $\downarrow$ \\
+\midrule
+CATMIL0101 & 0.7675 & 9.3881 & \underline{0.7720} & 0.8514 & 2292.17 \\
+CATMIL0102 & \textbf{0.7954} & \textbf{5.9771} & 0.7452 & \underline{0.8711} & \underline{1345.83} \\
+CATMIL0201 & \underline{0.7921} & \underline{6.7964} & \textbf{0.7754} & \textbf{0.8784} & \textbf{1233.92} \\
+CATMIL0202 & 0.7663 & 9.4507 & 0.7632 & 0.8699 & 1729.42 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The configuration used in the main experiments (CATMIL0102), in which the
+MIL term has the larger weight, gives the best global segmentation
+performance, with the highest DSC (0.7954) and lowest HD95 (5.9771~mm), but
+also the lowest lesion-wise F1 (0.7452). Exchanging the two weights
+(CATMIL0201) improves lesion-level behavior, with the highest lesion F1
+(0.7754), the highest small lesion recall (0.8784), and the lowest FP
+volume (1233.92~mm$^3$), at the cost of slightly lower DSC and boundary
+accuracy. The two configurations with equal weights (CATMIL0101 and
+CATMIL0202) are clearly worse in DSC, HD95, and FP volume. Small lesion
+recall stays between 0.85 and 0.88 in all four configurations, so the
+detection gain does not depend on a precise choice of the weights in this
+range; the ratio of $\lambda_{\text{CAT}}$ to $\lambda_{\text{MIL}}$ mainly
+shifts the balance between voxel-level accuracy and lesion-wise precision.
+
+\section{Lesion-Profile Characteristics of Test Cases}
+\label{appendix:test-case-lesion-profile}
+
+Each MSLesSeg test case is summarized using the ground-truth lesion mask
+(\cref{tab:test_case_lesion_profile}). Lesions are counted by applying
+connected-component analysis with 6-connectivity to the binary lesion
+mask, the same definition of a lesion as in the proposed loss and in the
+evaluation metrics; all components are counted regardless of their size.
+Lesion volume is the number of voxels inside each lesion multiplied by the
+voxel volume; at the 1~mm isotropic spacing of MSLesSeg, one voxel
+corresponds to 1~mm$^3$. The total volume is the sum of all lesion volumes
+in one case, and the median volume represents the typical lesion size in
+that case.
+
+Lesion contrast is computed locally on the FLAIR image after z-score
+normalization within the brain. For each lesion, a surrounding background
+ring is created within 3~mm around the lesion, excluding the lesion itself.
+The contrast value is the absolute difference between the median intensity
+inside the lesion and the median intensity in this ring, divided by the
+median absolute deviation of the ring intensity. A higher value indicates
+that the lesion is more distinguishable from its local background.
+
+Boundary sharpness is computed from the image gradient around the lesion
+boundary. The normalized FLAIR image is smoothed with a Gaussian filter of
+1~mm, and the sharpness is the median gradient magnitude in a band of one
+voxel on each side of the lesion boundary. A higher value indicates a
+clearer lesion boundary.
+
+Contrast and sharpness are not estimated reliably for the smallest lesions
+and are therefore computed only for lesions of at least 10 voxels. The
+contrast and sharpness in \cref{tab:test_case_lesion_profile} are means
+over these lesions, whereas the lesion count and the volume statistics
+include all lesions.
+
+\begin{table}[H]
+\centering
+\caption{Lesion-profile characteristics of the MSLesSeg test cases. N:
+number of lesions; $\leq$50 and $\leq$100: percentage of lesions of at most
+50 and 100~mm$^3$.}
+\label{tab:test_case_lesion_profile}
+\begin{tabular}{lrrrrrrr}
+\toprule
+\textbf{Case} & \textbf{N} & \textbf{Total vol.} & \textbf{Median vol.}
+& \textbf{$\leq$50} & \textbf{$\leq$100} & \textbf{Contrast} & \textbf{Sharpness} \\
+& & \textbf{(mm$^3$)} & \textbf{(mm$^3$)} & \textbf{(\%)} & \textbf{(\%)} & & \\
+\midrule
+P13\_T1 & 39 & 9677 & 83.0 & 10.3 & 53.8 & 4.11 & 8.41 \\
+P13\_T2 & 61 & 10268 & 68.0 & 45.9 & 65.6 & 3.85 & 8.34 \\
+P26\_T1 & 43 & 6639 & 106.0 & 20.9 & 46.5 & 3.77 & 9.16 \\
+P2\_T1  & 16 & 2261 & 92.5 & 31.2 & 50.0 & 4.56 & 9.31 \\
+P2\_T2  & 20 & 3286 & 87.5 & 20.0 & 55.0 & 3.76 & 10.30 \\
+P2\_T3  & 14 & 2623 & 134.0 & 14.3 & 28.6 & 4.61 & 11.68 \\
+P2\_T4  & 18 & 2940 & 87.0 & 16.7 & 55.6 & 4.45 & 10.86 \\
+P47\_T1 & 59 & 18736 & 67.0 & 42.4 & 71.2 & 4.26 & 9.92 \\
+P49\_T1 & 30 & 34709 & 83.5 & 30.0 & 56.7 & 3.65 & 8.55 \\
+P49\_T2 & 19 & 7763 & 173.0 & 0.0 & 26.3 & 3.34 & 7.38 \\
+P52\_T1 & 28 & 3306 & 70.5 & 42.9 & 67.9 & 5.24 & 11.02 \\
+P52\_T2 & 14 & 2843 & 147.0 & 7.1 & 42.9 & 4.04 & 6.91 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Additional Lesion-Level Analyses}
+\label{appendix:lesion-level-analyses}
+
+This section reports lesion-level analyses that complement the size
+analysis in the main text. All analyses use the same lesion definition as
+the evaluation metrics: 6-connected components of the reference mask, with
+a lesion counted as detected if any predicted voxel overlaps it. Values are
+means over the five fold models.
+
+\paragraph{Operating points under component filtering.}
+PP5 uses a single filter size. \Cref{fig:operating_curve} shows how lesion
+recall and the number of false-positive components per case change when
+the filter size is varied. In the left panel, predicted components smaller
+than $s$ voxels are removed, with $s$ from 0 to 20; in the right panel, the
+probability threshold $t$ is varied from 0.1 to 0.9 without filtering. A
+curve that lies higher and further to the left detects more lesions for
+the same number of false alarms.
+
+The CATMIL curve lies above the baseline curves across the whole range of
+filter sizes. Without filtering, CATMIL produces more false-positive
+components than the baselines (20.3 per case, against 5.4--7.0), which is
+the cause of its lower Lesion F1. These components are small and are
+removed at little cost in recall. With $s = 20$, CATMIL detects 84.5\% of
+lesions at 3.3 false-positive components per case, more lesions with fewer
+false alarms than unfiltered DiceCE (83.5\% at 5.4). For any false-alarm
+budget of at least 3.3 components per case, a filtered CATMIL model
+therefore detects more lesions than any of the baselines. Raising the
+probability threshold is less effective than a size filter, because most
+of the false-positive components are confident predictions rather than
+borderline ones.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/operating_curve.pdf}
+    \caption{Lesion recall against false-positive components per case on
+    the MSLesSeg test set. Left: predicted components smaller than $s$
+    voxels are removed ($s = 0, 2, 3, 5, 8, 10, 15, 20$) at probability
+    threshold 0.5. Right: the probability threshold $t$ is varied from 0.1
+    to 0.9 without filtering. Open circles: unfiltered predictions at
+    $t = 0.5$; stars: PP5 ($s = 5$). A false-positive component is a
+    predicted connected component that does not overlap any reference
+    lesion. Recall is pooled over the test lesions; values are means over
+    the five fold models.}
+    \label{fig:operating_curve}
+\end{figure}
+
+\paragraph{Lesion-level analyses on the 3D-MR-MS dataset.}
+\Cref{fig:recall_vs_size_curve_3dmrms,fig:lesion_fate_3dmrms,fig:operating_curve_3dmrms,fig:max_prob_by_size_3dmrms}
+repeat the analyses of
+\cref{fig:recall_vs_size_curve,fig:lesion_fate,fig:operating_curve,fig:max_prob_by_size}
+on the 3D-MR-MS dataset, and are read in the same way. Because the voxels
+of this dataset are anisotropic ($0.47 \times 0.47 \times 0.8$~mm), lesion
+sizes are given in mm$^3$ rather than in voxels.
+
+The recall curve (\cref{fig:recall_vs_size_curve_3dmrms}) reproduces the
+main result. CATMIL detects 51\% of lesions of at most 10~mm$^3$, compared
+with 40--41\% for the baselines, and 93\% of lesions of 11--50~mm$^3$,
+compared with 86--88\%. Small lesions are far more frequent in this
+dataset: 182 of the 389 reference lesions are at most 10~mm$^3$, so the
+gain in this range accounts for most of the overall increase in lesion
+recall, from 0.66--0.67 to 0.74. Above 100~mm$^3$, CATMIL detects slightly
+fewer lesions than the baselines (95\% against 98--99\%), a difference of
+about one of the 34 lesions in this range.
+
+The paired comparison (\cref{fig:lesion_fate_3dmrms}) is again one-sided.
+CATMIL detects 33.2 lesions per fold model that DiceCE misses, against 2.4
+in the opposite direction, and 30.4 against 3.8 for each of the
+Tversky-based losses. About 97\% of the lesions recovered by CATMIL in each
+comparison are at most 50~mm$^3$.
+
+The operating curve (\cref{fig:operating_curve_3dmrms}) shows that the
+component-level cost of CATMIL is larger on this dataset. Without
+filtering, CATMIL produces 150 false-positive components per case, compared
+with 14--19 for the baselines, which explains its low Lesion F1 in
+\cref{tab:external_eval_3dmrms}. The size filter again removes most of
+them: PP5 reduces the count to 27 per case with a recall of 0.70, and a
+filter of 20 voxels reduces it to 9.7 per case with a recall of 0.657. At
+this setting, CATMIL has about as many false-positive components as DiceCE
+after PP5 (9.5 per case) and a higher recall (0.648 for DiceCE). The filter
+size required to control false positives is therefore dataset dependent,
+and a larger filter is needed at the finer in-plane resolution of
+3D-MR-MS.
+
+The probability levels (\cref{fig:max_prob_by_size_3dmrms}) show the same
+mechanism as on MSLesSeg. For lesions of at most 10~mm$^3$, the fraction
+with no response falls from 57--58\% for the baselines to 39\% for CATMIL.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/recall_vs_size_curve_3dmrms.pdf}
+    \caption{Lesion recall against lesion size on the 3D-MR-MS test set.
+    Layout as in \cref{fig:recall_vs_size_curve}.}
+    \label{fig:recall_vs_size_curve_3dmrms}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/lesion_fate_3dmrms.pdf}
+    \caption{Lesions detected by only one of two losses on the 3D-MR-MS
+    test set, by lesion size. Layout as in \cref{fig:lesion_fate}.}
+    \label{fig:lesion_fate_3dmrms}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/operating_curve_3dmrms.pdf}
+    \caption{Lesion recall against false-positive components per case on
+    the 3D-MR-MS test set. Layout as in \cref{fig:operating_curve}.}
+    \label{fig:operating_curve_3dmrms}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/max_prob_by_size_3dmrms.pdf}
+    \caption{Maximum foreground probability inside each reference lesion on
+    the 3D-MR-MS test set, by lesion size. Layout as in
+    \cref{fig:max_prob_by_size}.}
+    \label{fig:max_prob_by_size_3dmrms}
+\end{figure}
+
+\section{Gradient and Boundedness Properties of the CATMIL Objective}
+\label{appendix:catmil-properties}
+
+This section derives the properties of the CAT and MIL terms stated in
+\cref{sec:method}, using the notation of that section. The components $C_k$
+and the weights $w_i$ are computed from the ground-truth mask and are
+constants with respect to the predictions $p_i$.
+
+\paragraph{Gradient of the CAT term.}
+Let
+\begin{equation}
+A = \mathrm{TP}_{w}+\delta,
+\qquad
+B = A + \alpha\, \mathrm{FP}_{w} + \beta\, \mathrm{FN}_{w},
+\end{equation}
+so that $\mathcal{L}_{\mathrm{CAT}} = 1 - A/B$. For a foreground voxel
+$j \in C_k$, $\partial \mathrm{TP}_{w}/\partial p_j = w_j$,
+$\partial \mathrm{FP}_{w}/\partial p_j = 0$, and
+$\partial \mathrm{FN}_{w}/\partial p_j = -w_j$, hence
+$\partial A/\partial p_j = w_j$ and
+$\partial B/\partial p_j = (1-\beta)\, w_j$. The quotient rule gives
+\begin{equation}
+\frac{\partial \mathcal{L}_{\mathrm{CAT}}}{\partial p_j}
+=
+-\frac{w_j B - (1-\beta)\, w_j A}{B^2}
+=
+-c\, w_j ,
+\qquad
+c
+=
+\frac{\beta A + \alpha\, \mathrm{FP}_{w} + \beta\, \mathrm{FN}_{w}}{B^2}
+> 0 .
+\end{equation}
+The factor $c$ is the same for all foreground voxels, so the gradient at a
+lesion voxel is scaled only by its weight
+$w_j = (|C_k|+\varepsilon_{c})^{-\gamma}$. Summing over the component, the
+total gradient magnitude received by lesion $C_k$ is
+\begin{equation}
+\sum_{j \in C_k}
+\left| \frac{\partial \mathcal{L}_{\mathrm{CAT}}}{\partial p_j} \right|
+=
+c\, |C_k|\, (|C_k|+\varepsilon_{c})^{-\gamma},
+\end{equation}
+which is proportional to $|C_k|$ for $\gamma=0$ and equal to
+$c\,\rho_k < c$ for $\gamma=1$, with $\rho_k$ the lesion weight of
+\cref{eq:sl_cat_lesion_weight}.
+
+For a background voxel $j$ with $g_j=0$, only $\mathrm{FP}_{w}$ depends on
+$p_j$, so $\partial A/\partial p_j = 0$ and
+$\partial B/\partial p_j = \alpha\, w_{\mathrm{bg}}$, and
+\begin{equation}
+\frac{\partial \mathcal{L}_{\mathrm{CAT}}}{\partial p_j}
+=
+\frac{\alpha\, w_{\mathrm{bg}}\, A}{B^2}
+\geq 0 .
+\end{equation}
+Increasing the predicted probability at a background voxel therefore
+increases the loss.
+
+\paragraph{Gradient of the MIL term.}
+With the clipping of \cref{eq:sl_mil_loss}, the contribution of lesion
+$C_k$ is $-\log\bigl(\max(s_k,\varepsilon)\bigr)$ and remains finite. Let
+$m_k = \arg\max_{i \in C_k} p_i$ be the maximal voxel of lesion $C_k$.
+Away from ties,
+\begin{equation}
+\frac{\partial \mathcal{L}_{\mathrm{MIL}}}{\partial p_j}
+=
+\begin{cases}
+-\dfrac{1}{K s_k},
+& \text{if } j=m_k \text{ for some } k \text{ and } s_k>\varepsilon, \\[2mm]
+0, & \text{otherwise.}
+\end{cases}
+\end{equation}
+The gradient is concentrated on one voxel per lesion, its magnitude does
+not depend on $|C_k|$, and it grows as the strongest response $s_k$
+decreases. When several voxels share the maximum, the hard maximum is not
+differentiable but remains subdifferentiable, and automatic differentiation
+assigns the gradient to a maximal voxel, as in max-pooling.
+
+\paragraph{Boundedness and continuity.}
+Since $\mathrm{TP}_{w}$, $\mathrm{FP}_{w}$, $\mathrm{FN}_{w}$, $\alpha$, and
+$\beta$ are non-negative and $\delta>0$, $0 < A \leq B$, and therefore
+$0 \leq \mathcal{L}_{\mathrm{CAT}} < 1$. Since
+$\varepsilon \leq \max(s_k,\varepsilon) \leq 1$,
+$0 \leq \mathcal{L}_{\mathrm{MIL}} \leq -\log \varepsilon$. For
+non-negative coefficients the auxiliary part of the objective thus
+satisfies
+\begin{equation}
+0
+\leq
+\lambda_{\mathrm{CAT}}\, \mathcal{L}_{\mathrm{CAT}}
++
+\lambda_{\mathrm{MIL}}\, \mathcal{L}_{\mathrm{MIL}}
+\leq
+\lambda_{\mathrm{CAT}} - \lambda_{\mathrm{MIL}} \log \varepsilon .
+\end{equation}
+Both terms are continuous in the predictions. The CAT term is a ratio of
+linear functions with a strictly positive denominator and is differentiable
+everywhere. The MIL term is differentiable except at ties of the maximum
+and at the clipping point $s_k=\varepsilon$, which is the same piecewise
+behavior as that of max-pooling and does not prevent gradient-based
+training.

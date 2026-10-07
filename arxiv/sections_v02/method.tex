@@ -1,0 +1,240 @@
+\subsection{Small-Lesion Segmentation as a Sparse-Signal Learning Problem}
+\label{sec:problem}
+
+Let $\Omega \subset \mathbb{Z}^{3}$ denote the voxel domain of a 3D MRI
+volume. For each voxel $i \in \Omega$, let $g_i \in \{0,1\}$ be the
+ground-truth label and $p_i \in [0,1]$ the foreground probability predicted
+by the segmentation network $f_{\theta}$. The set of lesion voxels is
+$G = \{ i \in \Omega \mid g_i = 1 \}$, and it decomposes into $K$ disjoint
+connected components, each corresponding to one lesion:
+\begin{equation}
+G = \bigcup_{k=1}^{K} C_k,
+\qquad
+C_k \cap C_j = \varnothing \quad \text{for } k \neq j ,
+\end{equation}
+where $|C_k|$ is the number of voxels in lesion $C_k$. In multiple
+sclerosis the lesion signal is sparse in two ways. Lesions occupy a very
+small part of the volume, $|G| \ll |\Omega|$, and their sizes are highly
+unequal: lesions with an area below 10~mm$^2$ account for nearly 20\% of
+all lesions but for about 1\% of the total lesion load on
+average~\cite{wang_survey_1997}.
+
+A voxel-wise loss such as cross-entropy is a sum of per-voxel terms
+$\ell(p_i, g_i)$, which can be grouped by lesion:
+\begin{equation}
+\mathcal{L}_{\mathrm{vox}}
+=
+\sum_{i \in \Omega} \ell(p_i, g_i)
+=
+\sum_{k=1}^{K} \sum_{i \in C_k} \ell(p_i, 1)
++
+\sum_{i \notin G} \ell(p_i, 0) .
+\label{eq:sl_voxel_loss}
+\end{equation}
+Lesion $C_k$ enters the loss, and therefore the gradient, through $|C_k|$
+terms, so its influence on training is proportional to its size.
+Background and large lesions dominate, and a lesion of a few voxels barely
+changes the objective~\cite{kofler_blob_2023}. Overlap-based losses behave
+in the same way and are additionally unstable on small
+objects~\cite{azad_loss_2023}. For example, if a prediction is perfect
+except that one lesion $C_m$ is missed completely, the DSC is
+\begin{equation}
+\mathrm{DSC}
+=
+\frac{2\,(|G| - |C_m|)}{2|G| - |C_m|}
+=
+1 - \frac{|C_m|}{2|G| - |C_m|} .
+\label{eq:sl_missed_lesion}
+\end{equation}
+A lesion that carries 1\% of the lesion volume lowers the DSC only to
+about 0.995, although one of the $K$ lesions has not been detected at all.
+Voxel-level overlap therefore does not control lesion-level detection.
+
+The question addressed in this work is: \textit{how can the training
+objective be redesigned so that small lesions contribute to optimization as
+much as large ones, and so that every lesion is detected?} These are two
+separate requirements. The first concerns \emph{balance}: the weight of
+lesion $C_k$ in the loss should not scale with $|C_k|$. The second concerns
+\emph{detection}: the complete omission of a lesion should be penalized
+directly, at the level of the lesion rather than of its voxels. Both are
+imposed on the loss only; the network $f_{\theta}$ is left unchanged, so
+that differences in performance can be attributed to the objective.
+
+\subsection{CATMIL Objective}
+
+The proposed objective, CATMIL, adds two terms to the standard nnU-Net
+loss, one for each requirement: a Component-Adaptive Tversky (CAT) term to
+balance lesions and a lesion-level MIL term for detection. The connected
+components $C_1,\ldots,C_K$ of the ground-truth foreground are computed
+from the ground-truth mask of each training patch using 6-connectivity,
+consistent with the definition of a lesion used for evaluation. They are
+therefore fixed with respect to the prediction.
+
+\subsubsection{Structure-Level Component-Adaptive Tversky Term}
+
+According to \cref{eq:sl_voxel_loss}, a voxel-wise loss gives lesion $C_k$
+an influence proportional to its size $|C_k|$. The CAT term removes this
+dependence by weighting each voxel according to the component it belongs
+to:
+\begin{equation}
+w_i =
+\begin{cases}
+(|C_k| + \varepsilon_{c})^{-\gamma}, & \text{if } i \in C_k, \\
+w_{\mathrm{bg}}, & \text{if } g_i = 0 .
+\end{cases}
+\label{eq:sl_cat_weights}
+\end{equation}
+The exponent $\gamma \geq 0$ controls the degree of size compensation.
+When $\gamma=0$, the weighting remains proportional to the number of
+voxels. With $\gamma=1$, as used in this work, the total weight of lesion
+$C_k$ is
+\begin{equation}
+\rho_k
+=
+\sum_{i \in C_k} w_i
+=
+\frac{|C_k|}{|C_k| + \varepsilon_{c}} ,
+\label{eq:sl_cat_lesion_weight}
+\end{equation}
+which is bounded by one and no longer increases linearly with lesion
+volume. The offset $\varepsilon_{c}=5$ voxels limits the weight assigned to
+each voxel, preventing lesions consisting of only a few voxels from
+receiving excessively large per-voxel weights. Thus, $\rho_k$ is $0.67$ for
+a 10-voxel lesion and $0.95$ for a 100-voxel lesion. Since
+$\rho_k \in [1/6, 1)$ for any lesion of at least one voxel, lesion volumes
+may differ by orders of magnitude while their total weights differ by less
+than a factor of six. Because the foreground weights are much less than
+one, the background weight is set to $w_{\mathrm{bg}}=0.01$ so that the
+false-positive term remains on a comparable scale.
+
+With these weights, the true-positive, false-positive, and false-negative
+sums are
+\begin{equation}
+\mathrm{TP}_{w} = \sum_{i \in \Omega} w_i\, p_i\, g_i,
+\qquad
+\mathrm{FP}_{w} = \sum_{i \in \Omega} w_i\, p_i\, (1-g_i),
+\qquad
+\mathrm{FN}_{w} = \sum_{i \in \Omega} w_i\, (1-p_i)\, g_i ,
+\end{equation}
+and the CAT term is one minus the corresponding Tversky
+index~\cite{salehi_tversky_2017}:
+\begin{equation}
+\mathcal{L}_{\mathrm{CAT}}
+=
+1 -
+\frac{\mathrm{TP}_{w}+\delta}
+{\mathrm{TP}_{w} + \alpha\, \mathrm{FP}_{w} + \beta\, \mathrm{FN}_{w} + \delta},
+\label{eq:sl_cat_loss}
+\end{equation}
+where $\alpha=0.3$ and $\beta=0.7$ weight false positives and false
+negatives, respectively, as in the Tversky baseline. The parameter
+$\delta=10^{-5}$ is the usual smoothing constant. The term is set to zero
+when the training batch contains no lesions.
+
+Under these weights, the sums take a simple form. Let
+$r_k = \frac{1}{|C_k|}\sum_{i \in C_k} p_i \in [0,1]$ be the mean predicted
+probability inside lesion $C_k$, that is, its soft recall. Then
+\begin{equation}
+\mathrm{TP}_{w} = \sum_{k=1}^{K} \rho_k\, r_k,
+\qquad
+\mathrm{FN}_{w} = \sum_{k=1}^{K} \rho_k\, (1-r_k) .
+\label{eq:sl_cat_lesion_form}
+\end{equation}
+Lesions therefore contribute to the loss through their recalls $r_k$, with
+coefficients $\rho_k$ that are nearly independent of lesion size. A
+completely missed lesion ($r_m=0$) transfers a total weight of
+$\rho_m < 1$ from $\mathrm{TP}_{w}$ to $\mathrm{FN}_{w}$, whereas in
+\cref{eq:sl_missed_lesion} its effect on the DSC is proportional to
+$|C_m|$. The gradient is balanced in the same way: for a voxel
+$j \in C_k$,
+$\partial \mathcal{L}_{\mathrm{CAT}} / \partial p_j = -c\, w_j$ with a factor
+$c>0$ common to all foreground voxels (\cref{appendix:catmil-properties}),
+so the total gradient magnitude received by lesion $C_k$ is $c\,\rho_k$
+instead of increasing with $|C_k|$. For $\gamma=0$ and $w_{\mathrm{bg}}=1$,
+the term reduces to the standard Tversky loss; if additionally
+$\alpha=\beta=0.5$, it is the soft Dice loss. The CAT term can therefore be
+viewed as a Tversky loss in which the lesion, rather than the voxel, is the
+effective unit of counting.
+
+\subsubsection{Lesion-Level Multiple Instance Learning Term}
+
+The CAT term balances lesions but still evaluates them by overlap: it is
+linear in $r_k$ and does not distinguish between a partially segmented
+lesion and one that is not detected at all. The second requirement is
+addressed using the Multiple Instance Learning
+paradigm~\cite{ilse_attention-based_2018}. Each lesion is treated as a bag
+of voxels. A bag is considered detected if at least one of its voxels
+receives a high foreground probability. The detection score of lesion
+$C_k$ is therefore its strongest response,
+\begin{equation}
+s_k = \max_{i \in C_k} p_i ,
+\end{equation}
+and the MIL term is the average negative log-score over lesions:
+\begin{equation}
+\mathcal{L}_{\mathrm{MIL}}
+=
+-\frac{1}{K} \sum_{k=1}^{K} \log \max(s_k, \varepsilon) ,
+\label{eq:sl_mil_loss}
+\end{equation}
+where $\varepsilon=10^{-6}$ keeps each contribution finite and $K$ denotes
+the number of lesions in the training batch. If the batch contains no
+lesions, the term is set to zero.
+
+This term directly penalizes the complete omission of a lesion. If lesion
+$C_k$ is missed, all $p_i$ in $C_k$ are close to zero, so $s_k \approx 0$
+and its contribution, $-\log s_k$, is large. Once a single voxel inside the
+lesion has a high predicted probability, $s_k$ approaches one and the
+contribution vanishes. The gradient acts on the maximal voxel of each
+lesion with magnitude $1/(K s_k)$ (\cref{appendix:catmil-properties}).
+It does not depend on $|C_k|$ and is largest for lesions that are currently
+missed. Consequently, a lesion consisting of only a few voxels receives the
+same detection signal as a large lesion. The term does not require the
+entire lesion to be segmented; delineation is left to the overlap terms.
+
+\subsubsection{Objective Function}
+
+The complete objective adds the two terms to the default nnU-Net loss. In
+this binary setting, the default loss is the sum of the Dice and
+cross-entropy losses,
+$\mathcal{L}_{\mathrm{base}} = \mathcal{L}_{\mathrm{Dice}} + \mathcal{L}_{\mathrm{CE}}$:
+\begin{equation}
+\mathcal{L}_{\mathrm{CATMIL}}
+=
+\mathcal{L}_{\mathrm{base}}
++
+\lambda_{\mathrm{CAT}}(t)\, \mathcal{L}_{\mathrm{CAT}}
++
+\lambda_{\mathrm{MIL}}\, \mathcal{L}_{\mathrm{MIL}} .
+\label{eq:sl_catmil_loss}
+\end{equation}
+The base loss provides voxel-level classification and global overlap, the
+CAT term provides component-balanced overlap, and the MIL term provides
+lesion-level detection. Only the loss is modified; the network $f_{\theta}$
+and, therefore, its hypothesis class remain unchanged. Both auxiliary terms
+are bounded and continuous in the predictions
+(\cref{appendix:catmil-properties}), so their influence is controlled by
+the two coefficients. The base loss retains nnU-Net's deep supervision,
+whereas the CAT and MIL terms are computed only on the full-resolution
+output.
+
+\paragraph{Training strategy.}
+The MIL term is assigned a constant weight of
+$\lambda_{\mathrm{MIL}}=0.2$. The CAT term is introduced using a linear
+warm-up:
+\begin{equation}
+\lambda_{\mathrm{CAT}}(t)
+=
+\lambda_{\mathrm{CAT}} \cdot \min\left(\frac{t}{T},\, 1\right),
+\qquad
+\lambda_{\mathrm{CAT}} = 0.1 ,
+\end{equation}
+where $t$ is the current training epoch and $T=50$ epochs is the warm-up
+duration. Because the CAT term changes how lesions contribute to the loss,
+applying it at full strength from the first epoch may destabilize
+optimization before the model has learned basic foreground-background
+separation. The warm-up allows the model to first establish stable
+voxel-level segmentation and then gradually shifts the supervision toward
+component balance. The weights $\lambda_{\mathrm{CAT}}$ and
+$\lambda_{\mathrm{MIL}}$ were fixed before the experiments and are used
+unchanged for both datasets; their effect is examined in a sensitivity
+analysis in \cref{appendix:catmil-loss-weights}.
