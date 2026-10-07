@@ -79,7 +79,11 @@ are also clinically important, and with other segmentation architectures.
 Methodologically, constraints on lesion coverage, boundary consistency, or
 structural connectivity could reduce fragmented predictions and isolated
 false positives, and could move the control of the precision trade-off
-from post-processing into the objective itself. Finally, an analysis of the
+from post-processing into the objective itself. A natural candidate is a
+penalty on predicted components that overlap no reference lesion, as in
+BiCC~\cite{bouteille_bicc_2026}: it acts on exactly the error that CATMIL
+introduces, whereas the MIL term acts on the error that CATMIL removes, so
+the two are complementary. Finally, an analysis of the
 learned features could show how the objective changes the internal
 representation of small lesions, beyond the output-level effects reported
 here.

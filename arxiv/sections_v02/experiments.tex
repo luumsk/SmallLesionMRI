@@ -69,7 +69,10 @@ available at \url{https://github.com/luumsk/SmallLesionMRI}.
 Three groups of metrics are used: voxel-level metrics for overall
 segmentation quality, lesion-level metrics for detection, in particular of
 small lesions, and error-volume metrics for the extent of false-positive
-and false-negative errors.
+and false-negative errors. Lesion-level metrics are included because the
+DSC is dominated by large lesions (\cref{eq:sl_missed_lesion}) and does not
+reflect whether individual, clinically relevant lesions are
+found~\cite{basit_rethinking_2026,jaus_every_2025}.
 
 \paragraph{Voxel-level Metrics.}
 Let $P$ and $G$ denote the sets of predicted and ground-truth lesion

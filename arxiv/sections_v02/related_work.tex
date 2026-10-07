@@ -36,7 +36,11 @@ lesion-wise F1 score for MS lesions by 5\% relative to soft Dice loss.
 CC-DiceCE~\cite{bouteille_learning_2026} builds the same kind of
 per-lesion loss on the component-wise evaluation protocol of
 CC-Metrics~\cite{jaus_every_2025} and achieves higher recall than blob loss,
-albeit with a dataset-dependent reduction in precision. Regularizing both
+albeit with a dataset-dependent reduction in precision. Its successor,
+BiCC~\cite{bouteille_bicc_2026}, derives components from both the
+annotation and the prediction, so that false-positive components also
+receive an instance-level penalty, and improves lesion-wise F1 over
+CC-DiceCE and blob loss on most of the evaluated datasets. Regularizing both
 predictions and labels has also been proposed as a means of addressing
 instance imbalance~\cite{aqib_javed_novel_2025}. These methods satisfy the
 balance requirement, and the component-adaptive term introduced in this
@@ -44,6 +48,9 @@ work follows the same inverse-weighting principle. Nevertheless, they
 remain overlap-based: each lesion is assessed according to the quality of
 its delineation, coupling detection and delineation within a single term.
 None of these methods considers only whether a lesion has been detected.
+The same component-level view has been adopted in the MS domain: a blob
+variant of the binary cross-entropy loss improved the detection of small
+cortical lesions with nnU-Net~\cite{molchanova_benchmarking_2025}.
 
 \paragraph{Lesion-level detection and multiple instance learning.}
 Few loss functions directly supervise detection. ALL-Net~\cite{zhang_all-net_2021}
@@ -61,7 +68,9 @@ to compensate for missing voxel-level labels: pixel scores are pooled to
 match image-level labels~\cite{pinheiro_image-level_2015} or bounding-box
 constraints~\cite{hsu_weakly_2019}, while recent medical applications have
 similarly focused on weakly supervised
-segmentation~\cite{liu_object_2026,huang_geometric_2026,pal_deep_2021}. To
+segmentation~\cite{liu_object_2026,huang_geometric_2026,pal_deep_2021},
+including lesion segmentation learned from image-level labels
+alone~\cite{cheng_fmamil_2025}. To
 the best of our knowledge, MIL has not been used as a per-lesion existence
 constraint when full voxel-level annotations are available.
 
@@ -72,10 +81,21 @@ voxel-level objectives. Examples include a 3D FC-DenseNet trained with an
 asymmetric similarity loss~\cite{hashemi_asymmetric_2019}, LST-AI, an
 ensemble of three 3D U-Nets trained with Tversky and cross-entropy
 loss~\cite{wiltgen_lst-ai_2024}, and the nnU-Net-based
-FLAMeS~\cite{dereskewicz_flames_2025}. Although these methods generalize
-well across centers, small lesions remain a major source of error: most
-lesions missed by FLAMeS were smaller than
-10~mm$^3$~\cite{dereskewicz_flames_2025}.
+FLAMeS~\cite{dereskewicz_flames_2025}. SegHeD+ adds longitudinal,
+anatomical, and volumetric constraints and lesion-aware augmentation to
+train on heterogeneous datasets~\cite{basaran_seghed_2024}, and the ICPR
+2024 competition on the MSLesSeg dataset benchmarked fully automated
+methods across hospitals and timepoints~\cite{rondinella_icpr_2024}.
+Although these methods generalize well across centers, small lesions remain
+a major source of error: most lesions missed by FLAMeS were smaller than
+10~mm$^3$~\cite{dereskewicz_flames_2025}. Recent work has accordingly moved
+toward the individual lesion as the unit of analysis. ConfLUNet segments
+MS lesion instances, including confluent lesions, and reports gains in
+lesion-level F1~\cite{wynen_conflunet_2025}, and lesion-wise detection
+metrics have been advocated over the DSC because they reflect what matters
+clinically, including small lesions~\cite{basit_rethinking_2026}. These
+works address lesion-level evaluation and inference, whereas the training
+objective of most MS segmentation models remains voxel-level.
 
 \paragraph{Remaining gap.}
 This review highlights three limitations. First, voxel-, class-, and
