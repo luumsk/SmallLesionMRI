@@ -601,23 +601,27 @@ lesion-wise precision. For each baseline, the CATMIL setting $(t, s)$ with
 the highest small-lesion recall whose precision on MSLesSeg is at least
 that of the baseline at its default output $(0.5, 1)$ was selected on
 MSLesSeg and applied unchanged to 3D-MR-MS. Values are differences CATMIL
-minus baseline with 95\% patient-level bootstrap CIs; differences whose CI
-excludes zero are shown in \textbf{bold}. The MSLesSeg values are
-optimistic because the setting is selected on the same data.}
+minus baseline with 95\% patient-level bootstrap CIs in brackets;
+differences whose CI excludes zero are shown in \textbf{bold}. The MSLesSeg
+values are optimistic because the setting is selected on the same data.}
 \label{tab:matched_precision}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lcccccc}
+\small
+\begin{tabular}{l r@{\hspace{0.4em}}l r@{\hspace{0.4em}}l r@{\hspace{0.4em}}l}
 \toprule
-& & \multicolumn{2}{c}{\textbf{MSLesSeg} (selection)} & \multicolumn{3}{c}{\textbf{3D-MR-MS} (transfer)} \\
-\cmidrule(lr){3-4}\cmidrule(lr){5-7}
-\textbf{Baseline} & \textbf{CATMIL $(t, s)$} & $\Delta$ Small Recall & $\Delta$ Lesion F1 & $\Delta$ Small Recall & $\Delta$ Precision & $\Delta$ Lesion F1 \\
+& \multicolumn{2}{c}{\textbf{vs.\ DiceCE}} & \multicolumn{2}{c}{\textbf{vs.\ Tversky}} & \multicolumn{2}{c}{\textbf{vs.\ FocalTversky}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+CATMIL $(t, s)$ & \multicolumn{2}{c}{(0.1, 15)} & \multicolumn{2}{c}{(0.8, 4)} & \multicolumn{2}{c}{(0.2, 10)} \\
 \midrule
-DiceCE & (0.1, 15) & \textbf{+0.048 [+0.013, +0.111]} & \textbf{+0.021 [+0.005, +0.041]} & +0.040 [$-$0.002, +0.087] & $-$0.050 [$-$0.099, +0.001] & $-$0.008 [$-$0.036, +0.023] \\
-Tversky & (0.8, 4) & +0.016 [$-$0.013, +0.060] & +0.007 [$-$0.017, +0.028] & $-$0.010 [$-$0.049, +0.024] & +0.030 [$-$0.040, +0.094] & +0.008 [$-$0.020, +0.037] \\
-FocalTversky & (0.2, 10) & +0.016 [$-$0.012, +0.057] & +0.007 [$-$0.008, +0.023] & +0.006 [$-$0.036, +0.043] & +0.006 [$-$0.050, +0.067] & +0.007 [$-$0.022, +0.040] \\
+\multicolumn{7}{l}{\textit{MSLesSeg (selection)}} \\
+\quad $\Delta$ Small Recall & \textbf{+0.048} & [+0.013, +0.111] & +0.016 & [$-$0.013, +0.060] & +0.016 & [$-$0.012, +0.057] \\
+\quad $\Delta$ Lesion F1    & \textbf{+0.021} & [+0.005, +0.041] & +0.007 & [$-$0.017, +0.028] & +0.007 & [$-$0.008, +0.023] \\
+\midrule
+\multicolumn{7}{l}{\textit{3D-MR-MS (transfer)}} \\
+\quad $\Delta$ Small Recall & +0.040 & [$-$0.002, +0.087] & $-$0.010 & [$-$0.049, +0.024] & +0.006 & [$-$0.036, +0.043] \\
+\quad $\Delta$ Precision    & $-$0.050 & [$-$0.099, +0.001] & +0.030 & [$-$0.040, +0.094] & +0.006 & [$-$0.050, +0.067] \\
+\quad $\Delta$ Lesion F1    & $-$0.008 & [$-$0.036, +0.023] & +0.008 & [$-$0.020, +0.037] & +0.007 & [$-$0.022, +0.040] \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabular}
 \end{table}
 
 \textbf{At the precision of DiceCE, CATMIL detects more small lesions and
