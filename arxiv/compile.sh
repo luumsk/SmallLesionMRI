@@ -56,14 +56,17 @@ done
 cp "$BUILD/$MAIN.pdf" "$OUT/"
 
 # ---------- arXiv source bundle ----------
-cp "$ROOT/$MAIN.tex" "$SRC/"
-cp "$BUILD/$MAIN.bbl" "$SRC/"   # arXiv does not run bibtex; it needs the .bbl
+# Bundled files drop the _<version> suffix (main.tex, sections/, references.bib, main.bbl)
+SUFFIX="_${VERSION}"
+sed -E "s/${SUFFIX}([/},])/\1/g" "$ROOT/$MAIN.tex" > "$SRC/main.tex"
+cp "$BUILD/$MAIN.bbl" "$SRC/main.bbl"   # arXiv does not run bibtex; it needs the .bbl
 # Section directories and bib file referenced by the main file
 for dir in $(grep -oE '\\input\{[^}/]+/' "$ROOT/$MAIN.tex" | sed -E 's/\\input\{//; s#/$##' | sort -u); do
-    cp -R "$ROOT/$dir" "$SRC/"
+    cp -R "$ROOT/$dir" "$SRC/${dir%"$SUFFIX"}"
 done
 for bib in $(grep -oE '\\bibliography\{[^}]+\}' "$ROOT/$MAIN.tex" | sed -E 's/\\bibliography\{//; s/\}$//' | tr ',' ' '); do
-    cp "$ROOT/${bib%.bib}.bib" "$SRC/"
+    bib="${bib%.bib}"
+    cp "$ROOT/$bib.bib" "$SRC/${bib%"$SUFFIX"}.bib"
 done
 cp -R "$ROOT/figures" "$SRC/"
 find "$SRC" \( -name .DS_Store -o -name '._*' \) -delete
