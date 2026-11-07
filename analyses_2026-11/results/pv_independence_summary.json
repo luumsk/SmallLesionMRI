@@ -1,0 +1,363 @@
+{
+ "reproduction": [
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "CATMIL",
+   "all": 0.474,
+   "small": 0.8,
+   "n_lesions_per_fold": 54.0,
+   "n_small_per_fold": 30.0
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "DiceCE",
+   "all": 0.481,
+   "small": 0.827,
+   "n_lesions_per_fold": 54.0,
+   "n_small_per_fold": 30.0
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "FocalTversky",
+   "all": 0.496,
+   "small": 0.833,
+   "n_lesions_per_fold": 54.0,
+   "n_small_per_fold": 30.0
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "Tversky",
+   "all": 0.5,
+   "small": 0.833,
+   "n_lesions_per_fold": 54.0,
+   "n_small_per_fold": 30.0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "CATMIL",
+   "all": 0.058,
+   "small": 0.102,
+   "n_lesions_per_fold": 104.0,
+   "n_small_per_fold": 47.0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "DiceCE",
+   "all": 0.112,
+   "small": 0.209,
+   "n_lesions_per_fold": 104.0,
+   "n_small_per_fold": 47.0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "FocalTversky",
+   "all": 0.071,
+   "small": 0.119,
+   "n_lesions_per_fold": 104.0,
+   "n_small_per_fold": 47.0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "Tversky",
+   "all": 0.071,
+   "small": 0.119,
+   "n_lesions_per_fold": 104.0,
+   "n_small_per_fold": 47.0
+  }
+ ],
+ "lost_indicators": [
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "CATMIL",
+   "expected": 0.794,
+   "observed": 1.0
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "DiceCE",
+   "expected": 0.821,
+   "observed": 1.0
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "FocalTversky",
+   "expected": 0.831,
+   "observed": 1.0
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "Tversky",
+   "expected": 0.83,
+   "observed": 1.0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "CATMIL",
+   "expected": 0.001,
+   "observed": 0.0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "DiceCE",
+   "expected": 0.01,
+   "observed": 0.0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "FocalTversky",
+   "expected": 0.002,
+   "observed": 0.0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "Tversky",
+   "expected": 0.001,
+   "observed": 0.0
+  }
+ ],
+ "dispersion": [
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "CATMIL",
+   "dispersion_obs": 1.453,
+   "dispersion_perm": 0.717,
+   "p_perm_median": 0.111,
+   "folds_p_lt_05": 1
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "DiceCE",
+   "dispersion_obs": 2.408,
+   "dispersion_perm": 0.731,
+   "p_perm_median": 0.018,
+   "folds_p_lt_05": 4
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "FocalTversky",
+   "dispersion_obs": 2.267,
+   "dispersion_perm": 0.721,
+   "p_perm_median": 0.02,
+   "folds_p_lt_05": 5
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "Tversky",
+   "dispersion_obs": 2.744,
+   "dispersion_perm": 0.726,
+   "p_perm_median": 0.006,
+   "folds_p_lt_05": 5
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "CATMIL",
+   "dispersion_obs": 1.512,
+   "dispersion_perm": 0.838,
+   "p_perm_median": 0.075,
+   "folds_p_lt_05": 2
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "DiceCE",
+   "dispersion_obs": 1.429,
+   "dispersion_perm": 0.832,
+   "p_perm_median": 0.078,
+   "folds_p_lt_05": 2
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "FocalTversky",
+   "dispersion_obs": 1.384,
+   "dispersion_perm": 0.833,
+   "p_perm_median": 0.072,
+   "folds_p_lt_05": 1
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "Tversky",
+   "dispersion_obs": 1.444,
+   "dispersion_perm": 0.842,
+   "p_perm_median": 0.12,
+   "folds_p_lt_05": 2
+  }
+ ],
+ "co_miss": [
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "CATMIL",
+   "pairs_both_missed": 82.8,
+   "pairs_expected_indep": 90.89,
+   "co_miss_ratio": 0.91
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "DiceCE",
+   "pairs_both_missed": 93.2,
+   "pairs_expected_indep": 95.41,
+   "co_miss_ratio": 0.98
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "FocalTversky",
+   "pairs_both_missed": 97.2,
+   "pairs_expected_indep": 99.49,
+   "co_miss_ratio": 0.98
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "loss": "Tversky",
+   "pairs_both_missed": 101.4,
+   "pairs_expected_indep": 101.33,
+   "co_miss_ratio": 1.0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "CATMIL",
+   "pairs_both_missed": 1.2,
+   "pairs_expected_indep": 2.58,
+   "co_miss_ratio": 0.44
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "DiceCE",
+   "pairs_both_missed": 7.4,
+   "pairs_expected_indep": 10.41,
+   "co_miss_ratio": 0.67
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "FocalTversky",
+   "pairs_both_missed": 1.8,
+   "pairs_expected_indep": 3.93,
+   "co_miss_ratio": 0.47
+  },
+  {
+   "dataset": "MSLesSeg",
+   "loss": "Tversky",
+   "pairs_both_missed": 1.8,
+   "pairs_expected_indep": 3.72,
+   "co_miss_ratio": 0.48
+  }
+ ],
+ "k_per_scan": [
+  {
+   "dataset": "3D-MR-MS",
+   "case": "patient03",
+   "k": 6,
+   "k_small": 2
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "case": "patient13",
+   "k": 16,
+   "k_small": 12
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "case": "patient18",
+   "k": 3,
+   "k_small": 0
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "case": "patient21",
+   "k": 15,
+   "k_small": 11
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "case": "patient26",
+   "k": 13,
+   "k_small": 4
+  },
+  {
+   "dataset": "3D-MR-MS",
+   "case": "patient29",
+   "k": 1,
+   "k_small": 1
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P13_T1",
+   "k": 15,
+   "k_small": 8
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P13_T2",
+   "k": 26,
+   "k_small": 18
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P26_T1",
+   "k": 4,
+   "k_small": 0
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P2_T1",
+   "k": 6,
+   "k_small": 3
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P2_T2",
+   "k": 5,
+   "k_small": 2
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P2_T3",
+   "k": 4,
+   "k_small": 3
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P2_T4",
+   "k": 3,
+   "k_small": 3
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P47_T1",
+   "k": 9,
+   "k_small": 2
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P49_T1",
+   "k": 6,
+   "k_small": 2
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P49_T2",
+   "k": 10,
+   "k_small": 1
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P52_T1",
+   "k": 10,
+   "k_small": 4
+  },
+  {
+   "dataset": "MSLesSeg",
+   "case": "P52_T2",
+   "k": 6,
+   "k_small": 1
+  }
+ ],
+ "settings": {
+  "d_mm": 3,
+  "size_bins_vox": [
+   0,
+   150,
+   500,
+   "inf"
+  ],
+  "n_perm": 2000,
+  "masks": "raw"
+ }
+}
