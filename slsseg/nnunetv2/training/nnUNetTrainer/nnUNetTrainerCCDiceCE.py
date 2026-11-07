@@ -45,16 +45,26 @@ _EPS = 1e-7
 _no_compile = getattr(getattr(torch, "compiler", None), "disable", lambda f: f)
 
 
+def _voronoi_cupy(fg: torch.Tensor, sampling) -> torch.Tensor:
+    # uint8 (not bool) for DLPack: older torch versions cannot export bool tensors
+    m = cp.from_dlpack(fg.to(torch.uint8).contiguous()) > 0
+    lab, _ = _cp_label(m, structure=cp.ones((3, 3, 3), dtype=bool))
+    if int(lab.max()) == 0:
+        return torch.zeros(fg.shape, dtype=torch.int64, device=fg.device)
+    idx = _cp_edt(lab == 0, sampling=sampling, return_distances=False, return_indices=True,
+                  float64_distances=False)
+    return torch.from_dlpack(lab[tuple(idx)].astype(cp.int64)).to(fg.device)
+
+
 def _voronoi(fg: torch.Tensor, sampling) -> torch.Tensor:
     """Voronoi map (0 = no component in patch, else 1..K) of a binary 3D mask; int64 on fg.device."""
+    global _HAS_CUPY
     if _HAS_CUPY and fg.is_cuda:
-        m = cp.from_dlpack(fg.contiguous())
-        lab, _ = _cp_label(m, structure=cp.ones((3, 3, 3), dtype=bool))
-        if int(lab.max()) == 0:
-            return torch.zeros(fg.shape, dtype=torch.int64, device=fg.device)
-        idx = _cp_edt(lab == 0, sampling=sampling, return_distances=False, return_indices=True,
-                      float64_distances=False)
-        return torch.from_dlpack(lab[tuple(idx)]).to(device=fg.device, dtype=torch.int64)
+        try:
+            return _voronoi_cupy(fg, sampling)
+        except Exception as e:  # e.g. cupy/CUDA mismatch: use scipy (same result) for the rest of the run
+            print(f"CC-DiceCE: cupy Voronoi failed ({e!r}); falling back to scipy on CPU", flush=True)
+            _HAS_CUPY = False
     m = fg.cpu().numpy()
     lab, n = ndimage.label(m, structure=np.ones((3, 3, 3), dtype=bool))
     if n == 0:

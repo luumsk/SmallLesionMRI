@@ -26,7 +26,16 @@ BASE_OUTPUT="/media/storage/luu/SmallLesionMRI/MSLesSeg/final_checkpoints"
 OUT_DIR="../metrics/MSLesSeg/latest_checkpoints"
 
 # Fail early if the trainer is not visible to the installed nnunetv2
-python -c "from nnunetv2.training.nnUNetTrainer.nnUNetTrainerCCDiceCE import nnUNetTrainerCCDiceCE, _HAS_CUPY; print('Voronoi on', 'GPU (cupy)' if _HAS_CUPY else 'CPU (scipy fallback; pip install cupy-cuda12x for speed)')"
+python - <<'PY'
+import importlib, torch
+m = importlib.import_module('nnunetv2.training.nnUNetTrainer.nnUNetTrainerCCDiceCE')
+_voronoi = m._voronoi
+if m._HAS_CUPY and torch.cuda.is_available():
+    y = torch.zeros(32, 32, 32, dtype=torch.bool, device='cuda'); y[4:8, 4:8, 4:8] = 1; y[20:22, 20:22, 20:22] = 1
+    v = _voronoi(y, (1.0, 1.0, 1.0))  # self-test of the GPU path; falls back to CPU if it fails
+    assert int(v.max()) == 2 and v.min() > 0
+print('Voronoi on', 'GPU (cupy)' if m._HAS_CUPY else 'CPU (scipy; pip install cupy-cuda11x / cupy-cuda12x for speed)')
+PY
 
 for FOLD in "${FOLDS[@]}"; do
   if [[ " $STAGES " == *" train "* ]]; then
