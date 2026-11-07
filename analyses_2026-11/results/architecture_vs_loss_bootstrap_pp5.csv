@@ -1,0 +1,25 @@
+metric,comparison,a,b,diff,ci_lo,ci_hi
+small_recall,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),SegResNet (DiceCE),0.0919064975274283,0.023859806851392835,0.20980580547981498
+small_recall,architecture change: arch DiceCE - nnU-Net DiceCE,SegResNet (DiceCE),nnU-Net (DiceCE),-0.021854976497972523,-0.07535961103539157,0.007326291643229282
+small_recall,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),SwinUNETR (DiceCE),0.11449135376911057,0.04932985206325801,0.21517890927249483
+small_recall,architecture change: arch DiceCE - nnU-Net DiceCE,SwinUNETR (DiceCE),nnU-Net (DiceCE),-0.044439832739654794,-0.08937850212455944,-0.005193236714231553
+small_recall,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),UNETR (DiceCE),0.167689763708055,0.0725736300086176,0.31827568608205353
+small_recall,architecture change: arch DiceCE - nnU-Net DiceCE,UNETR (DiceCE),nnU-Net (DiceCE),-0.09763824267859922,-0.18747243090425314,-0.03479364319363232
+small_recall,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),UMambaBot (DiceCE),0.09120433387191151,0.02561721204601302,0.19980228189809746
+small_recall,architecture change: arch DiceCE - nnU-Net DiceCE,UMambaBot (DiceCE),nnU-Net (DiceCE),-0.021152812842455737,-0.07114713099340464,0.019143648615636222
+fn_count,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),SegResNet (DiceCE),-2.1000000000000005,-4.866666666666665,-0.6748897058823534
+fn_count,architecture change: arch DiceCE - nnU-Net DiceCE,SegResNet (DiceCE),nnU-Net (DiceCE),0.0,-0.1750000000000007,0.2400000000000002
+fn_count,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),SwinUNETR (DiceCE),-2.45,-5.199999999999999,-0.9614375000000007
+fn_count,architecture change: arch DiceCE - nnU-Net DiceCE,SwinUNETR (DiceCE),nnU-Net (DiceCE),0.34999999999999964,0.04496874999999991,0.6537946428571412
+fn_count,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),UNETR (DiceCE),-3.9833333333333334,-8.0,-1.7529411764705882
+fn_count,architecture change: arch DiceCE - nnU-Net DiceCE,UNETR (DiceCE),nnU-Net (DiceCE),1.8833333333333329,0.8588235294117657,3.3002272727272723
+fn_count,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),UMambaBot (DiceCE),-1.866666666666668,-4.144285714285716,-0.6133333333333342
+fn_count,architecture change: arch DiceCE - nnU-Net DiceCE,UMambaBot (DiceCE),nnU-Net (DiceCE),-0.2333333333333325,-0.8501785714285728,0.1333333333333342
+lesion_f1,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),SegResNet (DiceCE),-0.0024550946838890475,-0.019489408249814835,0.01136378575561437
+lesion_f1,architecture change: arch DiceCE - nnU-Net DiceCE,SegResNet (DiceCE),nnU-Net (DiceCE),-0.014647768975753372,-0.02639683787887182,-0.0034158158347016737
+lesion_f1,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),SwinUNETR (DiceCE),0.023408967173354056,0.0036772926558889503,0.04075760694852744
+lesion_f1,architecture change: arch DiceCE - nnU-Net DiceCE,SwinUNETR (DiceCE),nnU-Net (DiceCE),-0.040511830832996476,-0.06238124330897943,-0.01882504443622479
+lesion_f1,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),UNETR (DiceCE),0.05921150094795824,0.033834490085211,0.08557671787516485
+lesion_f1,architecture change: arch DiceCE - nnU-Net DiceCE,UNETR (DiceCE),nnU-Net (DiceCE),-0.07631436460760066,-0.10372987123592481,-0.05372197149490632
+lesion_f1,loss change: CATMIL nnU-Net - arch DiceCE,nnU-Net (CATMIL),UMambaBot (DiceCE),-0.01203155081736329,-0.028971274568107445,-0.0002788303442966012
+lesion_f1,architecture change: arch DiceCE - nnU-Net DiceCE,UMambaBot (DiceCE),nnU-Net (DiceCE),-0.00507131284227913,-0.012967475111460347,0.006938265259254714
