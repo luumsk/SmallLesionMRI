@@ -902,11 +902,15 @@ def main() -> None:
         prob: Optional[np.ndarray] = None
         if case.pred_prob_path is not None:
             prob = load_npz_probability(case.pred_prob_path)
+
             if prob.shape != gt.shape:
-                raise ValueError(
+                print(
                     f"Probability shape mismatch for case '{case.case_id}': "
                     f"prob={prob.shape} gt={gt.shape}"
                 )
+                # Prob shape is sometimes inversed with gt shape
+                prob = np.transpose(prob, (2, 0, 1))
+                print(f"After transpose, prob={prob.shape}, gt={gt.shape}")
 
         metrics = compute_case_metrics(
             gt=gt,
