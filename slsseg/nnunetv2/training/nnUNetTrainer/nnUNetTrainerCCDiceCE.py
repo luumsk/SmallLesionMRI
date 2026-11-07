@@ -41,6 +41,9 @@ except Exception:  # CPU fallback (scipy), same result
 
 _EPS = 1e-7
 
+# torch.compiler exists from torch 2.1; older versions do not compile the loss anyway
+_no_compile = getattr(getattr(torch, "compiler", None), "disable", lambda f: f)
+
 
 def _voronoi(fg: torch.Tensor, sampling) -> torch.Tensor:
     """Voronoi map (0 = no component in patch, else 1..K) of a binary 3D mask; int64 on fg.device."""
@@ -73,7 +76,7 @@ class CCDiceCELoss(nn.Module):
         # spacing of the current deep-supervision level
         return tuple(s * full / cur for s, full, cur in zip(self.spacing, self.patch_size, shape))
 
-    @torch.compiler.disable
+    @_no_compile
     def forward(self, net_output: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         assert net_output.ndim == 5 and net_output.shape[1] == 2, "binary 3D only"
         y = target[:, 0].long()                       # (B, X, Y, Z)
