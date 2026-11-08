@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 
 TABLES = os.path.join(os.path.dirname(__file__), os.pardir, "metrics", "lesion_tables")
-LOSSES = ["CATMIL", "DiceCE", "Tversky", "FocalTversky"]
+LOSSES = ["CATMIL", "DiceCE", "Tversky", "FocalTversky", "CCDiceCE"]  # CCDiceCE: MSLesSeg only
 METRICS = ["small_recall", "fn_count", "lesion_f1"]
 SMALL_VOX = 150
 EPS = 1e-8
@@ -59,6 +59,7 @@ def main(pp5=False, n_resamples=2000):
     rng = np.random.default_rng(0)
     for ds in ["MSLesSeg", "3D-MR-MS"]:
         d = df[df.dataset == ds].copy()
+        losses = [m for m in LOSSES if m in set(d.model)]
         # MSLesSeg cases are timepoints (P13_T1, P13_T2, ...) of one patient
         d["patient"] = d.case.str.split("_").str[0] if ds == "MSLesSeg" else d.case
         # metric per (loss, patient-scan) averaged over folds; scans weighted equally
@@ -73,12 +74,12 @@ def main(pp5=False, n_resamples=2000):
         boot = []
         for _ in range(n_resamples):
             cases = [c for p in rng.choice(patients, len(patients)) for c in cases_of[p]]
-            boot.append({m: value(m, cases) for m in LOSSES})
+            boot.append({m: value(m, cases) for m in losses})
         print(f"{ds}{' (PP5)' if pp5 else ''}: {len(patients)} patients, {len(all_cases)} scans")
         for metric in METRICS:
-            point = {m: value(m, all_cases)[metric] for m in LOSSES}
-            print(f"  {metric}: " + ", ".join(f"{m} {point[m]:.4f}" for m in LOSSES))
-            for m in LOSSES[1:]:
+            point = {m: value(m, all_cases)[metric] for m in losses}
+            print(f"  {metric}: " + ", ".join(f"{m} {point[m]:.4f}" for m in losses))
+            for m in losses[1:]:
                 diff = sorted(b["CATMIL"][metric] - b[m][metric] for b in boot)
                 print(f"    CATMIL - {m:13s} {point['CATMIL'] - point[m]:+.4f}  "
                       f"95% CI [{diff[lo]:+.4f}, {diff[hi]:+.4f}]")

@@ -1,4 +1,4 @@
-"""Per-lesion and per-component tables for the four losses on both test sets.
+"""Per-lesion and per-component tables for the losses on both test sets.
 
 For every dataset, loss, fold model and test case this writes
   lesions.csv     one row per ground-truth lesion: size, detection, coverage,
@@ -29,7 +29,8 @@ DATASETS = {
     "MSLesSeg": ("SmallLesionMRI/MSLesSeg/final_checkpoints", "nnUNet_raw/Dataset333_MSLesSeg/labelsTs"),
     "3D-MR-MS": ("SmallLesionMRI/LjubljanaMS/final_checkpoints", "nnUNet_raw/Dataset666_LjubljanaMS/labelsTs"),
 }
-MODELS = {"CATMIL": "CATMIL", "DiceCE": "nnUNet", "Tversky": "Tversky", "FocalTversky": "FocalTversky"}
+MODELS = {"CATMIL": "CATMIL", "DiceCE": "nnUNet", "Tversky": "Tversky", "FocalTversky": "FocalTversky",
+          "CCDiceCE": "CCDiceCE"}  # CC-DiceCE was trained on MSLesSeg only; missing models are skipped
 FOLDS = range(5)
 THRESHOLDS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 STRUCT = ndimage.generate_binary_structure(3, 1)
@@ -93,6 +94,8 @@ def jobs():
     for dataset, (pred_dir, gt_dir) in DATASETS.items():
         cases = sorted(f[:-7] for f in os.listdir(f"{ROOT}/{gt_dir}") if f.endswith(".nii.gz"))
         for model in MODELS:
+            if not os.path.isdir(f"{ROOT}/{pred_dir}/{MODELS[model]}"):
+                continue
             for fold in FOLDS:
                 for case in cases:
                     yield dataset, model, fold, case
