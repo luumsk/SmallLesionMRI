@@ -2,8 +2,14 @@
 # Health check for the CC-DiceCE run (read-only: changes nothing).
 # Usage on the server:  bash check_ccdicece.sh
 source ~/SmallLesionMRI/scripts/setvars.sh >/dev/null 2>&1
-R="$nnUNet_results/Dataset333_MSLesSeg/nnUNetTrainerCCDiceCE__nnUNetPlans__3d_fullres"
-LOG_SCRIPT=~/SmallLesionMRI/scripts/ccdicece.log
+# usage: bash check_ccdicece.sh            (MSLesSeg)
+#        DATASET=LjubljanaMS bash check_ccdicece.sh
+case "${DATASET:-MSLesSeg}" in
+  LjubljanaMS) DS=Dataset666_LjubljanaMS; LOG_SCRIPT=~/SmallLesionMRI/scripts/ccdicece_ljubljana.log ;;
+  *)           DS=Dataset333_MSLesSeg ;;
+esac
+R="$nnUNet_results/$DS/nnUNetTrainerCCDiceCE__nnUNetPlans__3d_fullres"
+LOG_SCRIPT=${LOG_SCRIPT:-~/SmallLesionMRI/scripts/ccdicece.log}
 line() { printf '\n===== %s =====\n' "$1"; }
 
 line "1. Processes (expect ONE nnUNetv2_train ... nnUNetTrainerCCDiceCE)"

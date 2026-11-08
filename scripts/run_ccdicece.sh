@@ -1,17 +1,23 @@
 #!/bin/bash
-# Train nnU-Net with CC-DiceCE (Bouteille et al. 2026) on MSLesSeg (5 folds, 150 epochs),
+# Train nnU-Net with CC-DiceCE (Bouteille et al. 2026) on MSLesSeg or 3D-MR-MS (5 folds, 150 epochs),
 # predict the test set with each fold model, and run the same multiscale evaluation as the
 # other losses. Same splits, plans, epochs and checkpoint as nnUNetTrainer / nnUNetTrainerCATMIL.
 #
 # Usage (on the server, from SmallLesionMRI/scripts):
-#   nohup bash run_ccdicece.sh > ccdicece.log 2>&1 &
-#   FOLDS="0 1" bash run_ccdicece.sh      # subset of folds (e.g. two GPUs in parallel)
+#   PYTHONUNBUFFERED=1 bash run_ccdicece.sh 2>&1 | tee ccdicece.log                  # MSLesSeg (default)
+#   DATASET=LjubljanaMS PYTHONUNBUFFERED=1 bash run_ccdicece.sh 2>&1 | tee ccdicece_ljubljana.log
+#   FOLDS="0 1" bash run_ccdicece.sh              # subset of folds
 #   STAGES="predict eval" bash run_ccdicece.sh   # skip training
 set -e
 cd "$(dirname "$0")"
 source setvars.sh
 
-DATASET_ID="333"
+DATASET="${DATASET:-MSLesSeg}"
+case "$DATASET" in
+  MSLesSeg)    DATASET_ID="333"; DATASET_NAME="Dataset333_MSLesSeg";    METRICS_MODES="${METRICS_MODES:-main}" ;;
+  LjubljanaMS) DATASET_ID="666"; DATASET_NAME="Dataset666_LjubljanaMS"; METRICS_MODES="${METRICS_MODES:-main all}" ;;
+  *) echo "unknown DATASET=$DATASET (use MSLesSeg or LjubljanaMS)"; exit 1 ;;
+esac
 CONFIGURATION="3d_fullres"
 DEVICE="cuda"
 TRAINER="nnUNetTrainerCCDiceCE"
@@ -20,10 +26,15 @@ CHECKPOINT="checkpoint_final.pth"
 FOLDS=(${FOLDS:-0 1 2 3 4})
 STAGES="${STAGES:-train predict eval}"
 
-INPUT_FOLDER="/media/storage/luu/nnUNet_raw/Dataset333_MSLesSeg/imagesTs"
-GT_DIR="/media/storage/luu/nnUNet_raw/Dataset333_MSLesSeg/labelsTs"
-BASE_OUTPUT="/media/storage/luu/SmallLesionMRI/MSLesSeg/final_checkpoints"
-OUT_DIR="../metrics/MSLesSeg/latest_checkpoints"
+INPUT_FOLDER="$nnUNet_raw/${DATASET_NAME}/imagesTs"
+GT_DIR="$nnUNet_raw/${DATASET_NAME}/labelsTs"
+BASE_OUTPUT="/media/storage/luu/SmallLesionMRI/${DATASET}/final_checkpoints"
+OUT_DIR="../metrics/${DATASET}/latest_checkpoints"
+echo "dataset: $DATASET_NAME | test images: $INPUT_FOLDER | predictions: $BASE_OUTPUT/$MODEL"
+for d in "$nnUNet_preprocessed/$DATASET_NAME" "$INPUT_FOLDER" "$GT_DIR"; do
+  [ -e "$d" ] || { echo "!! missing: $d"; exit 1; }
+done
+[ -f "$nnUNet_preprocessed/$DATASET_NAME/splits_final.json" ] || { echo "!! missing splits_final.json (needed for the same folds as the other losses)"; exit 1; }
 
 # Fail early if the trainer is not visible to the installed nnunetv2
 python - <<'PY'
@@ -40,7 +51,7 @@ PY
 for FOLD in "${FOLDS[@]}"; do
   if [[ " $STAGES " == *" train "* ]]; then
     echo "=== [$(date)] train fold $FOLD"
-    RESULT_DIR="$nnUNet_results/Dataset${DATASET_ID}_MSLesSeg/${TRAINER}__nnUNetPlans__${CONFIGURATION}/fold_${FOLD}"
+    RESULT_DIR="$nnUNet_results/${DATASET_NAME}/${TRAINER}__nnUNetPlans__${CONFIGURATION}/fold_${FOLD}"
     if [ -f "$RESULT_DIR/checkpoint_final.pth" ]; then
       echo "fold $FOLD already trained, skipping"
     elif [ -f "$RESULT_DIR/checkpoint_latest.pth" ]; then
@@ -62,13 +73,16 @@ for FOLD in "${FOLDS[@]}"; do
   if [[ " $STAGES " == *" eval "* ]]; then
     echo "=== [$(date)] evaluate fold $FOLD"
     mkdir -p "$OUT_DIR"
-    python ../multiscale_eval.py \
-      --gt_dir "$GT_DIR" \
-      --pred_mask_dir "${BASE_OUTPUT}/${MODEL}/fold_${FOLD}" \
-      --pred_prob_dir "${BASE_OUTPUT}/${MODEL}/fold_${FOLD}" \
-      --out_csv "${OUT_DIR}/multiscale_eval_${MODEL}_fold${FOLD}.csv" \
-      --out_json "${OUT_DIR}/multiscale_eval_${MODEL}_fold${FOLD}.json" \
-      --small_voxels_thresh 150
+    for MODE in $METRICS_MODES; do   # output files get the suffix _main / _all
+      python ../multiscale_eval.py \
+        --gt_dir "$GT_DIR" \
+        --pred_mask_dir "${BASE_OUTPUT}/${MODEL}/fold_${FOLD}" \
+        --pred_prob_dir "${BASE_OUTPUT}/${MODEL}/fold_${FOLD}" \
+        --out_csv "${OUT_DIR}/multiscale_eval_${MODEL}_fold${FOLD}.csv" \
+        --out_json "${OUT_DIR}/multiscale_eval_${MODEL}_fold${FOLD}.json" \
+        --small_voxels_thresh 150 \
+        --metrics_mode "$MODE"
+    done
   fi
 done
 
