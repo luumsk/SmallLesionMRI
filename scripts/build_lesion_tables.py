@@ -30,7 +30,7 @@ DATASETS = {
     "3D-MR-MS": ("SmallLesionMRI/LjubljanaMS/final_checkpoints", "nnUNet_raw/Dataset666_LjubljanaMS/labelsTs"),
 }
 MODELS = {"CATMIL": "CATMIL", "DiceCE": "nnUNet", "Tversky": "Tversky", "FocalTversky": "FocalTversky",
-          "CCDiceCE": "CCDiceCE"}  # CC-DiceCE was trained on MSLesSeg only; missing models are skipped
+          "CCDiceCE": "CCDiceCE"}  # models without predictions for a dataset are skipped
 FOLDS = range(5)
 THRESHOLDS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 STRUCT = ndimage.generate_binary_structure(3, 1)

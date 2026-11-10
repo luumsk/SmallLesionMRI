@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 
 TABLES = os.path.join(os.path.dirname(__file__), os.pardir, "metrics", "lesion_tables")
-LOSSES = ["CATMIL", "DiceCE", "Tversky", "FocalTversky", "CCDiceCE"]  # CCDiceCE: MSLesSeg only
+LOSSES = ["CATMIL", "DiceCE", "Tversky", "FocalTversky", "CCDiceCE"]
 METRICS = ["small_recall", "fn_count", "lesion_f1"]
 SMALL_VOX = 150
 EPS = 1e-8
