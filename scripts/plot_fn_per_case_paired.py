@@ -1,41 +1,39 @@
 """Per-case paired plot of missed lesions (FN lesion count): CATMIL vs each baseline.
 
-One panel per baseline (DiceCE, Tversky, FocalTversky). Each point is one test
+One panel per baseline (DiceCE, Tversky, FocalTversky, CC-DiceCE). Each point is one test
 case; coordinates are the mean FN count over the five fold models, error bars
 span the fold min-max. Points below the diagonal are cases where CATMIL misses
 fewer lesions than the baseline.
 
-Usage: python plot_fn_per_case_paired.py <metrics_dir> <out_dir>
+FN counts are taken from the lesion table (lesions.csv, built by build_lesion_tables.py);
+they are identical to fn_lesion_count in the multiscale_eval CSVs for the four original losses.
+
+Usage: python plot_fn_per_case_paired.py <lesion_table_dir> <out_dir>
 """
-import csv
-import glob
 import os
 import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
-METRIC = "fn_lesion_count"
 DATASET = "MSLesSeg"
 CATMIL = "CATMIL"
-BASELINES = {"DiceCE": "nnUNet", "Tversky": "Tversky", "FocalTversky": "FocalTversky"}
+BASELINES = {"DiceCE": "DiceCE", "Tversky": "Tversky", "FocalTversky": "FocalTversky", "CC-DiceCE": "CCDiceCE"}
 POINT = "#2a5caa"
 DIAG = "#6b6b6b"
 SHADE = "#e8eef8"
 INK = "#3a3a3a"
 
 
-def load(metrics_dir, model):
-    per_case = {}
-    for f in sorted(glob.glob(f"{metrics_dir}/{DATASET}/all/multiscale_eval_{model}_fold*_all.csv")):
-        for row in csv.DictReader(open(f)):
-            per_case.setdefault(row["case_id"], []).append(float(row[METRIC]))
-    return per_case
+def load(les, model):
+    fn = (~les[les.model == model].detected).groupby([les.case, les.fold]).sum()
+    return {case: g.sort_index().tolist() for case, g in fn.groupby(level=0)}
 
 
-def paired(metrics_dir, baseline):
-    c = load(metrics_dir, CATMIL)
-    b = load(metrics_dir, baseline)
+def paired(les, baseline):
+    c = load(les, CATMIL)
+    b = load(les, baseline)
     cases = sorted(c)
     assert set(cases) == set(b) and all(len(c[k]) == len(b[k]) == 5 for k in cases)
     return cases, np.array([b[k] for k in cases]), np.array([c[k] for k in cases])
@@ -71,16 +69,19 @@ def panel(ax, cases, base, cat, name, lo, hi):
           f"{name}={bm.mean():.2f} CATMIL={cm.mean():.2f} separated={separated}")
 
 
-def main(metrics_dir, out_dir):
+def main(table_dir, out_dir):
     plt.rcParams.update({"font.family": "serif", "font.size": 10})
-    data = {name: paired(metrics_dir, model) for name, model in BASELINES.items()}
+    les = pd.read_csv(f"{table_dir}/lesions.csv")
+    les = les[les.dataset == DATASET]
+    data = {name: paired(les, model) for name, model in BASELINES.items()}
     vmax = max(max(b.max(), c.max()) for _, b, c in data.values())
     lo, hi = -0.6, vmax * 1.08 + 0.5
 
-    fig, axes = plt.subplots(1, 3, figsize=(10.5, 3.8), sharey=True)
-    for ax, (name, d) in zip(axes, data.items()):
+    fig, axes = plt.subplots(2, 2, figsize=(7.6, 7.6), sharey=True)
+    for ax, (name, d) in zip(axes.flat, data.items()):
         panel(ax, *d, name, lo, hi)
-    axes[0].set_ylabel("Missed lesions per case, CATMIL")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Missed lesions per case, CATMIL")
     fig.tight_layout()
     for ext in ["pdf", "jpeg"]:
         fig.savefig(os.path.join(out_dir, f"fn_per_case_paired.{ext}"), dpi=300)

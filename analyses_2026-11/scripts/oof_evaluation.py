@@ -51,6 +51,7 @@ MODELS = {
     "SwinUNETR (DiceCE)": ("nnUNetTrainerSwinUNETR", "SwinUNETR"),
     "UNETR (DiceCE)": ("nnUNetTrainerUNETR", "UNETR"),
     "UMambaBot (DiceCE)": ("nnUNetTrainerUMambaBot", "UMambaBot"),
+    "CC-DiceCE": ("nnUNetTrainerCCDiceCE", "CCDiceCE"),
 }
 STRUCT = ndimage.generate_binary_structure(3, 1)
 SMALL_VOX, EPS = 150, 1e-8

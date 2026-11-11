@@ -26,14 +26,18 @@ RAW = {"MSLesSeg": "nnUNet_raw/Dataset333_MSLesSeg", "3D-MR-MS": "nnUNet_raw/Dat
 PRED = {"MSLesSeg": "SmallLesionMRI/MSLesSeg/final_checkpoints",
         "3D-MR-MS": "SmallLesionMRI/LjubljanaMS/final_checkpoints"}
 SUFFIX = {"MSLesSeg": "", "3D-MR-MS": "_3dmrms"}
-MODEL_DIR = {"CATMIL": "CATMIL", "DiceCE": "nnUNet", "Tversky": "Tversky", "FocalTversky": "FocalTversky"}
+MODEL_DIR = {"CATMIL": "CATMIL", "DiceCE": "nnUNet", "Tversky": "Tversky", "FocalTversky": "FocalTversky",
+             "CC-DiceCE": "CCDiceCE"}
 MODELS = list(MODEL_DIR)
 BASELINES = MODELS[1:]
+GALLERY_MODELS = MODELS[:4]  # the qualitative gallery keeps the four original losses
+TABLE_NAME = {"CCDiceCE": "CC-DiceCE"}  # model names in lesions.csv / components.csv -> display names
 STYLE = {
     "CATMIL": dict(color="#e3a000", ls="-", marker="o", lw=2.8, zorder=5),
     "DiceCE": dict(color="#0072b2", ls="--", marker="s", lw=1.5, zorder=3),
     "Tversky": dict(color="#009e73", ls="-.", marker="^", lw=1.5, zorder=3),
     "FocalTversky": dict(color="#cc79a7", ls=":", marker="D", lw=1.8, zorder=3),
+    "CC-DiceCE": dict(color="#d55e00", ls=(0, (5, 1.5)), marker="v", lw=1.6, zorder=4),
 }
 BINS = [(0, 10, "≤10"), (10, 50, "11–50"), (50, 200, "51–200"), (200, np.inf, ">200")]
 INK = "#3a3a3a"
@@ -127,9 +131,9 @@ def fate_table(les, baseline):
 def plot_fate(les, out_dir, suffix):
     tables = {b: fate_table(les, b) for b in BASELINES}
     lim = max(max(t.catmil.max(), t.base.max()) for t in tables.values()) * 1.3
-    fig, axes = plt.subplots(1, 3, figsize=(11, 3.5), sharey=True)
+    fig, axes = plt.subplots(2, 2, figsize=(11, 6.6), sharey=True)
     y = np.arange(len(BINS))
-    for ax, (base, t) in zip(axes, tables.items()):
+    for ax, (base, t) in zip(axes.flat, tables.items()):
         ax.barh(y, t.catmil, height=0.55, color=CATMIL_ONLY, edgecolor="white", lw=1.5)
         ax.barh(y, -t.base, height=0.55, color=BASE_ONLY, edgecolor="white", lw=1.5)
         for yi in y:
@@ -149,7 +153,8 @@ def plot_fate(les, out_dir, suffix):
         ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{abs(v):g}"))
         ax.xaxis.grid(True, **GRID)
         style_axes(ax)
-    axes[0].set_ylabel("Lesion size (mm³)")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Lesion size (mm³)")
     fig.tight_layout()
     save(fig, out_dir, f"lesion_fate{suffix}")
 
@@ -164,7 +169,7 @@ def plot_max_prob(les, out_dir, suffix):
     # one value per lesion and fold model: the maximum foreground probability inside the lesion
     les = les.assign(bin=les.size_mm3.map(size_bin),
                      level=np.select([les.max_prob < 0.1, les.max_prob < 0.5], ["absent", "sub"], "above"))
-    fig, axes = plt.subplots(2, 2, figsize=(7.4, 6.6), sharey=True, sharex=True)
+    fig, axes = plt.subplots(2, 2, figsize=(8.4, 6.8), sharey=True, sharex=True)
     x = np.arange(len(MODELS))
     for b, ax in enumerate(axes.flat):
         sub = les[les.bin == b]
@@ -287,7 +292,8 @@ def load_case(dataset, case):
     flair = np.asarray(nib.load(f"{ROOT}/{RAW[dataset]}/imagesTs/{case}_0003.nii.gz").dataobj).astype(np.float32)
     lab = ndimage.label(gt, structure=ndimage.generate_binary_structure(3, 1))[0]
     probs = {}
-    for model, d in MODEL_DIR.items():
+    for model in GALLERY_MODELS:
+        d = MODEL_DIR[model]
         p = np.load(f"{ROOT}/{PRED[dataset]}/{d}/fold_{GALLERY_FOLD}/{case}.npz")["probabilities"][1]
         probs[model] = p.transpose(2, 1, 0)
     return flair, lab, probs
@@ -302,7 +308,7 @@ def crop(vol, cx, cy, z):
 def plot_gallery(les, out_dir):
     dataset = "MSLesSeg"
     rows = pick_gallery_lesions(les[les.dataset == dataset])
-    cols = ["FLAIR"] + MODELS
+    cols = ["FLAIR"] + GALLERY_MODELS
     fig, axes = plt.subplots(2 * len(rows), len(cols), figsize=(1.6 * len(cols), 1.6 * 2 * len(rows)),
                              gridspec_kw={"wspace": 0.04, "hspace": 0.06})
     cache = {}
@@ -312,7 +318,7 @@ def plot_gallery(les, out_dir):
         flair, lab, probs = cache[row.case]
         lesion = lab == row.lesion_id
         # axial slice through the lesion voxel with the highest probability summed over the four losses
-        psum = sum(probs[m] for m in MODELS)
+        psum = sum(probs[m] for m in GALLERY_MODELS)
         z = int(np.unravel_index(np.argmax(np.where(lesion, psum, -1)), lesion.shape)[2])
         f = crop(flair, row.cx, row.cy, z)
         lo, hi = np.percentile(flair[flair > 0], [1, 99.5])
@@ -359,8 +365,8 @@ def plot_gallery(les, out_dir):
 def main(tables_dir, out_dir):
     plt.rcParams.update({"font.family": "serif", "font.serif": ["Times New Roman", "DejaVu Serif"],
                          "font.size": 10, "hatch.linewidth": 0.6})
-    les_all = pd.read_csv(f"{tables_dir}/lesions.csv")
-    comp_all = pd.read_csv(f"{tables_dir}/components.csv")
+    les_all = pd.read_csv(f"{tables_dir}/lesions.csv").replace({"model": TABLE_NAME})
+    comp_all = pd.read_csv(f"{tables_dir}/components.csv").replace({"model": TABLE_NAME})
     for dataset, suffix in SUFFIX.items():
         les = les_all[les_all.dataset == dataset]
         comp = comp_all[comp_all.dataset == dataset]
