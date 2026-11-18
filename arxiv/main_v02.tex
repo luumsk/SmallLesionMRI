@@ -18,8 +18,13 @@
 %   - CC-DiceCE as an instance-level baseline in all tables, figures and
 %     paired analyses (stats: metrics/stats, metrics/error_analysis,
 %     metrics/operating_curves)
-%   - evaluation on the 47 MSLesSeg cross-validation patients (losses only;
-%     analyses_2026-11/results/oof_*.csv)
+%   - evaluation on the 47 MSLesSeg cross-validation patients
+%     (analyses_2026-11/results/oof_*.csv)
+%   - architecture vs objective (SegResNet, SwinUNETR, UNETR, UMambaBot with
+%     DiceCE); test-set CIs use the two-level bootstrap of this paper
+%     (analyses_2026-11/results/architecture_vs_loss_bootstrap_twolevel.csv)
+%   - 3D-MR-MS after PP5, from the lesion tables with the same bootstrap
+%     (analyses_2026-11/results/pp5_3dmrms_twolevel.csv)
 % Sections live in sections_v02/ so that main_v01.tex remains reproducible.
 % =====================================================================
 

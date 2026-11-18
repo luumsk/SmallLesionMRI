@@ -2,7 +2,13 @@ This study shows that modifying the training objective is an effective and
 controlled way to influence model behavior in sparse lesion segmentation.
 Instead of increasing architectural complexity, the proposed approach
 changes how supervision is distributed across lesions, which makes the
-effect of the loss design directly interpretable.
+effect of the loss design directly interpretable. The comparison with four
+other architectures supports this choice. Trained with the default
+objective, a residual network, two transformer-based networks, and a
+state-space model reached a small-lesion recall similar to or below that of
+nnU-Net, whereas changing only the objective raised it from 0.7956 to
+0.8730 (\cref{sec:arch_vs_objective}). Both findings were reproduced on the
+47 cross-validation patients.
 
 \paragraph{Why standard losses miss small lesions.}
 The probability analysis shows that the baselines do not miss small lesions
@@ -93,9 +99,13 @@ count.
 \paragraph{Limitations.}
 Several limitations should be noted. First, the evaluation is restricted to
 multiple sclerosis, and the applicability of the proposed objective to
-other brain pathologies remains to be validated; all experiments also use
-the nnU-Net framework, so the effect of CATMIL on other architectures
-remains to be tested. Among instance-level losses, only CC-DiceCE was
+other brain pathologies remains to be validated. CATMIL itself was trained
+only with nnU-Net: \cref{sec:arch_vs_objective} shows that the other
+architectures, trained with the default objective, did not detect more
+small lesions than nnU-Net, but not whether CATMIL raises small-lesion
+recall as much when combined with them. These architectures were also
+trained with their default hyperparameters under the same 150-epoch budget,
+without per-architecture tuning, and only on MSLesSeg. Among instance-level losses, only CC-DiceCE was
 trained under the same protocol, using the authors' loss within this
 pipeline and training budget rather than their own setup; inverse
 weighting, blob loss, and BiCC were not trained. Second, the 3D-MR-MS dataset was evaluated with the
