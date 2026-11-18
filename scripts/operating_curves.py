@@ -33,14 +33,16 @@ SMALL_VOXELS = 150
 THRESHOLDS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 MIN_SIZES = [1, 2, 3, 4, 5, 7, 10, 15, 20, 30, 50, 60, 85, 100, 170]
 VOXEL_MM3 = {"MSLesSeg": 1.0, "3D-MR-MS": 0.1758}  # median voxel volume in lesions.csv
-MODELS = ["CATMIL", "DiceCE", "Tversky", "FocalTversky"]
+MODELS = ["CATMIL", "DiceCE", "Tversky", "FocalTversky", "CCDiceCE"]
 DATASETS = ["MSLesSeg", "3D-MR-MS"]
 STYLE = {  # colour, marker, linestyle
     "CATMIL": ("#e3a000", "o", "-"),
     "DiceCE": ("#404040", "s", "--"),
     "Tversky": ("#808080", "^", "-."),
     "FocalTversky": ("#a8a8a8", "D", ":"),
+    "CCDiceCE": ("#d55e00", "v", (0, (5, 1.5))),
 }
+DISPLAY = {"CCDiceCE": "CC-DiceCE"}
 FP_BINS = [(1, 1), (2, 4), (5, 9), (10, 49), (50, np.inf)]
 
 
@@ -202,7 +204,7 @@ def plot(grid, out_dir):
                 g = grid[(grid.dataset == dataset) & (grid.model == model)].assign(y=lambda d: d[target])
                 ax.scatter(g.precision, g.y, s=6, color=colour, alpha=0.25, linewidths=0)
                 f = pareto(g)
-                ax.plot(f.precision, f.y, ls=ls, lw=1.6, color=colour, label=model,
+                ax.plot(f.precision, f.y, ls=ls, lw=1.6, color=colour, label=DISPLAY.get(model, model),
                         zorder=3 if model == "CATMIL" else 2)
                 d = g[(g.t == 0.5) & (g.s == 1)]
                 ax.scatter(d.precision, d.y, s=60, marker=marker, color=colour, edgecolor="black",
@@ -222,8 +224,8 @@ def plot(grid, out_dir):
                 plt.Line2D([], [], marker="o", ls="", markerfacecolor="white", markeredgecolor="#777",
                            markersize=7)]
     labels += ["default (t=0.5)", "min. size 5 vox"]
-    fig.legend(handles, labels, loc="lower center", ncol=6, frameon=False, fontsize=9)
-    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    fig.legend(handles, labels, loc="lower center", ncol=4, frameon=False, fontsize=9)
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     for ext in ["pdf", "jpeg"]:
         fig.savefig(os.path.join(out_dir, f"operating_curves.{ext}"), dpi=300)
 

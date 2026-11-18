@@ -56,7 +56,8 @@ SETTINGS = [
 ]
 # family name -> list of (method, reference); each family is Holm-corrected separately
 FAMILIES = {
-    "main": [("CATMIL", "nnUNet"), ("CATMIL", "Tversky"), ("CATMIL", "FocalTversky")],
+    "main": [("CATMIL", "nnUNet"), ("CATMIL", "Tversky"), ("CATMIL", "FocalTversky"),
+             ("CATMIL", "CCDiceCE")],
     "ablation": [("CATMIL", "CAT"), ("CATMIL", "MIL"), ("CAT", "nnUNet"), ("MIL", "nnUNet")],
 }
 LESION_BINS = {  # name -> (min voxels exclusive, max voxels inclusive)

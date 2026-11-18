@@ -29,7 +29,8 @@ from scipy.spatial import cKDTree
 
 from stats_significance import SEED, boot_weights, patient_of, weighted_mean
 
-MODELS = ["CATMIL", "DiceCE", "Tversky", "FocalTversky"]
+MODELS = ["CATMIL", "DiceCE", "Tversky", "FocalTversky", "CCDiceCE"]
+DELTA_REFS = ["DiceCE", "CCDiceCE"]  # clinical_size / strict_detection: CATMIL minus each
 DATASETS = ["MSLesSeg", "3D-MR-MS"]
 SIZE_BINS = [(0, 10, "≤10"), (10, 50, "11–50"), (50, 150, "51–150"), (150, 200, "151–200"),
              (200, np.inf, ">200")]
@@ -39,7 +40,8 @@ SMALL_VOXELS = 150
 CLINICAL_DIAMETER_MM = 3.0
 COVERAGE_THRESHOLDS = [0, 0.1, 0.25, 0.5]  # 0 = any overlap (the default criterion)
 STYLE = {"CATMIL": ("#e3a000", "o", "-"), "DiceCE": ("#404040", "s", "--"),
-         "Tversky": ("#808080", "^", "-."), "FocalTversky": ("#a8a8a8", "D", ":")}
+         "Tversky": ("#808080", "^", "-."), "FocalTversky": ("#a8a8a8", "D", ":"),
+         "CCDiceCE": ("#d55e00", "v", (0, (5, 1.5)))}
 KEY = ["dataset", "case", "lesion_id"]
 
 
@@ -137,12 +139,9 @@ def clinical_size(pl, les):
             row = dict(dataset=dataset, lesions=name, n=len(g), n_patients=g.case.map(patient_of).nunique())
             for m in MODELS:
                 row[f"recall_{m}"] = g[f"det_rate_{m}"].mean()
-            a, b, patients = fold_arrays(les, g, "CATMIL"), fold_arrays(les, g, "DiceCE"), \
-                g.case.map(patient_of).tolist()
-            w_scan, w_fold = boot_weights(patients, np.random.default_rng(SEED))
-            boot = weighted_mean(a, w_scan, w_fold) - weighted_mean(b, w_scan, w_fold)
-            row["delta_vs_DiceCE"] = a.mean() - b.mean()
-            row["ci_low"], row["ci_high"] = np.nanpercentile(boot, [2.5, 97.5])
+            a, patients = fold_arrays(les, g, "CATMIL"), g.case.map(patient_of).tolist()
+            for ref in DELTA_REFS:
+                row.update(paired_delta(a, fold_arrays(les, g, ref), patients, ref))
             rows.append(row)
     return pd.DataFrame(rows)
 
@@ -167,13 +166,21 @@ def strict_detection(pl, les):
                 row = dict(dataset=dataset, lesions=name, n=len(g), min_coverage=thr)
                 for m in MODELS:
                     row[f"recall_{m}"] = det[m].mean()
-                a, b = det["CATMIL"].astype(float), det["DiceCE"].astype(float)
-                w_scan, w_fold = boot_weights(patients, np.random.default_rng(SEED))
-                boot = weighted_mean(a, w_scan, w_fold) - weighted_mean(b, w_scan, w_fold)
-                row["delta_vs_DiceCE"] = a.mean() - b.mean()
-                row["ci_low"], row["ci_high"] = np.nanpercentile(boot, [2.5, 97.5])
+                for ref in DELTA_REFS:
+                    row.update(paired_delta(det["CATMIL"].astype(float), det[ref].astype(float),
+                                            patients, ref))
                 rows.append(row)
     return pd.DataFrame(rows)
+
+
+def paired_delta(a, b, patients, ref):
+    """CATMIL minus ref (arrays[fold, lesion]) with the patient/fold bootstrap CI.
+    The DiceCE columns keep their original names (ci_low, ci_high)."""
+    w_scan, w_fold = boot_weights(patients, np.random.default_rng(SEED))
+    boot = weighted_mean(a, w_scan, w_fold) - weighted_mean(b, w_scan, w_fold)
+    lo, hi = np.nanpercentile(boot, [2.5, 97.5])
+    tag = "" if ref == "DiceCE" else f"_{ref}"
+    return {f"delta_vs_{ref}": a.mean() - b.mean(), f"ci_low{tag}": lo, f"ci_high{tag}": hi}
 
 
 def fold_stability(pl):
