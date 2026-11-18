@@ -49,8 +49,9 @@ remain overlap-based: each lesion is assessed according to the quality of
 its delineation, coupling detection and delineation within a single term.
 None of these methods considers only whether a lesion has been detected.
 The same component-level view has been adopted in the MS domain: a blob
-variant of the binary cross-entropy loss improved the detection of small
-cortical lesions with nnU-Net~\cite{molchanova_benchmarking_2025}.
+variant of the binary cross-entropy and Dice loss modestly improved
+lesion-wise F1 and precision for cortical MS lesions with
+nnU-Net~\cite{molchanova_benchmarking_2025}.
 
 \paragraph{Lesion-level detection and multiple instance learning.}
 Few loss functions directly supervise detection. ALL-Net~\cite{zhang_all-net_2021}

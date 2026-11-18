@@ -61,7 +61,7 @@ CAT term, it balances lesions of different sizes, but it assesses each
 lesion through overlap and has no detection term. It is the authors'
 published loss, ported unchanged into the same nnU-Net pipeline and
 150-epoch budget rather than trained with the authors' own setup. Ablations of the two CATMIL terms and of their weights are
-reported in \cref{appendix:catmil-components,appendix:catmil-loss-weights}.
+reported in \cref{sec:ablation,appendix:catmil-loss-weights}.
 
 \subsection{Implementation}
 
@@ -114,9 +114,9 @@ Count is the number of reference lesions that are completely missed. The
 recall of lesions of at least 3~mm is the lesion-wise recall restricted to
 lesions above the size used in clinical MRI reading: current consensus
 recommendations state that multiple sclerosis lesions should generally be
-at least 3~mm in longest diameter, with exceptions in specific locations
-such as the corpus callosum and the floor of the fourth
-ventricle~\cite{barkhof_2024_2025,filippi_mri_2016}. The longest diameter
+at least 3~mm in longest diameter, with exceptions for lesions in the
+corpus callosum, the floor of the fourth ventricle, and the outer margin
+of the pons~\cite{barkhof_2024_2025,filippi_mri_2016}. The longest diameter
 of a reference lesion is measured as its largest in-plane extent over all
 axial, coronal, and sagittal slices.
 

@@ -73,70 +73,7 @@ V_{\mathrm{FN}}^{\mathrm{frac}}
 {|G| + \varepsilon}.
 \end{equation}
 
-\section{Ablation I: Contribution of CAT and MIL Terms}
-\label{appendix:catmil-components}
-
-Unless stated otherwise, all ablation experiments use the same nnU-Net
-configuration, data splits, preprocessing, and training schedule as the
-main experiments. To isolate the effect of each component, three variants
-are compared: (i) CAT, which adds only the structure-level
-component-adaptive term to the base loss, (ii) MIL, which adds only the
-lesion-level supervision term, and (iii) CATMIL, which combines both terms.
-
-\Cref{tab:ablation_cat_mil} reports the mean performance of the five fold
-models on the MSLesSeg test set, and the differences below are given with
-95\% patient-level CIs as in \cref{tab:paired_differences}.
-
-\textbf{The MIL term accounts for the detection gain.} MIL alone raises
-small-lesion recall from 0.7956 (DiceCE) to 0.8712 (+0.076 [+0.033,
-+0.148]) and reduces missed lesions per case by 2.42 [0.87, 5.26], in all
-six patients. These gains are as large as those of CATMIL, and CATMIL and
-MIL do not differ on any metric: small-lesion recall differs by +0.002
-[$-0.012$, +0.019], lesion-wise F1 by +0.008 [$-0.020$, +0.031], DSC by
-+0.003 [$-0.016$, +0.021], and HD95 by $-1.26$~mm [$-6.82$, +1.55]. The
-lower lesion-wise F1 of CATMIL is also already present with MIL alone
-(0.7492).
-
-\textbf{The CAT term alone changes lesion detection little.} CAT alone
-reaches a small-lesion recall of 0.8230, a difference from DiceCE of
-+0.027 [$-0.010$, +0.081] whose CI includes zero, and it keeps the
-lesion-wise F1 of DiceCE (0.8386 against 0.8433). Its effect on detection
-is thus close to that of the Tversky-based losses and of CC-DiceCE
-(0.8307), which follows the same per-lesion weighting principle, consistent
-with a term
-that rebalances voxel weights between lesions but, unlike the MIL term,
-does not require each lesion to be detected.
-
-The mean DSC and HD95 of CATMIL are the best of the three variants, and
-CATMIL has the lowest false-positive blob fraction, but these differences
-lie within the variation between patients and fold models. On this test
-set, the ablation therefore supports the MIL term as the source of the
-detection gain, and it does not show a measurable benefit of adding the
-CAT term to it. The CAT term is kept in CATMIL because of its design
-rationale, size-balanced voxel supervision within each lesion
-(\cref{appendix:catmil-properties}), and because the loss-weight analysis
-below shows that its weight shifts the balance between voxel-level accuracy
-and lesion-wise precision; whether it contributes measurably on other data
-remains to be tested.
-
-\begin{table}[H]
-\centering
-\caption{Ablation study on the individual and combined contribution of the
-CAT and MIL terms on the MSLesSeg test set. FP Vol: false-positive volume
-(mm$^3$); FP Blob: false-positive blob fraction.}
-\label{tab:ablation_cat_mil}
-\begin{tabular}{lcccccc}
-\toprule
-Model & DSC & HD95 $\downarrow$ & Lesion F1 & Small Lesion Recall & FP Vol $\downarrow$ & FP Blob $\downarrow$ \\
-\midrule
-CAT    & 0.7812 & 8.6844 & \textbf{0.8386} & 0.8230 & \textbf{1528.72} & 0.2277 \\
-MIL    & 0.7805 & 9.2375 & 0.7492 & 0.8712 & 1539.77 & 0.2195 \\
-CATMIL & \textbf{0.7834} & \textbf{7.9817} & 0.7571 & \textbf{0.8730} & 1536.88 & \textbf{0.2094} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\section{Ablation II: Sensitivity to Loss Weights}
+\section{Sensitivity to Loss Weights}
 \label{appendix:catmil-loss-weights}
 
 This section analyzes the impact of the weighting coefficients
@@ -254,6 +191,77 @@ the evaluation metrics: 6-connected components of the reference mask, with
 a lesion counted as detected if any predicted voxel overlaps it. Values are
 means over the five fold models.
 
+\paragraph{Results after removing small components.}
+\Cref{tab:loss_comparison_small_lesion_pp5} repeats the MSLesSeg comparison of
+\cref{tab:loss_comparison_small_lesion} after removing predicted components
+smaller than 5 voxels (PP5). Paired differences are given in
+\cref{tab:paired_differences}.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of CATMIL with standard losses and the instance-level
+loss CC-DiceCE on the MSLesSeg test set after post-processing with a
+minimum connected-component size of 5 voxels (PP5). Best values are shown
+in \textbf{bold}; second-best values are \underline{underlined}.}
+\label{tab:loss_comparison_small_lesion_pp5}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Metric}
+& \textbf{CATMIL (ours)}
+& \textbf{DiceCE}
+& \textbf{Tversky}
+& \textbf{FocalTversky}
+& \textbf{CC-DiceCE} \\
+\midrule
+Small Lesion Recall $\uparrow$
+& \textbf{0.8554 $\pm$ 0.01}
+& 0.7853 $\pm$ 0.03
+& \underline{0.8223 $\pm$ 0.02}
+& 0.8196 $\pm$ 0.02
+& 0.8148 $\pm$ 0.01 \\
+FN Count $\downarrow$
+& \textbf{3.1333 $\pm$ 0.21}
+& 5.2333 $\pm$ 0.52
+& \underline{4.0667 $\pm$ 0.24}
+& 4.0833 $\pm$ 0.24
+& 4.1833 $\pm$ 0.30 \\
+FN Volume Fraction $\downarrow$
+& \textbf{0.0238 $\pm$ 0.004}
+& 0.0353 $\pm$ 0.01
+& 0.0277 $\pm$ 0.01
+& \underline{0.0270 $\pm$ 0.01}
+& 0.0369 $\pm$ 0.01 \\
+\midrule
+DSC $\uparrow$
+& \textbf{0.7842 $\pm$ 0.01}
+& 0.7797 $\pm$ 0.01
+& 0.7707 $\pm$ 0.01
+& \underline{0.7803 $\pm$ 0.01}
+& 0.7781 $\pm$ 0.01 \\
+HD95 (mm) $\downarrow$
+& \textbf{8.1028 $\pm$ 1.76}
+& 9.0895 $\pm$ 1.37
+& 10.3585 $\pm$ 0.21
+& \underline{8.2297 $\pm$ 1.95}
+& 9.8234 $\pm$ 1.52 \\
+Lesion F1 $\uparrow$
+& 0.8415 $\pm$ 0.01
+& \textbf{0.8586 $\pm$ 0.01}
+& 0.8532 $\pm$ 0.01
+& \underline{0.8582 $\pm$ 0.005}
+& 0.8387 $\pm$ 0.01 \\
+FP Volume (mm$^3$) $\downarrow$
+& \underline{1515 $\pm$ 244}
+& 1815 $\pm$ 654
+& 2618 $\pm$ 558
+& 2279 $\pm$ 710
+& \textbf{1505 $\pm$ 290} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
 \paragraph{Operating points under component filtering.}
 PP5 uses a single filter size. \Cref{fig:operating_curve} shows how lesion
 recall and the number of false-positive components per case change when
@@ -361,7 +369,7 @@ The operating curve (\cref{fig:operating_curve_3dmrms}) shows that the
 component-level cost of CATMIL is larger on this dataset. Without
 filtering, CATMIL produces 150 false-positive components per case, compared
 with 14--19 for the voxel-level losses and 43 for CC-DiceCE, which explains its low Lesion F1 in
-\cref{tab:external_eval_3dmrms}. The size filter again removes most of
+\cref{tab:loss_comparison_small_lesion}. The size filter again removes most of
 them: PP5 reduces the count to 27 per case with a recall of 0.70, and a
 filter of 20 voxels reduces it to 9.7 per case with a recall of 0.657. At
 this setting, CATMIL has about as many false-positive components as DiceCE

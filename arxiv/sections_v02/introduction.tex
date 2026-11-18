@@ -1,78 +1,62 @@
-Small lesions in brain magnetic resonance imaging (MRI) are sparse,
-spatially localized, and clinically important targets embedded within a
-large volume of normal-appearing tissue. In multiple sclerosis (MS), lesions
-occupy little of the image and vary widely in size, yet missing them can
-underestimate disease activity and lesion
-burden~\cite{filippi_quantitative_1996,wang_survey_1997}. The number of
-lesions and the appearance of new lesions on follow-up scans are central to
-diagnosis and to the monitoring of disease activity, so a small lesion that
-is never detected is a clinically relevant error.
+Small lesions in brain magnetic resonance imaging (MRI) are sparse targets
+embedded in a large volume of normal-appearing tissue. In multiple
+sclerosis (MS), the number of lesions and the appearance of new lesions on
+follow-up scans are central to diagnosis~\cite{barkhof_2024_2025} and to
+the monitoring of disease activity~\cite{wattjes_2021_2021}, so a small
+lesion that is never detected is a clinically relevant error, even when it
+barely changes the segmented volume.
 
-Deep learning methods, particularly convolutional neural networks (CNNs),
-have substantially advanced medical image segmentation. Architectures
-such as U-Net and its 3D extensions have become standard for volumetric
-analysis~\cite{navab_u-net_2015}, while automated frameworks such as
-nnU-Net have demonstrated strong performance across a wide range of
-biomedical datasets through systematic pipeline
-adaptation~\cite{isensee_nnu-net_2021}. More recently, transformer-based
-and hybrid CNN--transformer models have further expanded the design space
-for medical segmentation~\cite{hatamizadeh_unetr_2021,
-hatamizadeh_swin_2022}. However, despite these advances, segmentation of
-small pathological structures remains challenging even for
-state-of-the-art models: in the nnU-Net-based FLAMeS, for example, most
-missed lesions were smaller than
-10~mm$^3$~\cite{dereskewicz_flames_2025}.
+Progress in medical image segmentation has come largely from architectures
+and pipelines: U-Net and its 3D extensions~\cite{navab_u-net_2015}, the
+self-configuring nnU-Net~\cite{isensee_nnu-net_2021}, and transformer-based
+and hybrid models~\cite{hatamizadeh_unetr_2021,hatamizadeh_swin_2022}. Yet
+small lesions are still missed by state-of-the-art models; in the
+nnU-Net-based FLAMeS, most missed lesions were smaller than
+10~mm$^3$~\cite{dereskewicz_flames_2025}. This raises a question that
+architectural progress does not answer: are small lesions missed because
+the network cannot represent them, or because the training objective gives
+it no reason to?
 
-A primary difficulty lies in the training objective. In voxel-wise
-optimization, background and large lesions dominate the learning signal,
-so small lesions have little influence on the learned representation. A
-model trained with a voxel-wise overlap objective can therefore reach a
-high Dice similarity coefficient (DSC) while leaving many small lesions
-undetected. Existing losses for class imbalance reweight voxels by class,
-difficulty, or position, and instance-level losses balance lesions of
-different sizes, but each lesion is still assessed through overlap.
-No existing objective combines size-balanced overlap with an explicit,
-overlap-independent detection term for each lesion
-(\cref{sec:related}).
+The objective is a plausible cause. In a voxel-wise loss, a lesion of a
+few voxels is a negligible part of the objective, so a model can reach a
+high Dice similarity coefficient (DSC) while ignoring it. Losses for class
+imbalance reweight voxels, and instance-level losses balance lesions of
+different sizes, but both still judge each lesion by how much of it is
+overlapped. Neither asks the more basic question of whether the lesion is
+detected at all, and no existing objective supervises this separately from
+delineation (\cref{sec:related}).
 
-In this work, rather than adding architectural complexity to the strong
-nnU-Net baseline, we redesign the objective to give sparse lesions greater
-influence during training. The proposed loss, CATMIL, adds two terms to
-the standard nnU-Net loss: a \emph{Component-Adaptive Tversky (CAT)} term,
-which gives small and large lesions comparable weight, and a lesion-level
+We test this explanation by changing only the objective. CATMIL adds two
+lesion-level terms to the standard nnU-Net loss, one for each property
+that a voxel-wise loss lacks: a \emph{Component-Adaptive Tversky (CAT)}
+term, which gives small and large lesions comparable weight, and a
 \emph{Multiple Instance Learning (MIL)} term, which penalizes any lesion in
-which no voxel is detected. Its practical aim is to reduce false negatives
-without changing the segmentation architecture; performance is therefore
-assessed with both voxel- and lesion-level metrics, on the MSLesSeg dataset
-and on a second dataset, 3D-MR-MS, trained with the same loss weights.
-
-The main contributions of this study are threefold:
+which no voxel is detected. Because the network is fixed, differences in
+behavior can be attributed to the supervision. Our contributions are:
 \begin{itemize}
-\item We propose CATMIL, a loss objective that targets the omission of
-small lesions without any change to the network architecture. Because it
-acts only on the training objective, it can be applied to existing
-segmentation pipelines. We show analytically that the CAT term gives each
-lesion a total weight and gradient that are nearly independent of its
-size, and that the MIL term gives every lesion the same detection signal.
-\item We show that CATMIL reduces the omission of small lesions. The
-improvement is concentrated in the lesion sizes at which the standard
-losses fail, it is a net gain in detected lesions rather than a trade
-between lesion sizes, and it holds across test patients, across trained
-models, on a second dataset, and for lesions above the size used in
-clinical reading. On MSLesSeg, CATMIL also preserves the voxel-level
-overlap and boundary accuracy of the standard losses. An ablation shows
-that the lesion-level detection term accounts for the gain, and CATMIL
-detects more small lesions than CC-DiceCE, an instance-level overlap loss
-trained in the same pipeline, on the test set, on the cross-validation
-patients, and at matched lesion-wise precision.
-\item We identify why standard losses miss small lesions. The baselines do
-not miss them by a narrow margin: they produce no response to most of
-them, so no choice of decision threshold can recover these lesions. Four
-other architectures trained with the same voxel-wise objective do not
-recover them either, whereas changing only the objective does. We
-also characterize the cost of the increased sensitivity, a larger number
-of small false-positive components, and show that a simple
-component-size filter controls it while keeping the sensitivity gain: at
-the lesion-wise precision of the standard nnU-Net loss, CATMIL detects more
-small lesions.
+\item \textbf{A diagnosis of how small lesions are missed.} Standard losses
+do not miss small lesions by a narrow margin: the network produces almost
+no response to most of them, so the omission cannot be corrected by the
+decision threshold. On MSLesSeg, four other architectures trained with the
+same loss detect no more small lesions, whereas changing only the
+objective recovers many of them.
+\item \textbf{A lesion-level detection objective for fully supervised
+segmentation.} To our knowledge, CATMIL is the first use of multiple
+instance learning as a per-lesion existence constraint when voxel-level
+annotations are available. We show analytically that the CAT term gives
+each lesion a total weight nearly independent of its size and that the MIL
+term gives every lesion the same detection signal, largest when the lesion
+is missed. The objective requires no change to the network.
+\item \textbf{Evidence that lesion-level supervision recovers the missed
+lesions.} CATMIL detects more small lesions than losses that reweight
+voxels or balance lesions within an overlap term, including the
+instance-level loss CC-DiceCE, and an ablation separates the roles of its
+two terms. The gain holds across patients, on 47
+cross-validation patients, for lesions above the size used in clinical
+reading, and on a second dataset trained with the same loss weights.
+\item \textbf{A characterization of the cost.} The added sensitivity
+produces small false-positive components. They can be removed after
+training, and at the lesion-wise precision of the standard loss CATMIL
+still detects more small lesions; against Tversky-based losses, part of
+the gain reflects a more sensitive operating point.
 \end{itemize}

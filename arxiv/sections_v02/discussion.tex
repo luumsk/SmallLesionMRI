@@ -1,155 +1,104 @@
-This study shows that modifying the training objective is an effective and
-controlled way to influence model behavior in sparse lesion segmentation.
-Instead of increasing architectural complexity, the proposed approach
-changes how supervision is distributed across lesions, which makes the
-effect of the loss design directly interpretable. The comparison with four
-other architectures supports this choice. Trained with the default
-objective, a residual network, two transformer-based networks, and a
-state-space model reached a small-lesion recall similar to or below that of
-nnU-Net, whereas changing only the objective raised it from 0.7956 to
-0.8730 (\cref{sec:arch_vs_objective}). Both findings were reproduced on the
-47 cross-validation patients.
+\paragraph{Why standard objectives miss small lesions.}
+The results point to a specific failure. The baselines do not miss small
+lesions narrowly; for most of them the network produces no response at all,
+so the omission is fixed during training and cannot be undone at
+inference. Four other architectures trained with the same loss show the
+same omission, while a change of objective with the network held fixed
+removes much of it. Within the range of networks tested, the omission is
+therefore better explained by the supervision than by the capacity of the
+network. \Cref{eq:sl_voxel_loss} gives the reason: a lesion of a few voxels
+contributes a few terms to a sum over hundreds of thousands, and an
+optimizer has little incentive to fit it.
 
-\paragraph{Why standard losses miss small lesions.}
-The probability analysis shows that the baselines do not miss small lesions
-by a narrow margin: for most of them, the network produces no response at
-all. A lower decision threshold therefore cannot recover these lesions, and
-the omission has to be addressed during training. The comparison with the
-Tversky-based losses locates the cause. Tversky and FocalTversky penalize
-false-negative voxels more heavily than DiceCE and recover part of the
-lesions that DiceCE misses, but they remain behind CATMIL in the cases with
-many small lesions. Because Tversky weighting applies to all false-negative
-voxels alike, a lesion of a few voxels is still a negligible fraction of
-the loss. Only when each lesion is treated as a unit, as in the CAT and MIL
-terms, does every lesion contribute to the objective regardless of its
-size. The gain of CATMIL therefore comes from lesion-level supervision
-rather than from a stronger penalty on false negatives, and on MSLesSeg it
-is obtained without a measurable loss of voxel-level overlap or boundary
-accuracy. The ablation in \cref{appendix:catmil-components} locates the
-gain more precisely: the MIL term alone produces the full detection gain,
-and adding the CAT term does not change any metric beyond the variation
-between patients and fold models. Of the two terms, it is the
-overlap-independent detection term, not the size-balanced overlap term,
-that makes the network respond to small lesions.
+\paragraph{Why both balance and detection.}
+The two terms of CATMIL answer two distinct deficits of a voxel-wise loss.
+Balance alone, whether through the CAT term, CC-DiceCE, or a heavier
+penalty on false-negative voxels, raises small-lesion recall only part of
+the way (\cref{sec:ablation}). The form of the terms suggests why. In an
+overlap term, even one balanced across lesions, a lesion enters through its
+soft recall $r_k$ linearly (\cref{eq:sl_cat_lesion_form}): a completely
+missed lesion and a half-segmented lesion of the same weight receive the
+same marginal gradient, so nothing in the objective marks a missed lesion
+as a different kind of error. The MIL term does. Its contribution,
+$-\log s_k$, grows steeply as the strongest response in a lesion approaches
+zero, its gradient $1/(K s_k)$ is largest for exactly those lesions, and it
+vanishes once a single voxel is confident. Conversely, the MIL term says
+nothing about how much of a lesion is segmented; that is left to the
+overlap terms, and the CAT term ensures that this delineation signal is
+not dominated by large lesions. Detection and delineation are thereby
+supervised separately. This division is visible in the results: the
+recovered lesions are detected but often only partly delineated, and the
+gain persists, though narrowing, under stricter coverage criteria
+(\cref{appendix:strict-detection}). In the present ablation the detection
+gain is carried by the MIL term, and a measurable benefit of the CAT term
+on delineation was not shown.
 
-\paragraph{Relation to instance-level overlap losses.}
-The comparison with CC-DiceCE~\cite{bouteille_learning_2026}, trained in
-the same pipeline and with the same budget, supports this reading. CC-DiceCE
-balances lesions of different sizes, as the CAT term does, but judges each
-lesion through overlap. It reached a small-lesion recall of 0.8307 on
-MSLesSeg, at the level of the Tversky-based losses and of the CAT term
-alone (0.8230), and below CATMIL's 0.8730. The difference held on the 47
-cross-validation patients (0.747 against 0.802), at the precision of
-CC-DiceCE, and in the number of missed lesions on 3D-MR-MS, where CC-DiceCE
-was the closest competitor. CC-DiceCE behaved as its authors reported,
-gaining recall over DiceCE with some loss of
-precision~\cite{bouteille_learning_2026}, and inverse weighting likewise
-improved small-lesion detection at some cost in
-delineation~\cite{shirokikh_universal_2020}. Weighting each lesion within an
-overlap term balances the lesions but does not make the network respond to
-a lesion that it does not yet segment; the overlap-independent detection
-term does. The cost is also similar in kind: after the five-voxel filter,
-CATMIL's lesion-wise F1 is slightly below that of CC-DiceCE on the
-cross-validation patients ($-0.026$), as it is below that of the
-voxel-level losses.
+This interpretation has a limit. Against the Tversky-based losses, much of
+the gain disappears at matched precision (\cref{sec:matched_precision}), so
+those losses can reach a similar sensitivity by a lower threshold or filter
+size. What the lesion-level terms change reliably is where the default operating point lies, and,
+against DiceCE and CC-DiceCE, the detection achievable at a given
+precision.
+
+\paragraph{Relation to instance-level losses.}
+Instance-level losses~\cite{shirokikh_universal_2020,kofler_blob_2023,bouteille_learning_2026}
+were developed for the same problem and do improve small-lesion recall;
+CC-DiceCE did so here, at some cost in precision, as its authors
+reported~\cite{bouteille_learning_2026}. CATMIL is complementary rather
+than an alternative to them: its CAT term follows the same balancing
+principle, and the MIL term adds what balancing lacks, a lesion-level
+existence signal that is independent of overlap. Combining this signal
+with instance-level losses other than the CAT term, or with
+BiCC~\cite{bouteille_bicc_2026}, which penalizes unmatched predicted
+components, is a direct next step.
 
 \paragraph{The trade-off and its control.}
-The greater sensitivity of CATMIL comes with more false-positive components
-and a lower lesion-wise F1. These components are small, lie mostly close to
-true lesions, and contribute little false-positive volume. They reflect the
-same responsiveness to weak signals that allows CATMIL to detect small
-lesions, extended to ambiguous patterns that resemble lesions. Because they
-are small, a component-size filter removes most of them while the
-sensitivity gain is retained, so the trade-off can be adjusted after
-training without retraining the model. At the lesion-wise precision of
-DiceCE, a filtered CATMIL model detects more small lesions and has a higher
-lesion-wise F1 than DiceCE (\cref{tab:matched_precision}), so its lower F1
-at the default output reflects its operating point rather than a weaker
-detector. At the precision of the Tversky-based losses, however, the
-detection advantage of CATMIL is no longer measurable, so part of its gain
-over these losses is a shift toward a more sensitive operating point. In
-addition, the MIL term requires
-only one confident voxel per lesion and does not enforce full lesion
-coverage, which explains why some recovered lesions are detected but only
-partly delineated.
+The detection gain and the false-positive cost arise from the same term:
+a loss that rewards one confident voxel inside every lesion also makes the
+network respond to small lesion-like foci elsewhere. The resulting
+components are small and mostly close to true lesions, so they add little
+false-positive volume and can be removed by a size filter after training.
+This makes the operating point adjustable without retraining. The filter
+size, however, depends on the data: a five-voxel filter sufficed on
+MSLesSeg but not on 3D-MR-MS, and a small residual precision cost remains
+on the MSLesSeg cross-validation patients. Moving this control into the
+objective, for instance by penalizing predicted components that overlap no
+reference lesion, would act on exactly the error that the MIL term
+introduces.
 
 \paragraph{Clinical implications.}
-In multiple sclerosis, the number of lesions and the appearance of new
-lesions on follow-up scans are central to diagnosis and to the monitoring
-of disease activity. A small lesion that is never detected cannot be
-counted, whereas a false-positive component can be dismissed by a reader
-when the segmentation is reviewed. For this setting, reducing missed
-lesions at the cost of additional small false positives is a favorable
-direction for the trade-off, particularly when the automatic segmentation
-supports rather than replaces the radiologist. The component-size filter
-then allows the operating point to be chosen for the intended use: a small
-filter for screening and follow-up, where sensitivity matters most, and a
-larger filter where a cleaner lesion map is needed. The gain is not
-confined to lesions below the size used in clinical reading. For lesions
-of at least 3~mm in longest diameter, the size above which lesions are
-generally counted~\cite{barkhof_2024_2025}, CATMIL raises recall over
-DiceCE by 6.5--7.4 percentage points on the two datasets, and by about 10
-points for the small lesions in this group (\cref{tab:clinical_size}). In
-the 2024 McDonald criteria, lesions of this size are also the ones in which
-the central vein sign, a new diagnostic marker, can be
-assessed~\cite{montalban_diagnosis_2025,barkhof_2024_2025}, so detecting
-them affects the information available for diagnosis, not only the lesion
-count.
+In MS, a lesion that is never detected cannot be counted, whereas a
+false-positive component can be dismissed when a reader reviews the
+segmentation. Where automatic segmentation supports rather than replaces
+the radiologist, trading missed lesions for small false positives is
+therefore a favorable direction, with the filter size chosen for the use:
+small for screening and follow-up, larger where a clean lesion map is
+needed. The gain is not confined to lesions below the size used in
+clinical reading. It is largest for small lesions of at least 3~mm, which
+are the lesions that are counted and in which the central vein sign, a
+diagnostic marker in the 2024 McDonald criteria, can be
+assessed~\cite{montalban_diagnosis_2025,barkhof_2024_2025}.
 
 \paragraph{Limitations.}
-Several limitations should be noted. First, the evaluation is restricted to
-multiple sclerosis, and the applicability of the proposed objective to
-other brain pathologies remains to be validated. CATMIL itself was trained
-only with nnU-Net: \cref{sec:arch_vs_objective} shows that the other
-architectures, trained with the default objective, did not detect more
-small lesions than nnU-Net, but not whether CATMIL raises small-lesion
-recall as much when combined with them. These architectures were also
-trained with their default hyperparameters under the same 150-epoch budget,
-without per-architecture tuning, and only on MSLesSeg. Among instance-level losses, only CC-DiceCE was
-trained under the same protocol, using the authors' loss within this
-pipeline and training budget rather than their own setup; inverse
-weighting, blob loss, and BiCC were not trained. Second, the 3D-MR-MS dataset was evaluated with the
-same training configuration as the main experiments to keep the comparison
-consistent, so some hyperparameters may not be optimal for its
-characteristics; the false-positive cost of CATMIL is larger on this
-dataset, and a larger filter is required to control it. The filter size is
-thus chosen after training and depends on the data, rather than being
-controlled within the objective. Third, the connected components used by
-the loss are computed within each training patch, so a lesion cut by the
-patch border is weighted according to the part visible in the patch rather
-than its full size. Fourth, the test sets are small (six patients each).
-With six patients, no paired test can reach $p < 0.05$ after correction
-for the four comparisons, so the statistical analysis rests on
-patient-level CIs and on the consistency of the effect across patients;
-these results describe the available patients rather than a population. On
-3D-MR-MS, one patient also contributes 64\% of the reference lesions. The
-cross-validation predictions of the 47 MSLesSeg training patients
-reproduce the main findings with narrower intervals
-(\cref{sec:catmil_oof}), but the corresponding analysis on the 24 3D-MR-MS
-training patients was not performed. Fifth, the operating points at
-matched precision were selected on the MSLesSeg test set, so the MSLesSeg
-values in \cref{tab:matched_precision} are optimistic; only the transfer to
-3D-MR-MS is free of this selection. Sixth, the ablation does not show a
-measurable contribution of the CAT term on MSLesSeg, and its role should be
-tested on further datasets. Finally, lesions of only a few
-voxels and lesions with low contrast or diffuse boundaries remain difficult
-for every loss: the objective increases the influence of small lesions
-during training, but it cannot compensate for missing evidence in the
-image.
-
-\paragraph{Future work.}
-These limitations suggest several directions. The objective should be
-evaluated on other conditions with small focal lesions, such as brain
-metastases, satellite glioma lesions, or microbleeds, where missed lesions
-are also clinically important, and with other segmentation architectures.
-Methodologically, constraints on lesion coverage, boundary consistency, or
-structural connectivity could reduce fragmented predictions and isolated
-false positives, and could move the control of the precision trade-off
-from post-processing into the objective itself. A natural candidate is a
-penalty on predicted components that overlap no reference lesion, as in
-BiCC~\cite{bouteille_bicc_2026}: it acts on exactly the error that CATMIL
-introduces, whereas the MIL term acts on the error that CATMIL removes, so
-the two are complementary. Finally, an analysis of the
-learned features could show how the objective changes the internal
-representation of small lesions, beyond the output-level effects reported
-here.
+First, the evaluation is restricted to MS, and the objective has not been
+tested on other pathologies. Second, CATMIL was trained only with nnU-Net;
+the other architectures were trained with DiceCE, with default
+hyperparameters, a 150-epoch budget, and only on MSLesSeg, so it is not
+known whether CATMIL raises their recall as much. Among instance-level
+losses, only CC-DiceCE was trained under the same protocol, using the
+authors' loss within this pipeline rather than their own setup. Third, the
+test sets are small (six patients each), so no paired test can reach
+$p < 0.05$ after correction, and the analysis rests on patient-level CIs
+and on consistency across patients; on 3D-MR-MS, one patient also
+contributes 64\% of the reference lesions. The 47 cross-validation
+patients of MSLesSeg reproduce the main findings, but the corresponding
+analysis was not performed on 3D-MR-MS. Fourth, the operating points at
+matched precision were selected on the MSLesSeg test set, so only their
+transfer to 3D-MR-MS is free of selection. Fifth, the ablation was run on
+MSLesSeg only, where the contribution of the CAT term was not measurable;
+its role should be tested on further datasets.
+Sixth, connected components are computed within each training patch, so a
+lesion cut by the patch border is weighted by its visible part. Finally,
+lesions of a few voxels and lesions with low contrast remain difficult for
+every loss: the objective changes how much each lesion counts during
+training, but it cannot create evidence that the image does not contain.

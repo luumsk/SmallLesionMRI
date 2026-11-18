@@ -1,40 +1,26 @@
-This work studied small lesion segmentation in brain MRI as a problem of
-learning from sparse pathological signals. In multiple sclerosis MRI, small
-lesions occupy a negligible fraction of the image volume, so a model
-trained with a voxel-wise overlap objective can reach a high DSC while
-leaving many of them undetected. The proposed CATMIL objective targets this
-failure without any change to the network architecture: a
-component-adaptive Tversky term gives small and large lesions comparable
-weight, and a multiple-instance term penalizes any lesion in which no voxel
-is detected.
+This work asked why segmentation models miss small lesions in brain MRI.
+In MS lesion segmentation, standard objectives produce almost no response
+to most of the small lesions they miss, and the architectures we tested do
+not change this when trained with the same objective. The omission arises
+in training, from how supervision is distributed across lesions.
 
-CATMIL reduces the omission of small lesions. The improvement is
-concentrated in the lesion sizes at which the standard losses fail, it is a
-net gain in detected lesions rather than a trade between lesion sizes, and
-it holds across test patients, across trained models, on a second dataset
-trained with the same loss weights, and for lesions of at least 3~mm, the
-size used in clinical reading. The ablation attributes the gain to the
-lesion-level MIL term, and CATMIL also detects more small lesions than the
-instance-level overlap loss CC-DiceCE trained in the same pipeline, on the
-MSLesSeg test set and on the 47 cross-validation patients, and misses fewer
-lesions on 3D-MR-MS. On MSLesSeg, CATMIL preserves the voxel-level
-overlap and boundary accuracy of the standard losses; on 3D-MR-MS its DSC
-is slightly lower. The analysis of predicted probabilities
-shows why standard losses miss small lesions: they produce no response to
-most of them, so no choice of decision threshold can recover these lesions,
-and four other architectures trained with the same objective did not
-recover them either.
-The omission is therefore a consequence of how supervision is distributed
-across lesions, rather than an inherent limitation of the network.
+CATMIL supervises each lesion as a unit in two ways: the CAT term balances
+the overlap signal across lesions of different sizes, and the MIL term
+penalizes every lesion in which no voxel is detected. Together they detect
+more small lesions than losses that only reweight voxels or balance
+lesions within an overlap term, with the detection gain carried mainly by
+the MIL term. The gain holds
+across patients, on a larger cross-validation sample, for lesions of
+clinically reportable size, and on a second dataset trained with the same
+loss weights, and it does not require any change to the network.
 
-The cost of this sensitivity is a larger number of small false-positive
-components, which lowers lesion-wise F1. These components are small and
-localized, and a simple component-size filter removes most of them while
-keeping the sensitivity gain, although a small lesion-wise F1 cost remains
-on the cross-validation patients; at the lesion-wise precision of the standard
-nnU-Net loss, CATMIL detects more small lesions. Against the
-Tversky-based losses, its advantage at matched precision is small. CATMIL
-is therefore most useful where missing
-a lesion is a more serious error than a small false-positive component,
-provided that the operating point is chosen after training for the
-intended use.
+The cost is additional small false-positive components. They can be
+removed after training, and at the precision of the standard loss CATMIL
+still detects more small lesions, but the filter size depends on the data,
+and against Tversky-based losses part of the gain reflects a more
+sensitive operating point. CATMIL is therefore most useful where a missed
+lesion is a more serious error than a small false positive. Separating
+detection from delineation in the objective suggests two next steps: an
+analogous term that penalizes unmatched predicted components, and
+lesion-level supervision of complete delineation rather than of a single
+detected voxel.
