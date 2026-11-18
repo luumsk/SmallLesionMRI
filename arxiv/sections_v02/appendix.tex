@@ -101,7 +101,9 @@ lower lesion-wise F1 of CATMIL is also already present with MIL alone
 reaches a small-lesion recall of 0.8230, a difference from DiceCE of
 +0.027 [$-0.010$, +0.081] whose CI includes zero, and it keeps the
 lesion-wise F1 of DiceCE (0.8386 against 0.8433). Its effect on detection
-is thus close to that of the Tversky-based losses, consistent with a term
+is thus close to that of the Tversky-based losses and of CC-DiceCE
+(0.8307), which follows the same per-lesion weighting principle, consistent
+with a term
 that rebalances voxel weights between lesions but, unlike the MIL term,
 does not require each lesion to be detected.
 
@@ -263,8 +265,9 @@ the same number of false alarms.
 
 The CATMIL curve lies above the baseline curves across the whole range of
 filter sizes. Without filtering, CATMIL produces more false-positive
-components than the baselines (20.3 per case, against 5.4--7.0), which is
-the cause of its lower Lesion F1. These components are small and are
+components than the baselines (20.3 per case, against 5.4--7.0 for the
+voxel-level losses and 11.2 for CC-DiceCE), which is the cause of its lower
+Lesion F1. These components are small and are
 removed at little cost in recall. With $s = 20$, CATMIL detects 84.5\% of
 lesions at 3.3 false-positive components per case, more lesions with fewer
 false alarms than unfiltered DiceCE (83.5\% at 5.4). For any false-alarm
@@ -282,9 +285,9 @@ component size jointly and plots lesion recall against lesion-wise
 precision, the two quantities that make up lesion-wise F1. Each faint point
 is one setting; the lines connect the settings that are not outperformed
 in both precision and recall by another setting of the same loss. On
-MSLesSeg, the CATMIL frontier lies above that of DiceCE over most of the
-precision range and close to those of the Tversky-based losses, which is
-the pattern quantified in \cref{tab:matched_precision}. On 3D-MR-MS, the
+MSLesSeg, the CATMIL frontier lies above those of DiceCE and CC-DiceCE over
+most of the precision range and close to those of the Tversky-based losses,
+which is the pattern quantified in \cref{tab:matched_precision}. On 3D-MR-MS, the
 default output of CATMIL (filled circle) lies far to the left of its
 frontier: its precision of 0.37 is due to the many small components, and
 the frontier reaches the precision of the baselines with similar recall.
@@ -337,24 +340,27 @@ sizes are given in mm$^3$ rather than in voxels.
 
 The recall curve (\cref{fig:recall_vs_size_curve_3dmrms}) reproduces the
 main result. CATMIL detects 51\% of lesions of at most 10~mm$^3$, compared
-with 40--41\% for the baselines, and 93\% of lesions of 11--50~mm$^3$,
-compared with 86--88\%. Small lesions are far more frequent in this
-dataset: 182 of the 389 reference lesions are at most 10~mm$^3$, so the
-gain in this range accounts for most of the overall increase in lesion
-recall, from 0.66--0.67 to 0.74. Above 100~mm$^3$, CATMIL detects slightly
-fewer lesions than the baselines (95\% against 98--99\%), a difference of
-about one of the 34 lesions in this range.
+with 40--41\% for the voxel-level losses and 47\% for CC-DiceCE, and 93\%
+of lesions of 11--50~mm$^3$, compared with 86--88\% and 91\%. Small lesions
+are far more frequent in this dataset: 182 of the 389 reference lesions are
+at most 10~mm$^3$, so the gain in this range accounts for most of the
+overall increase in lesion recall, from 0.66--0.67 for the voxel-level
+losses and 0.71 for CC-DiceCE to 0.74. Above 100~mm$^3$, CATMIL detects
+slightly fewer lesions than the voxel-level losses (95\% against 98--99\%),
+a difference of about one of the 34 lesions in this range, and slightly
+more than CC-DiceCE (93\%).
 
 The paired comparison (\cref{fig:lesion_fate_3dmrms}) is again one-sided.
 CATMIL detects 33.2 lesions per fold model that DiceCE misses, against 2.4
-in the opposite direction, and 30.4 against 3.8 for each of the
-Tversky-based losses. About 97\% of the lesions recovered by CATMIL in each
-comparison are at most 50~mm$^3$.
+in the opposite direction, 30.4 against 3.8 for each of the Tversky-based
+losses, and 17.0 against 3.4 for CC-DiceCE. About 97\% of the lesions
+recovered by CATMIL relative to the voxel-level losses, and 89\% of those
+recovered relative to CC-DiceCE, are at most 50~mm$^3$.
 
 The operating curve (\cref{fig:operating_curve_3dmrms}) shows that the
 component-level cost of CATMIL is larger on this dataset. Without
 filtering, CATMIL produces 150 false-positive components per case, compared
-with 14--19 for the baselines, which explains its low Lesion F1 in
+with 14--19 for the voxel-level losses and 43 for CC-DiceCE, which explains its low Lesion F1 in
 \cref{tab:external_eval_3dmrms}. The size filter again removes most of
 them: PP5 reduces the count to 27 per case with a recall of 0.70, and a
 filter of 20 voxels reduces it to 9.7 per case with a recall of 0.657. At
@@ -366,7 +372,8 @@ and a larger filter is needed at the finer in-plane resolution of
 
 The probability levels (\cref{fig:max_prob_by_size_3dmrms}) show the same
 mechanism as on MSLesSeg. For lesions of at most 10~mm$^3$, the fraction
-with no response falls from 57--58\% for the baselines to 39\% for CATMIL.
+with no response falls from 57--58\% for the voxel-level losses and 51\%
+for CC-DiceCE to 39\% for CATMIL.
 
 \begin{figure}[htbp]
     \centering
@@ -421,23 +428,23 @@ covers any of its voxels, or at least the stated fraction of them. Recall
 is pooled over the reference lesions of the test set and averaged over the
 five fold models, so the any-overlap values differ slightly from the
 case-averaged Small Lesion Recall in the main tables. $\Delta$: CATMIL
-minus DiceCE with 95\% patient-level bootstrap CI; differences whose CI
-excludes zero are shown in \textbf{bold}.}
+minus DiceCE or CC-DiceCE with 95\% patient-level bootstrap CI; differences
+whose CI excludes zero are shown in \textbf{bold}.}
 \label{tab:strict_detection}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llccccl}
+\begin{tabular}{llcccccll}
 \toprule
-\textbf{Dataset} & \textbf{Criterion} & \textbf{CATMIL} & \textbf{DiceCE} & \textbf{Tversky} & \textbf{FocalTversky} & $\Delta$ vs.\ DiceCE \\
+\textbf{Dataset} & \textbf{Criterion} & \textbf{CATMIL} & \textbf{DiceCE} & \textbf{Tversky} & \textbf{FocalTversky} & \textbf{CC-DiceCE} & $\Delta$ vs.\ DiceCE & $\Delta$ vs.\ CC-DiceCE \\
 \midrule
-MSLesSeg & any overlap & 0.883 & 0.779 & 0.829 & 0.833 & \textbf{+0.104 [+0.046, +0.176]} \\
- & $\geq$ 10\% & 0.865 & 0.767 & 0.818 & 0.818 & \textbf{+0.098 [+0.039, +0.170]} \\
- & $\geq$ 25\% & 0.836 & 0.743 & 0.802 & 0.799 & \textbf{+0.093 [+0.032, +0.162]} \\
- & $\geq$ 50\% & 0.760 & 0.679 & 0.750 & 0.748 & \textbf{+0.081 [+0.029, +0.138]} \\
+MSLesSeg & any overlap & 0.883 & 0.779 & 0.829 & 0.833 & 0.841 & \textbf{+0.104 [+0.046, +0.176]} & \textbf{+0.042 [+0.024, +0.062]} \\
+ & $\geq$ 10\% & 0.865 & 0.767 & 0.818 & 0.818 & 0.826 & \textbf{+0.098 [+0.039, +0.170]} & \textbf{+0.039 [+0.020, +0.060]} \\
+ & $\geq$ 25\% & 0.836 & 0.743 & 0.802 & 0.799 & 0.799 & \textbf{+0.093 [+0.032, +0.162]} & \textbf{+0.037 [+0.012, +0.062]} \\
+ & $\geq$ 50\% & 0.760 & 0.679 & 0.750 & 0.748 & 0.725 & \textbf{+0.081 [+0.029, +0.138]} & \textbf{+0.035 [+0.007, +0.066]} \\
 \midrule
-3D-MR-MS & any overlap & 0.654 & 0.548 & 0.564 & 0.562 & \textbf{+0.107 [+0.046, +0.129]} \\
- & $\geq$ 10\% & 0.630 & 0.538 & 0.555 & 0.556 & \textbf{+0.092 [+0.029, +0.114]} \\
- & $\geq$ 25\% & 0.595 & 0.509 & 0.534 & 0.538 & \textbf{+0.086 [+0.009, +0.108]} \\
- & $\geq$ 50\% & 0.550 & 0.449 & 0.493 & 0.500 & \textbf{+0.101 [+0.028, +0.129]} \\
+3D-MR-MS & any overlap & 0.654 & 0.548 & 0.564 & 0.562 & 0.614 & \textbf{+0.107 [+0.046, +0.129]} & \textbf{+0.041 [+0.011, +0.080]} \\
+ & $\geq$ 10\% & 0.630 & 0.538 & 0.555 & 0.556 & 0.602 & \textbf{+0.092 [+0.029, +0.114]} & +0.028 [$-$0.004, +0.062] \\
+ & $\geq$ 25\% & 0.595 & 0.509 & 0.534 & 0.538 & 0.584 & \textbf{+0.086 [+0.009, +0.108]} & +0.011 [$-$0.034, +0.046] \\
+ & $\geq$ 50\% & 0.550 & 0.449 & 0.493 & 0.500 & 0.535 & \textbf{+0.101 [+0.028, +0.129]} & \textbf{+0.015 [+0.002, +0.046]} \\
 \bottomrule
 \end{tabular}%
 }
@@ -448,7 +455,11 @@ datasets it stays between 8 and 11 percentage points at every coverage
 level, and its CI excludes zero in every case. The margin over the
 Tversky-based losses narrows as the criterion becomes stricter: at 50\%
 coverage on MSLesSeg, CATMIL detects 76.0\% of small lesions against
-74.8--75.0\%. This agrees with the case-based analysis, in which CATMIL
+74.8--75.0\%. The gain over CC-DiceCE stays between 3.5 and 4.2 points at
+every coverage level on MSLesSeg, with CIs that exclude zero, but on
+3D-MR-MS it shrinks from 4.1 points under any overlap to 1.1--2.8 points
+under the coverage criteria, with CIs that include zero at 10\% and 25\%.
+This agrees with the case-based analysis, in which CATMIL
 recovers lesions that the baselines miss but often covers only part of
 them; the lesion-level term ensures that a lesion is detected, whereas its
 full extent still depends on the voxel-wise terms. Lesion-wise precision

@@ -14,7 +14,10 @@ net gain in detected lesions rather than a trade between lesion sizes, and
 it holds across test patients, across trained models, on a second dataset
 trained with the same loss weights, and for lesions of at least 3~mm, the
 size used in clinical reading. The ablation attributes the gain to the
-lesion-level MIL term. On MSLesSeg, CATMIL preserves the voxel-level
+lesion-level MIL term, and CATMIL also detects more small lesions than the
+instance-level overlap loss CC-DiceCE trained in the same pipeline, on the
+MSLesSeg test set and on the 47 cross-validation patients, and misses fewer
+lesions on 3D-MR-MS. On MSLesSeg, CATMIL preserves the voxel-level
 overlap and boundary accuracy of the standard losses; on 3D-MR-MS its DSC
 is slightly lower. The analysis of predicted probabilities
 shows why standard losses miss small lesions: they produce no response to
@@ -25,7 +28,8 @@ across lesions, rather than an inherent limitation of the network.
 The cost of this sensitivity is a larger number of small false-positive
 components, which lowers lesion-wise F1. These components are small and
 localized, and a simple component-size filter removes most of them while
-keeping the sensitivity gain; at the lesion-wise precision of the standard
+keeping the sensitivity gain, although a small lesion-wise F1 cost remains
+on the cross-validation patients; at the lesion-wise precision of the standard
 nnU-Net loss, CATMIL detects more small lesions. Against the
 Tversky-based losses, its advantage at matched precision is small. CATMIL
 is therefore most useful where missing

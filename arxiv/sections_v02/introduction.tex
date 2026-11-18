@@ -61,7 +61,10 @@ between lesion sizes, and it holds across test patients, across trained
 models, on a second dataset, and for lesions above the size used in
 clinical reading. On MSLesSeg, CATMIL also preserves the voxel-level
 overlap and boundary accuracy of the standard losses. An ablation shows
-that the lesion-level detection term accounts for the gain.
+that the lesion-level detection term accounts for the gain, and CATMIL
+detects more small lesions than CC-DiceCE, an instance-level overlap loss
+trained in the same pipeline, on the test set, on the cross-validation
+patients, and at matched lesion-wise precision.
 \item We identify why standard losses miss small lesions. The baselines do
 not miss them by a narrow margin: they produce no response to most of
 them, so no choice of decision threshold can recover these lesions. We

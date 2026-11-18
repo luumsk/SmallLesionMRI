@@ -26,6 +26,27 @@ between patients and fold models. Of the two terms, it is the
 overlap-independent detection term, not the size-balanced overlap term,
 that makes the network respond to small lesions.
 
+\paragraph{Relation to instance-level overlap losses.}
+The comparison with CC-DiceCE~\cite{bouteille_learning_2026}, trained in
+the same pipeline and with the same budget, supports this reading. CC-DiceCE
+balances lesions of different sizes, as the CAT term does, but judges each
+lesion through overlap. It reached a small-lesion recall of 0.8307 on
+MSLesSeg, at the level of the Tversky-based losses and of the CAT term
+alone (0.8230), and below CATMIL's 0.8730. The difference held on the 47
+cross-validation patients (0.747 against 0.802), at the precision of
+CC-DiceCE, and in the number of missed lesions on 3D-MR-MS, where CC-DiceCE
+was the closest competitor. CC-DiceCE behaved as its authors reported,
+gaining recall over DiceCE with some loss of
+precision~\cite{bouteille_learning_2026}, and inverse weighting likewise
+improved small-lesion detection at some cost in
+delineation~\cite{shirokikh_universal_2020}. Weighting each lesion within an
+overlap term balances the lesions but does not make the network respond to
+a lesion that it does not yet segment; the overlap-independent detection
+term does. The cost is also similar in kind: after the five-voxel filter,
+CATMIL's lesion-wise F1 is slightly below that of CC-DiceCE on the
+cross-validation patients ($-0.026$), as it is below that of the
+voxel-level losses.
+
 \paragraph{The trade-off and its control.}
 The greater sensitivity of CATMIL comes with more false-positive components
 and a lower lesion-wise F1. These components are small, lie mostly close to
@@ -74,7 +95,10 @@ Several limitations should be noted. First, the evaluation is restricted to
 multiple sclerosis, and the applicability of the proposed objective to
 other brain pathologies remains to be validated; all experiments also use
 the nnU-Net framework, so the effect of CATMIL on other architectures
-remains to be tested. Second, the 3D-MR-MS dataset was evaluated with the
+remains to be tested. Among instance-level losses, only CC-DiceCE was
+trained under the same protocol, using the authors' loss within this
+pipeline and training budget rather than their own setup; inverse
+weighting, blob loss, and BiCC were not trained. Second, the 3D-MR-MS dataset was evaluated with the
 same training configuration as the main experiments to keep the comparison
 consistent, so some hyperparameters may not be optimal for its
 characteristics; the false-positive cost of CATMIL is larger on this
@@ -85,12 +109,14 @@ the loss are computed within each training patch, so a lesion cut by the
 patch border is weighted according to the part visible in the patch rather
 than its full size. Fourth, the test sets are small (six patients each).
 With six patients, no paired test can reach $p < 0.05$ after correction
-for the three comparisons, so the statistical analysis rests on
+for the four comparisons, so the statistical analysis rests on
 patient-level CIs and on the consistency of the effect across patients;
 these results describe the available patients rather than a population. On
-3D-MR-MS, one patient also contributes 64\% of the reference lesions.
-Evaluating the out-of-fold predictions of the cross-validation (47 and 24
-patients) would provide a larger sample. Fifth, the operating points at
+3D-MR-MS, one patient also contributes 64\% of the reference lesions. The
+cross-validation predictions of the 47 MSLesSeg training patients
+reproduce the main findings with narrower intervals
+(\cref{sec:catmil_oof}), but the corresponding analysis on the 24 3D-MR-MS
+training patients was not performed. Fifth, the operating points at
 matched precision were selected on the MSLesSeg test set, so the MSLesSeg
 values in \cref{tab:matched_precision} are optimistic; only the transfer to
 3D-MR-MS is free of this selection. Sixth, the ablation does not show a

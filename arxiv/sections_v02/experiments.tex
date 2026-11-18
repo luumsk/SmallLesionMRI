@@ -13,7 +13,7 @@ spacing.
 
 \paragraph{3D-MR-MS.}
 To assess whether the behavior of CATMIL carries over to other data, the
-four losses are also trained and evaluated on a second multiple sclerosis
+five losses are also trained and evaluated on a second multiple sclerosis
 dataset, 3D-MR-MS~\cite{lesjak_novel_2018}, which was acquired at a
 different center with different imaging conditions. It contains 30
 patients with consensus-based white matter lesion annotations, provided
@@ -39,7 +39,7 @@ datasets, so 3D-MR-MS was not used to tune the objective.
 
 \subsection{Compared Losses}
 
-Four configurations of nnU-Net are compared, differing only in the loss
+Five configurations of nnU-Net are compared, differing only in the loss
 function:
 \begin{itemize}
     \item \textbf{DiceCE}: the default Dice and cross-entropy loss;
@@ -49,10 +49,18 @@ function:
     \item \textbf{FocalTversky}~\cite{abraham_novel_2019}: Focal Tversky
     loss, $\mathcal{L}_{\mathrm{Tversky}}^{1/\gamma_{\mathrm{F}}}$, with the
     same $\alpha$ and $\beta$ and focal exponent $\gamma_{\mathrm{F}}=4/3$;
+    \item \textbf{CC-DiceCE}~\cite{bouteille_learning_2026}: an
+    instance-level loss that adds a per-lesion DiceCE term, built on the
+    component-wise evaluation protocol of CC-Metrics~\cite{jaus_every_2025},
+    to the global DiceCE loss with equal weight;
     \item \textbf{CATMIL}: the proposed loss.
 \end{itemize}
-Tversky and FocalTversky replace the DiceCE loss, whereas CATMIL adds its
-two terms to it. Ablations of the two CATMIL terms and of their weights are
+Tversky and FocalTversky replace the DiceCE loss, whereas CC-DiceCE and
+CATMIL add terms to it. CC-DiceCE is the closest prior objective: like the
+CAT term, it balances lesions of different sizes, but it assesses each
+lesion through overlap and has no detection term. It is the authors'
+published loss, ported unchanged into the same nnU-Net pipeline and
+150-epoch budget rather than trained with the authors' own setup. Ablations of the two CATMIL terms and of their weights are
 reported in \cref{appendix:catmil-components,appendix:catmil-loss-weights}.
 
 \subsection{Implementation}
@@ -142,13 +150,15 @@ replacement. The fold models are drawn jointly for both losses, because
 fold $k$ of every loss is trained on the same data split. For lesion-level
 recall, the same bootstrap is applied to the pooled reference lesions of
 the resampled patients. A paired exact Wilcoxon signed-rank test is applied
-to the per-patient differences, with the Holm correction over the three
+to the per-patient differences, with the Holm correction over the four
 baselines.
 
 With six patients, the smallest possible two-sided $p$-value of the exact
-test is $1/32 \approx 0.031$ before correction and $0.094$ after it, so no
+test is $1/32 \approx 0.031$ before correction and $0.125$ after it, so no
 comparison can reach $p < 0.05$ after correction. A difference is
 therefore regarded as supported when its 95\% CI excludes zero, and the
 number of patients in which CATMIL is better is reported with it. These
 analyses describe the consistency of an effect across the available
-patients; they are not population-level estimates.
+patients; they are not population-level estimates. To obtain a larger
+sample, the MSLesSeg comparisons are also repeated on the cross-validation
+predictions of the 47 training patients (\cref{sec:catmil_oof}).
