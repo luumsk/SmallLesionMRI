@@ -50,12 +50,14 @@ Per-model and per-fold outputs are in [metrics/](metrics/).
 ## Repository layout
 
 ```
+catmil/                    Standalone `catmil` package: CATMIL and baseline losses, nnU-Net trainers,
+                           lesion-wise metrics (see catmil/README.md)
 slsseg/                    Modified nnU-Net v2 package (installs as `nnunetv2`)
   nnunetv2/training/nnUNetTrainer/
-    nnUNetTrainerCATMIL.py   CATMIL (proposed)
-    nnUNetTrainerCAT.py      CAT term only
-    nnUNetTrainerMIL.py      MIL term only
-    nnUNetTrainerTversky.py, nnUNetTrainerFocalTversky.py   loss baselines
+    nnUNetTrainerCATMIL.py   CATMIL (proposed)          \
+    nnUNetTrainerCAT.py      CAT term only               |  thin stubs that import the
+    nnUNetTrainerMIL.py      MIL term only               |  trainers from catmil
+    nnUNetTrainerTversky.py, nnUNetTrainerFocalTversky.py, nnUNetTrainerCCDiceCE.py   loss baselines /
     nnUNetTrainerSegResNet.py, ...UNETR.py, ...SwinUNETR.py,
     ...UMambaBot.py, ...UMambaEnc.py                         architecture baselines
   nnunetv2/inference/extract_features.py   feature extraction via forward hooks
@@ -81,7 +83,11 @@ cd SmallLesionMRI
 python -m venv .venv && source .venv/bin/activate
 pip install torch            # pick the build for your CUDA version: https://pytorch.org
 pip install -e slsseg
+pip install -e catmil        # the loss trainers in slsseg import from this package
 ```
+
+To use only the losses (plain PyTorch, MONAI or stock nnU-Net), install `catmil` alone; see
+[catmil/README.md](catmil/README.md).
 
 The UMamba baselines also need `mamba-ssm` and `causal-conv1d`; CATMIL itself does not.
 
