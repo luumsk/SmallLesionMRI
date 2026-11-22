@@ -1,0 +1,34 @@
+\paragraph{Automated MS lesion segmentation.}
+Current MS lesion segmentation tools have improved mainly through network
+design, ensembling, and training data, while keeping voxel-level training
+objectives. Examples include LST-AI, an ensemble of three 3D U-Nets trained
+with Tversky and cross-entropy loss~\cite{wiltgen_lst-ai_2024}, the
+nnU-Net-based FLAMeS~\cite{dereskewicz_flames_2025}, and SegHeD+, which
+trains on heterogeneous datasets with longitudinal and anatomical
+constraints~\cite{basaran_seghed_2024}; the ICPR 2024 challenge on MSLesSeg
+benchmarked such methods across hospitals and
+timepoints~\cite{rondinella_icpr_2024}. Although these tools generalize
+well across centers, small lesions remain a major source of error: most
+lesions missed by FLAMeS were smaller than
+10~mm$^3$~\cite{dereskewicz_flames_2025}. Lesion-wise detection metrics
+have therefore been advocated over the Dice score because they reflect what
+matters for clinical reading~\cite{basit_rethinking_2026}, and
+ConfLUNet segments individual lesions, including confluent
+ones~\cite{wynen_conflunet_2025}. These works change how lesions are
+evaluated or separated at inference, but not how the model is trained.
+
+\paragraph{Training objectives for small lesions.}
+Alternatives to the standard objective reweight voxels by class volume,
+error type, or difficulty~\cite{sudre_generalised_2017,salehi_tversky_2017,lin_focal_2017,abraham_novel_2019},
+or balance lesions of different sizes by computing the loss per
+lesion~\cite{shirokikh_universal_2020,kofler_blob_2023,bouteille_learning_2026,bouteille_bicc_2026,molchanova_benchmarking_2025}.
+All of them still score each lesion by how well it is outlined, not by
+whether it is found. Losses that target detection directly model lesions as
+fixed shapes~\cite{zhang_all-net_2021,rachmadi_improving_2024}, and multiple
+instance learning, which treats an object as found if any of its parts is
+found~\cite{dietterich_solving_1997,ilse_attention-based_2018}, has been
+used in segmentation almost only when voxel-level labels are
+missing~\cite{pinheiro_image-level_2015,cheng_fmamil_2025}. CATMIL
+(\cref{sec:method}) adds to the standard nnU-Net
+objective~\cite{isensee_nnu-net_2021} the question of whether each
+annotated lesion was detected.

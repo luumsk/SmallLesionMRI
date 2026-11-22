@@ -1,0 +1,133 @@
+%=================================================================
+% Journal (MDPI) version of the CATMIL paper.
+% Build with ./compile.sh (it stages the MDPI class from ../MDPI_template_ACS).
+%
+% The sections in sections/ started as copies of ../arxiv/sections_v02 and are
+% edited here for the clinical submission; the arXiv sources stay unchanged.
+% Figures are taken from ../arxiv/figures (see compile.sh, FIGURES=...).
+%
+% Journal option: the first class option is the MDPI journal; compile.sh
+% replaces it with $JOURNAL when that variable is set (e.g. JOURNAL=jcm).
+%=================================================================
+% Target: Biomedicines, special issue U0435PEUM6
+% https://www.mdpi.com/journal/biomedicines/special_issues/U0435PEUM6
+\documentclass[biomedicines,article,submit,pdftex,moreauthors]{Definitions/mdpi}
+
+%--------------------
+% Front matter
+%--------------------
+\firstpage{1}
+\makeatletter
+\setcounter{page}{\@firstpage}
+\makeatother
+\pubvolume{1}
+\issuenum{1}
+\articlenumber{0}
+\pubyear{2026}
+\copyrightyear{2026}
+\datereceived{ }
+\daterevised{ }
+\dateaccepted{ }
+\datepublished{ }
+
+\graphicspath{{figures/}}
+
+\Title{Component-Adaptive and Lesion-Level Supervision for Improved Small Structure Segmentation in Brain MRI}
+
+\newcommand{\orcidauthorA}{0000-0002-6766-4966}
+\newcommand{\orcidauthorB}{0000-0001-6976-1885}
+\newcommand{\orcidauthorC}{0000-0002-8931-9848}
+
+\Author{Minh Sao Khue Luu \orcidA{}*, Evgeniy N. Pavlovskiy \orcidB{} and Bair N. Tuchinov \orcidC{}}
+\AuthorNames{Minh Sao Khue Luu, Evgeniy N. Pavlovskiy and Bair N. Tuchinov}
+
+\address{%
+The Artificial Intelligence Research Center of Novosibirsk State University, Novosibirsk 630090, Russia}
+\corres{Correspondence: luumsk@gmail.com}
+
+\abstract{\input{sections/abstract}}
+
+\keyword{multiple sclerosis; brain MRI; small lesions; lesion detection; deep learning; component-adaptive loss; multiple instance learning}
+
+\begin{document}
+
+\section{Introduction}
+\label{sec:intro}
+\input{sections/introduction}
+
+\subsection{Related Work}
+\label{sec:related}
+\input{sections/related_work}
+
+\section{Materials and Methods}
+\label{sec:method}
+\input{sections/method}
+
+\subsection{Experimental Setup}
+\label{sec:experiments}
+\input{sections/experiments}
+
+\section{Results}
+\label{sec:results}
+\input{sections/results}
+
+\section{Discussion}
+\label{sec:discussion}
+\input{sections/discussion}
+
+\section{Conclusions}
+\label{sec:conclusion}
+\input{sections/conclusion}
+
+\vspace{6pt}
+
+%--------------------
+% Back matter (MDPI required statements)
+%--------------------
+\authorcontributions{Conceptualization, M.S.K.L., E.N.P. and B.N.T.; methodology, M.S.K.L.; software, M.S.K.L.; validation, M.S.K.L.; formal analysis, M.S.K.L.; investigation, M.S.K.L.; data curation, M.S.K.L.; writing---original draft preparation, M.S.K.L.; writing---review and editing, E.N.P. and B.N.T.; visualization, M.S.K.L.; supervision, E.N.P. and B.N.T.; project administration, B.N.T.; funding acquisition, B.N.T. All authors have read and agreed to the published version of the manuscript.}
+
+\funding{This research was funded by the Russian Science Foundation, grant number 23-15-00377.}
+
+\institutionalreview{Not applicable. This study used only publicly available, de-identified datasets (MSLesSeg and 3D-MR-MS).}
+
+\informedconsent{Not applicable.}
+
+\dataavailability{The MSLesSeg and 3D-MR-MS datasets are publicly available from their original providers. All code is available at \url{https://github.com/luumsk/SmallLesionMRI}.}
+
+\acknowledgments{During the preparation of this manuscript, the authors used ChatGPT (OpenAI) for the purposes of improving the language and readability of the text. The authors have reviewed and edited the output and take full responsibility for the content of this publication.}
+
+\conflictsofinterest{The authors declare no conflicts of interest. The funders had no role in the design of the study; in the collection, analyses, or interpretation of data; in the writing of the manuscript; or in the decision to publish the results.}
+
+\abbreviations{Abbreviations}{%
+The following abbreviations are used in this manuscript:\\
+\noindent
+\begin{tabular}{@{}ll}
+MS & Multiple sclerosis\\
+MRI & Magnetic resonance imaging\\
+FLAIR & Fluid-attenuated inversion recovery\\
+CAT & Component-Adaptive Tversky\\
+MIL & Multiple instance learning\\
+DSC & Dice similarity coefficient\\
+HD95 & 95th-percentile Hausdorff distance\\
+CI & Confidence interval
+\end{tabular}
+}
+
+%--------------------
+% Appendix
+%--------------------
+\appendixtitles{yes}
+\appendixstart
+\appendix
+\input{sections/appendix}
+
+%--------------------
+% References
+%--------------------
+\begin{adjustwidth}{-\extralength}{0cm}
+\reftitle{References}
+\bibliography{references}  % style Definitions/mdpi.bst is set by the class
+
+\PublishersNote{}
+\end{adjustwidth}
+\end{document}

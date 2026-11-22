@@ -1,0 +1,89 @@
+Magnetic resonance imaging (MRI) is central to both the diagnosis and the
+monitoring of multiple sclerosis (MS). Under the 2024 revision of the
+McDonald criteria, dissemination in space is established by T2-hyperintense
+lesions in the periventricular, juxtacortical or cortical, and
+infratentorial regions, the spinal cord, and the optic nerve, and
+dissemination in time can be shown by a single new T2-hyperintense lesion on
+follow-up MRI~\cite{montalban_diagnosis_2025,barkhof_2024_2025}. After
+diagnosis, new or enlarging lesions on follow-up scans are the main
+radiological marker of disease activity and inform treatment
+decisions~\cite{wattjes_2021_2021}. In both settings, a single lesion can
+change the conclusion of a report.
+
+Many of these lesions are small. Lesion size in MS is strongly skewed
+towards small lesions~\cite{wang_survey_1997}, and acquisitions that miss
+lesions underestimate lesion load~\cite{filippi_quantitative_1996}.
+The 2024 MAGNIMS--CMSC--NAIMS recommendations state that lesions should
+generally be at least 3~mm in longest diameter, while smaller lesions in
+specific locations, such as the corpus callosum or the floor of the fourth
+ventricle, can also be considered demyelinating~\cite{barkhof_2024_2025}.
+The central vein sign, which the 2024 criteria introduce as a marker of
+specificity, is likewise assessed in lesions of at least this
+size~\cite{montalban_diagnosis_2025,barkhof_2024_2025}. Lesions just above
+3~mm are therefore clinically relevant but are also the hardest to find by
+eye: on a whole-brain three-dimensional fluid-attenuated inversion recovery
+(FLAIR) scan they occupy a few voxels among millions, and finding them,
+in particular new ones on serial scans, depends on careful visual
+inspection of the whole volume.
+
+Automated lesion segmentation is designed to support this task. The 2024
+recommendations note that automated tools that report the number,
+location, and volume of (new) lesions can potentially improve the accuracy
+and objectivity of MRI assessment, while their clinical benefit still
+requires validation~\cite{barkhof_2024_2025}. Deep learning methods, in
+particular nnU-Net~\cite{isensee_nnu-net_2021} and MS-specific tools
+such as LST-AI~\cite{wiltgen_lst-ai_2024} and
+FLAMeS~\cite{dereskewicz_flames_2025}, now achieve high agreement with
+expert annotations on standard overlap metrics. Their errors, however, are
+concentrated in small lesions: in FLAMeS, most missed lesions were smaller
+than 10~mm$^3$~\cite{dereskewicz_flames_2025}. For a tool that works in
+tandem with a human reader, these two kinds of error are not equivalent. A
+false-positive detection is shown to the reader and can be dismissed in
+seconds, whereas a lesion that the tool does not mark gives the reader no
+prompt to look at that location. The most useful property of such a tool
+is therefore that it misses as few lesions as possible, with false
+positives kept at a level that a reader can review.
+
+A main reason why current models miss small lesions lies in how they are
+trained. The standard training objective, which combines the Dice score
+with voxel-wise cross-entropy, rewards correctly classified voxels. A
+single large lesion contains as many voxels as dozens of small ones, so
+during training, a missed 10-voxel lesion costs the model almost nothing,
+and a model can reach a high Dice score while leaving many small lesions
+undetected. Existing alternatives reweight voxels by class, difficulty, or
+position, or balance lesions of different sizes, but they still judge each
+lesion by how well it is outlined rather than by whether it is found at
+all (\cref{sec:related}).
+
+In this study, we change the training objective rather than the network.
+The proposed objective, CATMIL, adds two lesion-level terms to the
+standard nnU-Net loss. The \emph{Component-Adaptive Tversky (CAT)} term
+gives every lesion a comparable weight regardless of its volume, and the
+lesion-level \emph{Multiple Instance Learning (MIL)} term penalizes any
+lesion in which no voxel is detected, mirroring the question a reader asks:
+was this lesion found? Because only the objective changes, CATMIL can be
+used in existing nnU-Net-based pipelines without changes to the
+architecture or to inference. We evaluated CATMIL on two public MS
+datasets with T1-weighted, T2-weighted, and FLAIR images, MSLesSeg and
+3D-MR-MS, and report outcomes that correspond to clinical reading:
+detection of lesions of at least 3~mm, the number of completely missed
+lesions per scan, and the number of false-positive detections.
+
+The main findings of this study are as follows:
+\begin{itemize}
+\item On MSLesSeg, CATMIL reduces the number of completely missed lesions
+by about half compared with the standard nnU-Net objective, in every test
+patient and without loss of voxel-level agreement with the reference
+segmentation; the reduction is reproduced on the 47 cross-validation
+patients and against four alternative training objectives. CATMIL also
+improves the detection of lesions of at least 3~mm on both datasets.
+\item Standard objectives do not miss small lesions by a narrow margin:
+for most of them, the model produces no response at all. Making an
+existing tool more sensitive by lowering its decision threshold therefore
+cannot recover these lesions; the training objective must change.
+\item The cost of the higher sensitivity is a larger number of small
+false-positive detections. A simple minimum-size filter removes most of
+them while preserving the gain in detected lesions, so the operating point
+can be adapted to the intended use, such as a sensitive setting for
+follow-up reading with radiologist confirmation.
+\end{itemize}

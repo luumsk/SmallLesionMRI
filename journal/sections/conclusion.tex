@@ -1,0 +1,15 @@
+Small MS lesions can be missed by automated segmentation models whose
+training rewards voxel overlap, even when their Dice score is high. Adding
+lesion-level terms to the standard nnU-Net training objective, without
+changing the network, reduced the number of completely missed lesions by
+about half on MSLesSeg and improved the detection of lesions of at least
+3~mm, the size considered in the 2024 McDonald criteria and MAGNIMS--CMSC--NAIMS
+recommendations, on two independent datasets (94.4\% against 87.0\% and
+89.4\% against 83.0\%). The gain was reproduced on 47 further patients.
+Its cost, additional small false-positive detections, was largely removed
+by a simple size filter that can be adjusted to the intended use. Because
+a reader can dismiss a false positive but cannot review a lesion that is
+never shown, this trade-off makes lesion-level training a candidate for a
+second reader that flags lesions for radiologist confirmation. A reader
+study and a longitudinal evaluation of new lesions are needed to establish
+its clinical benefit.

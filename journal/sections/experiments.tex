@@ -1,0 +1,134 @@
+\subsection{Datasets}
+
+\paragraph{MSLesSeg.}
+The primary experiments use the MSLesSeg
+dataset~\cite{guarnera_mslesseg_2025} of longitudinal brain MRI scans of
+patients with multiple sclerosis. Of its 75 subjects, the 53 with manual
+lesion annotations are used here, as the official test set is unlabeled.
+Each subject has one to four timepoints, each with T1-weighted (T1-w),
+T2-weighted (T2-w), and Fluid-Attenuated Inversion Recovery (FLAIR)
+images. The dataset organizers provide the images skull-stripped,
+co-registered to the MNI152 template, and resampled to 1~mm isotropic
+spacing.
+
+\paragraph{3D-MR-MS.}
+To assess whether the behavior of CATMIL carries over to other data, the
+five losses are also trained and evaluated on a second multiple sclerosis
+dataset, 3D-MR-MS~\cite{lesjak_novel_2018}, which was acquired at a
+different center with different imaging conditions. It contains 30
+patients with consensus-based white matter lesion annotations, provided
+co-registered and bias-field corrected. Of the available modalities, only
+T1-w, T2-w, and FLAIR are used, to keep the input configuration identical
+to MSLesSeg. The voxels of this dataset are anisotropic
+($0.47 \times 0.47 \times 0.8$~mm), so lesion sizes on 3D-MR-MS are given
+in mm$^3$ rather than in voxels.
+
+\subsection{Data Split}
+
+Data are partitioned at the patient level, so that scans of one patient
+never appear in both training and evaluation sets. For MSLesSeg, six
+patients, with all their timepoints (12 test cases), are held out as an
+independent test set; for 3D-MR-MS, six of the 30 patients are held out.
+The remaining patients (47 and 24, respectively) are divided into five
+folds following the nnU-Net cross-validation strategy. Each of the five
+fold models is evaluated on the test set, and results are reported as the
+mean and sample standard deviation across the five models; statistical
+comparisons are described in \cref{sec:stats}. All training
+settings, including the CATMIL loss weights, are identical for the two
+datasets, so 3D-MR-MS was not used to tune the objective.
+
+\subsection{Compared Losses}
+
+Five configurations of nnU-Net are compared, differing only in the loss
+function:
+\begin{itemize}
+    \item \textbf{DiceCE}: the default Dice and cross-entropy loss;
+    \item \textbf{Tversky}~\cite{salehi_tversky_2017}: a loss that
+    penalizes missed lesion voxels more than false-positive voxels
+    ($\alpha=0.3$, $\beta=0.7$);
+    \item \textbf{FocalTversky}~\cite{abraham_novel_2019}: a Tversky loss
+    that additionally emphasizes difficult voxels (focal exponent
+    $\gamma_{\mathrm{F}}=4/3$);
+    \item \textbf{CC-DiceCE}~\cite{bouteille_learning_2026}: a published
+    loss that adds a per-lesion DiceCE term, weighting each lesion equally,
+    to the global DiceCE loss;
+    \item \textbf{CATMIL}: the proposed loss.
+\end{itemize}
+CC-DiceCE is the closest prior objective: like the CAT term, it balances
+lesions of different sizes, but it scores each lesion by overlap and has no
+detection term. It was ported unchanged into the same nnU-Net pipeline and
+150-epoch budget. Ablations of the two CATMIL terms and of their weights
+are reported in
+\cref{appendix:catmil-components,appendix:catmil-loss-weights}.
+
+\subsection{Implementation}
+
+All models use nnU-Net (version 2.1.1)~\cite{isensee_nnu-net_2021} with
+its default preprocessing, patch-based training, and optimizer, trained for
+150 epochs (details in \cref{appendix:implementation}). The loss
+implementation and evaluation code are available at
+\url{https://github.com/luumsk/SmallLesionMRI}.
+
+\subsection{Evaluation Metrics}
+
+Voxel-level metrics describe overall segmentation quality, and lesion-level
+metrics describe detection, in particular of small lesions. Lesion-level
+metrics are needed because the DSC is dominated by large lesions
+(\cref{sec:problem}) and does not reflect whether individual, clinically
+relevant lesions are found~\cite{basit_rethinking_2026,jaus_every_2025}.
+
+\paragraph{Voxel-level metrics.}
+Overall segmentation quality is measured with the DSC~\cite{dice_measures_1945}
+and the 95th-percentile Hausdorff distance (HD95, in
+mm)~\cite{taha_metrics_2015}, a measure of boundary error.
+
+\paragraph{Lesion definition and detection.}
+A lesion is a 3D connected component of the binary mask under
+6-connectivity, the same definition as in the proposed loss. A reference
+lesion counts as detected if at least one predicted voxel overlaps it, and
+a predicted component counts as correct if it overlaps at least one
+reference lesion. This any-overlap criterion is lenient, so lesion recall
+was also computed with stricter criteria that require at least 10\%, 25\%,
+or 50\% of the lesion voxels to be covered
+(\cref{appendix:strict-detection}).
+
+\paragraph{Lesion-level metrics.}
+Lesion-wise recall is the fraction of reference lesions that are detected,
+lesion-wise precision is the fraction of predicted components that are
+correct, and the lesion-wise F1 score combines the two. Because precision
+counts components regardless of their size, many small false-positive
+components lower it substantially even when their total volume is small.
+Small Lesion Recall is the lesion-wise recall restricted to reference
+lesions of at most 150 voxels, which corresponds to 150~mm$^3$ at the 1~mm
+isotropic spacing of MSLesSeg and to about 26~mm$^3$ on 3D-MR-MS. The FN
+Count is the number of reference lesions that are completely missed. The
+recall of lesions of at least 3~mm is the lesion-wise recall restricted to
+lesions above the clinical size threshold (\cref{sec:intro};
+\cite{barkhof_2024_2025,filippi_mri_2016}); the longest diameter of a
+reference lesion is measured as its largest in-plane extent over all
+axial, coronal, and sagittal slices.
+
+\paragraph{Error-volume metrics.}
+The FP Volume is the physical volume of the false-positive voxels, and the
+FN Volume Fraction is the share of the total reference lesion volume that
+belongs to missed lesions. All metrics are computed per test case and
+averaged over cases; their exact definitions are given in
+\cref{appendix:metrics}.
+
+\subsection{Statistical Analysis}
+\label{sec:stats}
+
+The standard deviations in the result tables describe the variation
+between the five fold models, not the uncertainty from the small test sets.
+Differences between CATMIL and each baseline were therefore also assessed
+with the patient as the independent unit, which matters for MSLesSeg, whose
+12 test cases are longitudinal scans of six patients. For each metric, a
+95\% confidence interval (CI) was obtained with a patient-level bootstrap
+(10{,}000 resamples), and the number of patients in which CATMIL was better
+is reported. With six patients, no Holm-corrected paired Wilcoxon test can
+reach $p < 0.05$, so a difference is regarded as supported when its 95\%
+CI excludes zero; these analyses describe the consistency of an effect
+across patients, not population-level estimates. Details are given in
+\cref{appendix:stats}. To obtain a larger sample, the MSLesSeg comparisons
+are also repeated on the cross-validation predictions of the 47 training
+patients (\cref{sec:catmil_oof}).

@@ -1,0 +1,103 @@
+Changing only the training objective of a standard MS lesion segmentation
+model halved the number of completely missed lesions on MSLesSeg and
+improved the detection of lesions of at least 3~mm on two datasets, without
+loss of voxel-level agreement; the gain was reproduced on 47 further
+patients and held against four alternative objectives and four alternative
+architectures. Its cost, additional small false-positive detections, was
+largely removed by a simple size filter.
+
+\paragraph{Clinical relevance of missed small lesions.}
+Because the 2024 McDonald criteria rest on counting lesions by location and
+over time, and new lesions on follow-up are the main radiological sign of
+disease activity (\cref{sec:intro}), the clinically decisive error is often
+a single missed lesion rather than an inaccurate lesion volume. This is
+also the error that overlap metrics conceal: on one test scan, CATMIL
+recovered about 11 lesions that the standard model missed while the
+scan-level Dice score did not change (\cref{sec:main_results}). A model
+selected and reported by its Dice score can therefore appear accurate while
+it misses the lesions that would change a report. For lesions of at least
+3~mm, CATMIL raised recall over the standard objective by 6.5--7.4
+percentage points, and by about 10 points for the smaller lesions in this
+group (\cref{tab:clinical_size}). These lesions are also the ones in which
+the central vein sign can be assessed, and one of the recovered lesions in
+\cref{fig:qual_lesion_gallery} is juxtacortical, a location that counts
+towards dissemination in space. Detecting them therefore affects the
+information available for diagnosis, not only the total lesion count.
+
+\paragraph{Use in tandem with a human reader.}
+For an assistive tool, a missed lesion is worse than a false positive,
+because the reader can dismiss a false positive but receives no prompt for
+an unmarked lesion (\cref{sec:intro}). The trade-off produced by CATMIL is
+therefore in the favorable direction, provided that the number of false
+positives remains manageable. The false positives of CATMIL were small,
+lay at a median distance of 1--2~mm from true lesions, and added little
+false-positive volume; some of them, such as the focal hyperintensity in
+\cref{fig:qual_lesion_gallery}, may be small lesions that the reference
+annotation does not contain. Because the minimum component size can be
+chosen after training, one trained model can serve different uses: a small
+filter for follow-up reading, where sensitivity matters most and every
+detection is confirmed by the radiologist, and a larger filter where a
+cleaner lesion map is needed, for example for lesion volume measurement.
+At the lesion-wise precision of the standard nnU-Net objective, a filtered
+CATMIL model still detected more small lesions and had a higher lesion-wise
+F1 (\cref{tab:matched_precision}).
+
+\paragraph{Why current models miss small lesions.}
+The baselines produced no response at all for most of the small lesions
+they missed, so these lesions cannot be recovered by lowering the decision
+threshold; the omission has to be addressed during training. Losses that
+penalize missed voxels more heavily (Tversky-based) or balance lesions
+within an overlap term (CC-DiceCE~\cite{bouteille_learning_2026}) recovered
+part of these lesions but remained below CATMIL, and the ablation
+(\cref{appendix:catmil-components}) attributes the gain to the lesion-level
+detection term. Changing the network architecture without changing the
+objective did not recover them (\cref{sec:arch_vs_objective}). Together
+with reports that the errors of current MS segmentation tools are
+concentrated in small lesions~\cite{dereskewicz_flames_2025}, this suggests
+that such errors are better addressed through the training objective than
+through larger networks; because CATMIL changes only the objective, it can
+be adopted in existing nnU-Net-based pipelines without changes to
+inference.
+
+\paragraph{Limitations.}
+Several limitations should be noted. First, this study measures detection
+against a reference segmentation, not the effect on radiologists: whether
+CATMIL improves the accuracy, agreement, or reading time of human readers
+was not tested and requires a reader study. Second, each scan was segmented
+independently; the detection of new lesions between serial scans, which is
+central to monitoring, was not evaluated directly, and lesion location was
+not analyzed, so the effect on the fulfilment of dissemination in space
+remains to be shown. Both datasets also cover only the brain, not the
+spinal cord or the optic nerve. Third, the evaluation used two public,
+retrospective datasets with six test patients each, so the analysis rests
+on patient-level confidence intervals rather than significance tests
+(\cref{sec:stats}); on 3D-MR-MS, one patient contributes 64\% of the
+reference lesions. The 47 MSLesSeg
+cross-validation patients reproduce the main findings
+(\cref{sec:catmil_oof}), but the corresponding analysis was not performed
+for 3D-MR-MS, and validation on a clinical cohort from routine practice is
+needed. Fourth, the reference segmentations are themselves imperfect: some
+detections counted as false positives may be unannotated lesions, and some
+missed lesions may be annotations that the image barely supports. Fifth,
+the false-positive cost of CATMIL was larger on 3D-MR-MS, where a larger
+size filter was needed, and the filter size must be chosen for each
+setting rather than being fixed by the method; the operating points at
+matched precision were selected on the MSLesSeg test set, so those
+MSLesSeg values are optimistic. Finally, lesions of only a few voxels and
+lesions with very low contrast remained difficult for every objective: the
+method increases the influence of small lesions during training, but it
+cannot compensate for evidence that the image does not contain.
+
+\paragraph{Future work.}
+The next step is a reader study in which radiologists assess MRI scans with
+and without CATMIL detections, measuring lesion detection, agreement
+between readers, and reading time against an expert consensus reference.
+A longitudinal extension that compares serial scans would address the
+detection of new lesions directly, and an analysis by McDonald location
+would show whether the recovered lesions change the classification of
+dissemination in space. Methodologically, a penalty on predicted
+components that overlap no reference lesion, as in
+BiCC~\cite{bouteille_bicc_2026}, could reduce the false positives within
+the training objective rather than by post-processing. The objective may
+also be useful for other conditions in which small focal lesions are
+clinically important, such as brain metastases.
