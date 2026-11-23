@@ -38,16 +38,20 @@
 \newcommand{\orcidauthorB}{0000-0001-6976-1885}
 \newcommand{\orcidauthorC}{0000-0002-8931-9848}
 
-\Author{Minh Sao Khue Luu \orcidA{}*, Evgeniy N. Pavlovskiy \orcidB{} and Bair N. Tuchinov \orcidC{}}
-\AuthorNames{Minh Sao Khue Luu, Evgeniy N. Pavlovskiy and Bair N. Tuchinov}
+\Author{Minh Sao Khue Luu \textsuperscript{1}\orcidA{}*, Bair N. Tuchinov \textsuperscript{1}\orcidC{}, Evgeniy N. Pavlovskiy \textsuperscript{1}\orcidB{}, Lyubov M. Vasilkiv \textsuperscript{2}, Anna I. Prokaeva \textsuperscript{2}, Denis S. Korobko \textsuperscript{2}, Nadezhda A. Malkova \textsuperscript{2} and Andrey A. Tulupov \textsuperscript{2}}
+\AuthorNames{Minh Sao Khue Luu, Bair N. Tuchinov, Evgeniy N. Pavlovskiy, Lyubov M. Vasilkiv, Anna I. Prokaeva, Denis S. Korobko, Nadezhda A. Malkova and Andrey A. Tulupov}
 
 \address{%
-The Artificial Intelligence Research Center of Novosibirsk State University, Novosibirsk 630090, Russia}
+\textsuperscript{1} \quad The Artificial Intelligence Research Center of Novosibirsk State University, Novosibirsk 630090, Russia\\
+\textsuperscript{2} \quad The Institute International Tomography Center of the Russian Academy of Sciences, Novosibirsk, Russia}
 \corres{Correspondence: luumsk@gmail.com}
 
 \abstract{\input{sections/abstract}}
 
 \keyword{multiple sclerosis; brain MRI; small lesions; lesion detection; deep learning; component-adaptive loss; multiple instance learning}
+
+% T2A is needed only for the Cyrillic letter in the RSF grant number
+\usepackage[T2A,T1]{fontenc}
 
 \begin{document}
 
@@ -84,9 +88,9 @@ The Artificial Intelligence Research Center of Novosibirsk State University, Nov
 %--------------------
 % Back matter (MDPI required statements)
 %--------------------
-\authorcontributions{Conceptualization, M.S.K.L., E.N.P. and B.N.T.; methodology, M.S.K.L.; software, M.S.K.L.; validation, M.S.K.L.; formal analysis, M.S.K.L.; investigation, M.S.K.L.; data curation, M.S.K.L.; writing---original draft preparation, M.S.K.L.; writing---review and editing, E.N.P. and B.N.T.; visualization, M.S.K.L.; supervision, E.N.P. and B.N.T.; project administration, B.N.T.; funding acquisition, B.N.T. All authors have read and agreed to the published version of the manuscript.}
+\authorcontributions{Conceptualization, M.S.K.L., B.N.T. and E.N.P.; methodology, M.S.K.L.; software, M.S.K.L.; validation, M.S.K.L.; formal analysis, M.S.K.L.; investigation, M.S.K.L.; data curation, M.S.K.L.; writing---original draft preparation, M.S.K.L.; writing---review and editing, B.N.T., E.N.P., L.M.V., A.I.P., D.S.K., N.A.M. and A.A.T.; medical expert feedback, L.M.V., A.I.P., D.S.K., N.A.M. and A.A.T.; visualization, M.S.K.L.; supervision, B.N.T. and E.N.P.; project administration, B.N.T.; funding acquisition, B.N.T. All authors have read and agreed to the published version of the manuscript.}
 
-\funding{This research was funded by the Russian Science Foundation, grant number 23-15-00377.}
+\funding{This work was supported by a grant from the Russian Science Foundation (RSF \mbox{23-15-0037-{\fontencoding{T2A}\selectfont П}}).}
 
 \institutionalreview{Not applicable. This study used only publicly available, de-identified datasets (MSLesSeg and 3D-MR-MS).}
 
