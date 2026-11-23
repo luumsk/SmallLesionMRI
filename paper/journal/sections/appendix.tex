@@ -119,14 +119,14 @@ Holm-corrected Wilcoxon $p$-value is 0.125 (\cref{sec:stats}).}
 \midrule
 \multicolumn{5}{l}{\emph{MSLesSeg}} \\
 Small Lesion Recall $\uparrow$ & \textbf{+0.077 [+0.030, +0.157] (6/6)} & \textbf{+0.039 [+0.004, +0.093] (6/6)} & \textbf{+0.042 [+0.005, +0.101] (6/6)} & \textbf{+0.042 [+0.020, +0.071] (6/6)} \\
-FN Count $\downarrow$ & \textbf{$-$2.38 [$-$5.29, $-$0.84] (6/6)} & \textbf{$-$1.20 [$-$2.98, $-$0.27] (6/6)} & \textbf{$-$1.13 [$-$2.71, $-$0.27] (5/6)} & \textbf{$-$1.08 [$-$1.95, $-$0.53] (6/6)} \\
-DSC $\uparrow$ & +0.004 [$-$0.010, +0.031] (1/6) & \textbf{+0.013 [+0.001, +0.034] (5/6)} & +0.003 [$-$0.015, +0.023] (5/6) & +0.006 [$-$0.004, +0.017] (6/6) \\
+FN Count $\downarrow$ & \textbf{$-$2.38 [$-$5.29, $-$0.84] (6/6)} & \textbf{$-$1.20 [$-$2.98, $-$0.27] (6/6)} & \textbf{$-$1.13 [$-$2.71, $-$0.27] (5/6)} & \textbf{$-$1.08 [$-$1.95, $-$0.52] (6/6)} \\
+DSC $\uparrow$ & +0.004 [$-$0.010, +0.031] (1/6) & \textbf{+0.013 [+0.001, +0.034] (5/6)} & +0.003 [$-$0.015, +0.023] (5/6) & +0.006 [$-$0.003, +0.017] (6/6) \\
 HD95 (mm) $\downarrow$ & $-$1.06 [$-$4.67, +0.73] (4/6) & $-$2.26 [$-$7.35, +0.11] (4/6) & $-$0.22 [$-$2.92, +2.72] (4/6) & \textbf{$-$1.73 [$-$5.43, $-$0.01] (5/6)} \\
 Lesion F1 $\uparrow$ & \textbf{$-$0.086 [$-$0.138, $-$0.043] (0/6)} & \textbf{$-$0.083 [$-$0.143, $-$0.038] (0/6)} & \textbf{$-$0.088 [$-$0.151, $-$0.039] (0/6)} & \textbf{$-$0.049 [$-$0.091, $-$0.018] (0/6)} \\
 FP Volume (mm$^3$) $\downarrow$ & $-$282 [$-$1582, +271] (1/6) & \textbf{$-$1084 [$-$2675, $-$302] (6/6)} & \textbf{$-$746 [$-$2189, $-$182] (6/6)} & +23 [$-$276, +236] (1/6) \\
 \midrule
 \multicolumn{5}{l}{\emph{MSLesSeg, PP5}} \\
-Small Lesion Recall $\uparrow$ & \textbf{+0.070 [+0.023, +0.151] (6/6)} & \textbf{+0.033 [+0.001, +0.079] (6/6)} & \textbf{+0.036 [+0.000, +0.093] (6/6)} & \textbf{+0.041 [+0.017, +0.073] (6/6)} \\
+Small Lesion Recall $\uparrow$ & \textbf{+0.070 [+0.023, +0.151] (6/6)} & \textbf{+0.033 [+0.001, +0.079] (6/6)} & \textbf{+0.036 [+0.000, +0.093] (6/6)} & \textbf{+0.040 [+0.017, +0.073] (6/6)} \\
 FN Count $\downarrow$ & \textbf{$-$2.10 [$-$4.80, $-$0.66] (6/6)} & \textbf{$-$0.93 [$-$2.38, $-$0.13] (6/6)} & \textbf{$-$0.95 [$-$2.40, $-$0.14] (6/6)} & \textbf{$-$1.05 [$-$1.84, $-$0.46] (6/6)} \\
 DSC $\uparrow$ & +0.004 [$-$0.009, +0.032] (2/6) & \textbf{+0.013 [+0.001, +0.035] (5/6)} & +0.004 [$-$0.014, +0.024] (5/6) & +0.006 [$-$0.003, +0.017] (6/6) \\
 HD95 (mm) $\downarrow$ & $-$0.99 [$-$4.65, +0.76] (4/6) & $-$2.26 [$-$7.25, +0.10] (5/6) & $-$0.13 [$-$2.80, +2.76] (4/6) & \textbf{$-$1.72 [$-$5.34, $-$0.11] (5/6)} \\
@@ -234,16 +234,16 @@ $\lambda_{\text{MIL}}$ on the MSLesSeg test set.}
 Model & DSC & HD95 $\downarrow$ & Lesion F1 & Small Recall & FP Vol $\downarrow$ \\
 \midrule
 CATMIL0101 & 0.7675 & 9.3881 & \underline{0.7720} & 0.8514 & 2292.17 \\
-CATMIL0102 & \textbf{0.7954} & \textbf{5.9771} & 0.7452 & \underline{0.8711} & \underline{1345.83} \\
+CATMIL0102 & \textbf{0.7953} & \textbf{5.9771} & 0.7452 & \underline{0.8711} & \underline{1345.83} \\
 CATMIL0201 & \underline{0.7921} & \underline{6.7964} & \textbf{0.7754} & \textbf{0.8784} & \textbf{1233.92} \\
-CATMIL0202 & 0.7663 & 9.4507 & 0.7632 & 0.8699 & 1729.42 \\
+CATMIL0202 & 0.7663 & 9.4506 & 0.7632 & 0.8699 & 1729.42 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The configuration used in the main experiments (CATMIL0102), in which the
 MIL term has the larger weight, gives the best global segmentation
-performance, with the highest DSC (0.7954) and lowest HD95 (5.9771~mm), but
+performance, with the highest DSC (0.7953) and lowest HD95 (5.9771~mm), but
 also the lowest lesion-wise F1 (0.7452). Exchanging the two weights
 (CATMIL0201) improves lesion-level behavior, with the highest lesion F1
 (0.7754), the highest small lesion recall (0.8784), and the lowest FP
