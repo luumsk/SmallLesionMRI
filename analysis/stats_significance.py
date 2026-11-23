@@ -21,7 +21,7 @@ of every loss was trained on the same split).
    - Odds ratio: GEE logistic model, clustered by patient, bias-reduced sandwich variance.
 
 Usage: python stats_significance.py <metrics_dir> <lesion_table_csv> <out_dir>
-  e.g. python stats_significance.py metrics_tunka results/lesion_tables/lesions.csv results/stats
+  e.g. python stats_significance.py results/per_fold results/lesion_tables/lesions.csv results/stats
 """
 import itertools
 import os

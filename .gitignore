@@ -25,7 +25,6 @@ paper/MDPI_template_ACS/
 *.pdf
 !paper/arxiv/figures/*.pdf
 
-# Local copies of per-fold metric files and other material that is not part of the repository
-metrics_tunka/
+# Local material that is not part of the repository
 Dissertation/
 minimal-agent-stack/

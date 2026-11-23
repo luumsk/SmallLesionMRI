@@ -1,0 +1,12 @@
+{
+  "per_case_csv": "/media/storage/luu/SmallLesionMRI/metrics/MSLesSeg/multiscale_eval_FocalTversky_fold2_main.csv",
+  "model_name": "FocalTversky",
+  "fold": 2,
+  "dice": 0.76959,
+  "hd95_mm": 10.35494,
+  "small_lesion_recall": 0.8301,
+  "lesion_f1": 0.85407,
+  "fn_lesion_count": 3.91667,
+  "fn_volume_fraction": 0.02559,
+  "fp_volume_mm3": 2538.41667
+}

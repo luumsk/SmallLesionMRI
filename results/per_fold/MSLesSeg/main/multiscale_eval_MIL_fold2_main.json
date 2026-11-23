@@ -1,0 +1,12 @@
+{
+  "per_case_csv": "/media/storage/luu/SmallLesionMRI/metrics/MSLesSeg/multiscale_eval_MIL_fold2_main.csv",
+  "model_name": "MIL",
+  "fold": 2,
+  "dice": 0.79733,
+  "hd95_mm": 6.71159,
+  "small_lesion_recall": 0.87076,
+  "lesion_f1": 0.74635,
+  "fn_lesion_count": 2.41667,
+  "fn_volume_fraction": 0.02117,
+  "fp_volume_mm3": 1164.41667
+}

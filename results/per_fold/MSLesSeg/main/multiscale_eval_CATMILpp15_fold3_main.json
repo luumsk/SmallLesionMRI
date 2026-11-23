@@ -1,0 +1,12 @@
+{
+  "per_case_csv": "/media/storage/luu/SmallLesionMRI/metrics/MSLesSeg/main/multiscale_eval_CATMILpp15_fold3_main.csv",
+  "model_name": "CATMILpp15",
+  "fold": 3,
+  "dice": 0.79293,
+  "hd95_mm": 6.19969,
+  "small_lesion_recall": 0.80838,
+  "lesion_f1": 0.86857,
+  "fn_lesion_count": 4.41667,
+  "fn_volume_fraction": 0.03361,
+  "fp_volume_mm3": 1282.66667
+}

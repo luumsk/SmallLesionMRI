@@ -1,0 +1,12 @@
+{
+  "per_case_csv": "/media/storage/luu/SmallLesionMRI/metrics/MSLesSeg/multiscale_eval_nnUNet_fold2_main.csv",
+  "model_name": "nnUNet",
+  "fold": 2,
+  "dice": 0.75843,
+  "hd95_mm": 10.91585,
+  "small_lesion_recall": 0.78499,
+  "lesion_f1": 0.82983,
+  "fn_lesion_count": 5.5,
+  "fn_volume_fraction": 0.03445,
+  "fp_volume_mm3": 2729.08333
+}

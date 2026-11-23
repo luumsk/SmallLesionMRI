@@ -12,8 +12,8 @@ multiscale_eval_nnUNet_pp5_fold*_main.csv; its output is written with a
 "_check" suffix and never replaces the original files.
 
 Usage: python pp5_case_metrics.py [n_workers]
-Outputs: metrics_tunka/MSLesSeg/main/multiscale_eval_CCDiceCE_pp5_fold{k}_main.csv
-         metrics_tunka/MSLesSeg/main/multiscale_eval_nnUNet_pp5_check_fold{k}_main.csv
+Outputs: results/per_fold/MSLesSeg/main/multiscale_eval_CCDiceCE_pp5_fold{k}_main.csv
+         results/per_fold/MSLesSeg/main/multiscale_eval_nnUNet_pp5_check_fold{k}_main.csv
 """
 import os
 import sys
@@ -31,7 +31,7 @@ import multiscale_eval as me  # noqa: E402
 ROOT = os.environ.get("SLS_DATA_ROOT", "/Volumes/BACH2TB/Tunka")  # see README, "Data location"
 PRED = f"{ROOT}/SmallLesionMRI/MSLesSeg/final_checkpoints"
 GT = f"{ROOT}/nnUNet_raw/Dataset333_MSLesSeg/labelsTs"
-OUT = os.path.join(REPO, "metrics_tunka", "MSLesSeg", "main")
+OUT = os.path.join(REPO, "results", "per_fold", "MSLesSeg", "main")
 MIN_VOX = 5
 MODELS = {"CCDiceCE": "CCDiceCE_pp5", "nnUNet": "nnUNet_pp5_check"}  # folder -> output name
 

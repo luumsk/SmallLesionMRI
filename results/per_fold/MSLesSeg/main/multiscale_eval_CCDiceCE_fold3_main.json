@@ -1,0 +1,12 @@
+{
+  "per_case_csv": "../metrics/MSLesSeg/latest_checkpoints/multiscale_eval_CCDiceCE_fold3_main.csv",
+  "model_name": "CCDiceCE",
+  "fold": 3,
+  "dice": 0.77308,
+  "hd95_mm": 9.9351,
+  "small_lesion_recall": 0.82571,
+  "lesion_f1": 0.78903,
+  "fn_lesion_count": 3.66667,
+  "fn_volume_fraction": 0.03797,
+  "fp_volume_mm3": 1431.66667
+}
