@@ -5,8 +5,7 @@ The primary experiments use the MSLesSeg
 dataset~\cite{guarnera_mslesseg_2025} of longitudinal brain MRI scans of
 patients with multiple sclerosis. Of its 75 subjects, the 53 with manual
 lesion annotations are used here, as the official test set is unlabeled.
-Each subject has one to four timepoints, each with T1-weighted (T1-w),
-T2-weighted (T2-w), and Fluid-Attenuated Inversion Recovery (FLAIR)
+Each subject has one to four timepoints, each with T1-WI, T2-WI, and Fluid-Attenuated Inversion Recovery (FLAIR)
 images. The dataset organizers provide the images skull-stripped,
 co-registered to the MNI152 template, and resampled to 1~mm isotropic
 spacing.
@@ -18,7 +17,7 @@ dataset, 3D-MR-MS~\cite{lesjak_novel_2018}, which was acquired at a
 different center with different imaging conditions. It contains 30
 patients with consensus-based white matter lesion annotations, provided
 co-registered and bias-field corrected. Of the available modalities, only
-T1-w, T2-w, and FLAIR are used, to keep the input configuration identical
+T1-WI, T2-WI, and FLAIR are used, to keep the input configuration identical
 to MSLesSeg. The voxels of this dataset are anisotropic
 ($0.47 \times 0.47 \times 0.8$~mm), so lesion sizes on 3D-MR-MS are given
 in mm$^3$ rather than in voxels.
