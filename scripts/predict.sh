@@ -1,5 +1,9 @@
-INPUT_FOLDER="/media/storage/luu/nnUNet_raw/Dataset333_MSLesSeg/imagesTs"
-BASE_OUTPUT="/media/storage/luu/SmallLesionMRI/MSLesSeg/final_checkpoints"
+#!/usr/bin/env bash
+# Run from anywhere; paths are relative to the repository root.
+cd "$(dirname "$0")/.." && source scripts/config.sh
+
+INPUT_FOLDER="${nnUNet_raw}/Dataset333_MSLesSeg/imagesTs"
+BASE_OUTPUT="${PRED_ROOT}/final_checkpoints"
 
 DATASET_ID="333"
 CONFIGURATION="3d_fullres"

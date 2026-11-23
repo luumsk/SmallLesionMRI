@@ -1,0 +1,31 @@
+# OS, editors, Python
+.DS_Store
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+
+# LaTeX build products (paper/*/compile.sh writes everything to paper/*/submission/)
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+paper/*/submission/
+
+# The MDPI journal template is not ours to redistribute; journal/compile.sh looks for it here
+paper/MDPI_template_ACS/
+
+# PDFs are build output or third-party papers, except the figures the paper includes
+*.pdf
+!paper/arxiv/figures/*.pdf
+
+# Local copies of per-fold metric files and other material that is not part of the repository
+metrics_tunka/
+Dissertation/
+minimal-agent-stack/

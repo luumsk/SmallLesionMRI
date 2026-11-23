@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+# Run from anywhere; paths are relative to the repository root.
+cd "$(dirname "$0")/.." && source scripts/config.sh
+
 set -e  # stop immediately if any command fails
 
 DATASET_ID="333"

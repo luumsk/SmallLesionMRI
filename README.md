@@ -3,9 +3,9 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2604.08015-b31b1b.svg)](https://arxiv.org/abs/2604.08015)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Official code for **CATMIL**, a loss function for nnU-Net that improves the detection of
-small brain lesions in MRI. It adds two auxiliary terms to the standard nnU-Net loss
-(Dice + cross-entropy):
+This repository holds the code, results and LaTeX sources needed to reproduce the paper.
+**CATMIL** is a loss function for nnU-Net that improves the detection of small brain lesions
+in MRI. It adds two auxiliary terms to the standard nnU-Net loss (Dice + cross-entropy):
 
 - **Component-Adaptive Tversky (CAT)** reweights voxels by connected component, so small
   lesions influence the loss about as much as large ones.
@@ -16,6 +16,11 @@ small brain lesions in MRI. It adds two auxiliary terms to the standard nnU-Net 
 > *Component-Adaptive and Lesion-Level Supervision for Improved Small Structure
 > Segmentation in Brain MRI.* arXiv:2604.08015, 2026.
 > [[paper]](https://arxiv.org/abs/2604.08015)
+
+**To use CATMIL in your own project**, install the loss package instead:
+[comploss](https://github.com/luumsk/comploss) (`pip install comploss`). It contains CATMIL, CAT,
+MIL, CC-DiceCE and the baseline losses, nnU-Net v2 trainers for each, and object-level metrics.
+This repository pins the exact version used for the paper.
 
 ## Results
 
@@ -45,32 +50,29 @@ setup, and each value is the mean ± std over the five fold models. Small lesion
   and the lowest FP volume. Its Dice (0.718 vs 0.734 best) and Lesion F1 (0.471 vs 0.668
   best) are the lowest of the four losses.
 
-Per-model and per-fold outputs are in [metrics/](metrics/).
+Per-model and per-fold outputs are in [results/](results/).
 
 ## Repository layout
 
 ```
-catmil/                    Standalone `catmil` package: CATMIL and baseline losses, nnU-Net trainers,
-                           lesion-wise metrics (see catmil/README.md)
-slsseg/                    Modified nnU-Net v2 package (installs as `nnunetv2`)
+paper/
+  arxiv/              LaTeX source of the arXiv version (main_v02.tex = arXiv v5), figures/, compile.sh
+  journal/            LaTeX source of the journal version (MDPI), compile.sh
+slsseg/               Modified nnU-Net v2 used in the paper (installs as `nnunetv2`, 150 epochs by default)
   nnunetv2/training/nnUNetTrainer/
-    nnUNetTrainerCATMIL.py   CATMIL (proposed)          \
-    nnUNetTrainerCAT.py      CAT term only               |  thin stubs that import the
-    nnUNetTrainerMIL.py      MIL term only               |  trainers from catmil
-    nnUNetTrainerTversky.py, nnUNetTrainerFocalTversky.py, nnUNetTrainerCCDiceCE.py   loss baselines /
-    nnUNetTrainerSegResNet.py, ...UNETR.py, ...SwinUNETR.py,
-    ...UMambaBot.py, ...UMambaEnc.py                         architecture baselines
-  nnunetv2/inference/extract_features.py   feature extraction via forward hooks
-scripts/                   Shell wrappers for each pipeline step and plotting scripts
-compute_metrics.py         Basic per-case segmentation metrics
-multiscale_eval.py         Voxel-, lesion- and size-stratified evaluation, FN/FP profiles, calibration
-get_all_metrics.py         Aggregate per-fold metric files
-analyze_features.py        Compare learned features between CATMIL and nnU-Net
-select_test_cases_for_visualization.py   Pick improved / failure / typical cases
-utils.py                   Shared helpers
-metrics/                   Evaluation results reported in the paper
-lesion_profile/            Per-lesion profiles for selected MSLesSeg cases
-*.ipynb                    Dataset exploration, uncertainty and visualization notebooks
+    nnUNetTrainerCATMIL.py, ...CAT.py, ...MIL.py,           loss trainers: thin stubs that import
+    ...Tversky.py, ...FocalTversky.py, ...CCDiceCE.py       the trainers from comploss
+    ...SegResNet.py, ...UNETR.py, ...SwinUNETR.py,
+    ...UMambaBot.py, ...UMambaEnc.py                        architecture baselines
+  nnunetv2/inference/extract_features.py                    feature extraction via forward hooks
+evaluation/           Metric code: multiscale_eval.py (voxel-, lesion- and size-stratified metrics,
+                      FN/FP profiles, calibration), compute_metrics.py, get_all_metrics.py, utils.py
+analysis/             One script per analysis, table or figure (see "Reproducing the analyses")
+scripts/              Shell pipeline: config.sh (paths), preprocess, train, predict, evaluate
+results/              Results reported in the paper (CSV); results/analyses_2026-11/ holds the
+                      architecture comparison, out-of-fold and PP5 analyses added in November 2026
+notebooks/            Dataset exploration, uncertainty and visualization notebooks
+requirements.txt      Pinned environment (slsseg, comploss, analysis packages)
 ```
 
 ## Installation
@@ -81,31 +83,42 @@ Requires Python ≥ 3.10 and a CUDA-capable GPU for training.
 git clone https://github.com/luumsk/SmallLesionMRI.git
 cd SmallLesionMRI
 python -m venv .venv && source .venv/bin/activate
-pip install torch            # pick the build for your CUDA version: https://pytorch.org
-pip install -e slsseg
-pip install -e catmil        # the loss trainers in slsseg import from this package
+pip install torch                  # pick the build for your CUDA version: https://pytorch.org
+pip install -r requirements.txt    # slsseg (nnunetv2 2.1.1), comploss 0.1.0, analysis packages
 ```
-
-To use only the losses (plain PyTorch, MONAI or stock nnU-Net), install `catmil` alone; see
-[catmil/README.md](catmil/README.md).
 
 The UMamba baselines also need `mamba-ssm` and `causal-conv1d`; CATMIL itself does not.
+A few analysis scripts need extra packages, listed at the end of `requirements.txt`.
 
-Set the usual nnU-Net paths (see [scripts/setvars.sh](scripts/setvars.sh)):
+### Data location
 
-```bash
-export nnUNet_raw=/path/to/nnUNet_raw
-export nnUNet_preprocessed=/path/to/nnUNet_preprocessed
-export nnUNet_results=/path/to/nnUNet_results
+All data stay outside the repository, in one folder that we call `SLS_DATA_ROOT`:
+
+```
+$SLS_DATA_ROOT/
+  nnUNet_raw/  nnUNet_preprocessed/  nnUNet_results/          the usual nnU-Net folders
+  SmallLesionMRI/MSLesSeg/final_checkpoints/<MODEL>/fold_<k>/  test-set predictions (MSLesSeg)
+  SmallLesionMRI/LjubljanaMS/final_checkpoints/...             test-set predictions (3D-MR-MS)
 ```
 
-## Usage
+Set it once before running anything:
+
+```bash
+export SLS_DATA_ROOT=/path/to/data
+```
+
+[scripts/config.sh](scripts/config.sh) derives `nnUNet_raw`, `nnUNet_preprocessed` and
+`nnUNet_results` from it (each can be overridden), and every script in `scripts/` sources it. The
+Python scripts in `analysis/` read the same variable.
+
+## Reproducing the paper
 
 ### 1. Data
 
 Download [MSLesSeg](https://doi.org/10.1038/s41597-025-05250-y) and convert it to the
 [nnU-Net v2 dataset format](https://github.com/MIC-DKFZ/nnUNet/blob/master/documentation/dataset_format.md).
-The scripts use dataset ID `333` (`Dataset333_MSLesSeg`).
+The scripts use dataset ID `333` (`Dataset333_MSLesSeg`) and, for the external test set
+3D-MR-MS, `666` (`Dataset666_LjubljanaMS`).
 
 ```bash
 nnUNetv2_plan_and_preprocess -d 333 --verify_dataset_integrity
@@ -122,7 +135,8 @@ done
 ```
 
 [scripts/train.sh](scripts/train.sh) trains every model in the paper. The bundled nnU-Net
-trains for 150 epochs by default (upstream uses 1000), as in the paper. We trained on a single NVIDIA Quadro RTX 8000.
+trains for 150 epochs by default (upstream uses 1000), as in the paper. We trained on a single
+NVIDIA Quadro RTX 8000.
 
 ### 3. Inference
 
@@ -130,23 +144,24 @@ trains for 150 epochs by default (upstream uses 1000), as in the paper. We train
 Install a downloaded model with `nnUNetv2_install_pretrained_model_from_zip <file.zip>`.
 
 ```bash
-nnUNetv2_predict -i $nnUNet_raw/Dataset333_MSLesSeg/imagesTs -o predictions/CATMIL/fold_0 \
+nnUNetv2_predict -i $nnUNet_raw/Dataset333_MSLesSeg/imagesTs \
+  -o $SLS_DATA_ROOT/SmallLesionMRI/MSLesSeg/final_checkpoints/CATMIL/fold_0 \
   -d 333 -c 3d_fullres -f 0 -tr nnUNetTrainerCATMIL -chk checkpoint_final.pth \
   --save_probabilities
 ```
 
 `--save_probabilities` is needed for the calibration and probability-based metrics below.
-See [scripts/predict.sh](scripts/predict.sh).
+[scripts/predict.sh](scripts/predict.sh) loops over models and folds.
 
 ### 4. Evaluation
 
 ```bash
-python multiscale_eval.py \
+python evaluation/multiscale_eval.py \
   --gt_dir $nnUNet_raw/Dataset333_MSLesSeg/labelsTs \
-  --pred_mask_dir predictions/CATMIL/fold_0 \
-  --pred_prob_dir predictions/CATMIL/fold_0 \
-  --out_csv metrics/multiscale_eval_CATMIL_fold0.csv \
-  --out_json metrics/multiscale_eval_CATMIL_fold0.json \
+  --pred_mask_dir $SLS_DATA_ROOT/SmallLesionMRI/MSLesSeg/final_checkpoints/CATMIL/fold_0 \
+  --pred_prob_dir $SLS_DATA_ROOT/SmallLesionMRI/MSLesSeg/final_checkpoints/CATMIL/fold_0 \
+  --out_csv results/MSLesSeg/multiscale_eval_CATMIL_fold0.csv \
+  --out_json results/MSLesSeg/multiscale_eval_CATMIL_fold0.json \
   --small_voxels_thresh 150
 ```
 
@@ -157,17 +172,47 @@ large >200 voxels), false-negative and false-positive profiles, and calibration
 loops over all models and folds, and [scripts/get_all_metrics.sh](scripts/get_all_metrics.sh)
 aggregates the results.
 
-### 5. Figures and analysis
+### 5. Reproducing the analyses
 
-| Script | Output |
-| --- | --- |
-| [scripts/plot_recall_by_size.py](scripts/plot_recall_by_size.py) | Lesion recall per size bin |
-| [scripts/plot_fn_per_case_paired.py](scripts/plot_fn_per_case_paired.py) | Missed lesions per case, CATMIL vs. each baseline |
-| [scripts/build_lesion_tables.py](scripts/build_lesion_tables.py) | Per-lesion and per-component tables across thresholds |
-| [scripts/plot_lesion_figures.py](scripts/plot_lesion_figures.py) | Recall–size curves, lesion fate, operating curves, lesion gallery |
-| [scripts/extract_features.sh](scripts/extract_features.sh), [scripts/analyze_features.sh](scripts/analyze_features.sh) | Feature-space comparison of CATMIL and nnU-Net |
+Run the scripts from the repository root (`python analysis/<script>.py ...`). Scripts marked
+*data* read predictions or labels from `SLS_DATA_ROOT`; the others need only files in `results/`.
 
-The shell scripts contain absolute paths from our setup; edit them before running.
+| Script | What it computes | Input | Output |
+| --- | --- | --- | --- |
+| [build_lesion_tables.py](analysis/build_lesion_tables.py) | Per-lesion and per-component tables over probability thresholds, both test sets | data | `results/lesion_tables/` |
+| [recall_bootstrap.py](analysis/recall_bootstrap.py) | Patient-level bootstrap of lesion-level metrics | lesion tables | printed |
+| [stats_significance.py](analysis/stats_significance.py) | Significance of CATMIL vs each baseline (case and lesion level) | per-fold metric CSVs, lesion tables | `results/stats/` |
+| [error_analysis.py](analysis/error_analysis.py) | Which lesions are missed, by which loss, how close the misses are | lesion tables | `results/error_analysis/` |
+| [operating_curves.py](analysis/operating_curves.py) | Detection/precision operating curves | lesion tables | `results/operating_curves/` |
+| [plot_lesion_figures.py](analysis/plot_lesion_figures.py) | Recall–size curves, lesion fate, operating curves, lesion gallery | lesion tables, data | paper figures |
+| [plot_fn_per_case_paired.py](analysis/plot_fn_per_case_paired.py) | Missed lesions per case, CATMIL vs each baseline | lesion tables | paper figure |
+| [plot_recall_by_size.py](analysis/plot_recall_by_size.py) | Lesion recall per size bin | per-fold metric JSONs | figure |
+| [lesion_extent.py](analysis/lesion_extent.py) | Largest linear extent of every lesion (MAGNIMS size definition) | data | CSV |
+| [periventricular_flip.py](analysis/periventricular_flip.py), [periventricular_summary.py](analysis/periventricular_summary.py) | Do missed small lesions change the periventricular indicator? | data | `results/periventricular/` |
+| [pv_independence_check.py](analysis/pv_independence_check.py) | Does losing the periventricular indicator follow the independence model? | `results/periventricular/` | `results/analyses_2026-11/` |
+| [ablation_fn_count.py](analysis/ablation_fn_count.py) | Missed lesions per scan for the CAT / MIL ablation | data | `results/analyses_2026-11/` |
+| [architecture_vs_loss.py](analysis/architecture_vs_loss.py), [architecture_voxel_metrics.py](analysis/architecture_voxel_metrics.py) | Architecture (SegResNet, SwinUNETR, UNETR, UMambaBot) vs loss | data | `results/analyses_2026-11/` |
+| [architecture_vs_loss_twolevel.py](analysis/architecture_vs_loss_twolevel.py) | The same comparison with the paper's two-level bootstrap | `results/analyses_2026-11/` | `results/analyses_2026-11/` |
+| [pp5_3dmrms_twolevel.py](analysis/pp5_3dmrms_twolevel.py), [pp5_case_metrics.py](analysis/pp5_case_metrics.py) | Results after removing predicted components < 5 voxels (PP5) | lesion tables / data | `results/analyses_2026-11/` |
+| [oof_evaluation.py](analysis/oof_evaluation.py) | Out-of-fold evaluation on the 47 cross-validation patients | data | `results/analyses_2026-11/` |
+| [extract_features.sh](scripts/extract_features.sh), [analyze_features.py](analysis/analyze_features.py) | Feature-space comparison of CATMIL and nnU-Net | data | — |
+| [select_test_cases_for_visualization.py](analysis/select_test_cases_for_visualization.py) | Pick improved, failure and typical cases for the qualitative figures | per-fold metric CSVs | CSV |
+
+### 6. Building the paper
+
+```bash
+bash paper/arxiv/compile.sh          # -> paper/arxiv/submission/v02/ (PDF + arXiv tarball)
+bash paper/journal/compile.sh        # needs the MDPI template in paper/MDPI_template_ACS/
+```
+
+The figures the paper includes are in [paper/arxiv/figures/](paper/arxiv/figures/).
+
+## Code versions
+
+The tag [`arxiv-v5`](https://github.com/luumsk/SmallLesionMRI/tree/arxiv-v5) holds the code and
+LaTeX source exactly as of the arXiv v5 submission (before this repository was reorganised and
+the losses moved to comploss). The losses in comploss reproduce that implementation; its parity
+tests compare values and gradients against a frozen copy of the original code.
 
 ## Citation
 

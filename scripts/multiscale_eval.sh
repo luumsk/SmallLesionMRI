@@ -1,6 +1,10 @@
-GT_DIR="/media/storage/luu/nnUNet_raw/Dataset333_MSLesSeg/labelsTs"
-BASE_DIR="/media/storage/luu/SmallLesionMRI/MSLesSeg/final_checkpoints"
-OUT_DIR="metrics/MSLesSeg/latest_checkpoints"
+#!/usr/bin/env bash
+# Run from anywhere; paths are relative to the repository root.
+cd "$(dirname "$0")/.." && source scripts/config.sh
+
+GT_DIR="${nnUNet_raw}/Dataset333_MSLesSeg/labelsTs"
+BASE_DIR="${PRED_ROOT}/final_checkpoints"
+OUT_DIR="results/MSLesSeg/latest_checkpoints"
 
 FOLDS=(0 1 2 3 4)
 
@@ -32,7 +36,7 @@ for MODEL in "${MODELS[@]}"; do
     OUT_CSV="${OUT_DIR}/multiscale_eval_${MODEL}_fold${FOLD}.csv"
     OUT_JSON="${OUT_DIR}/multiscale_eval_${MODEL}_fold${FOLD}.json"
 
-    python multiscale_eval.py \
+    python evaluation/multiscale_eval.py \
       --gt_dir "${GT_DIR}" \
       --pred_mask_dir "${PRED_MASK_DIR}" \
       --pred_prob_dir "${PRED_PROB_DIR}" \

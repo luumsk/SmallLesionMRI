@@ -1,7 +1,7 @@
-"""nnUNetTrainerTversky: implemented in the catmil package (catmil/src/catmil/integrations/nnunet.py).
+"""nnUNetTrainerTversky: implemented in the comploss package (comploss.integrations.nnunet).
 
-Install it once in the training environment: pip install -e <repo>/catmil
-The losses there reproduce the original implementation (catmil/tests/test_parity.py,
-catmil/tests/test_nnunet.py); the original code is in git history before this change.
+Install it once in the training environment: pip install -r requirements.txt (pins comploss).
+comploss reproduces the original implementation of the paper (its tests/test_parity.py and
+tests/test_nnunet.py); the original code is in the git history of this repository (tag arxiv-v5).
 """
-from catmil.integrations.nnunet import nnUNetTrainerTversky  # noqa: F401
+from comploss.integrations.nnunet import nnUNetTrainerTversky  # noqa: F401
