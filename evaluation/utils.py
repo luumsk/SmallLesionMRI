@@ -40,7 +40,7 @@ def connected_components(mask,
         - labeled_mask (numpy.ndarray): A 3D array where each connected component is assigned a unique integer label.
         - num_components (int): The number of connected components found in the mask.
     """
-    structure = generate_binary_structure(rank=rank, connectivity=connectivity)  # 26-connectivity
+    structure = generate_binary_structure(rank=rank, connectivity=connectivity)  # connectivity=1: 6-connectivity, 3: 26-connectivity
     labeled_mask, num_components = label(mask, structure=structure)
     return labeled_mask, num_components
 
@@ -832,7 +832,7 @@ def lesion_metrics_to_csv(
     out_csv: str | Path,
     brain_mask_path: str | Path | None = None,
     *,
-    connectivity: int = 3,
+    connectivity: int = 1,  # 6-connectivity, as in the lesion-wise metrics
     ring_mm: float = 3.0,
     cnr_eps: float = 1e-8,
     sigma_mm: float = 1.0,
