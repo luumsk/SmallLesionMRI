@@ -44,7 +44,7 @@ setup, and each value is the mean ± std over the five fold models. Small lesion
   within 1–2 mm of a real lesion. They add little false-positive volume but lower
   Lesion F1. If components smaller than 5 voxels are removed, CATMIL's Lesion F1 rises
   to 0.8415, compared with 0.8586 for DiceCE. CATMIL then still has the best Dice
-  (0.7842), the best HD95 (8.10 mm) and the highest small-lesion recall (0.8554).
+  (0.7842), the best HD95 (8.10 mm) and the highest small-lesion recall (0.8553).
 - **External test on 3D-MR-MS:** CATMIL again has the highest small-lesion recall
   (0.618 vs 0.537 for DiceCE), the fewest missed lesions (16.9 vs 22.0), the lowest HD95
   and the lowest FP volume. Its Dice (0.718 vs 0.734 best) and Lesion F1 (0.471 vs 0.668
