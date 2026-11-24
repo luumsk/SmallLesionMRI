@@ -370,7 +370,7 @@ component-level cost of CATMIL is larger on this dataset. Without
 filtering, CATMIL produces 150 false-positive components per case, compared
 with 14--19 for the voxel-level losses and 43 for CC-DiceCE, which explains its low Lesion F1 in
 \cref{tab:loss_comparison_small_lesion}. The size filter again removes most of
-them: PP5 reduces the count to 27 per case with a recall of 0.70, and a
+them: PP5 reduces the count to 27 per case with a lesion recall (pooled over all reference lesions) of 0.700, and a
 filter of 20 voxels reduces it to 9.7 per case with a recall of 0.657. At
 this setting, CATMIL has about as many false-positive components as DiceCE
 after PP5 (9.5 per case) and a higher recall (0.648 for DiceCE). The filter
