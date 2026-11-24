@@ -217,6 +217,7 @@ Run the scripts from the repository root (`python analysis/<script>.py ...`). Sc
 | [architecture_vs_loss_twolevel.py](analysis/architecture_vs_loss_twolevel.py) | The same comparison with the paper's two-level bootstrap | `results/analyses_2026-11/` | `results/analyses_2026-11/` |
 | [pp5_3dmrms_twolevel.py](analysis/pp5_3dmrms_twolevel.py), [pp5_case_metrics.py](analysis/pp5_case_metrics.py) | Results after removing predicted components < 5 voxels (PP5) | lesion tables / data | `results/analyses_2026-11/` |
 | [make_tables.py](analysis/make_tables.py) | Paper tables from the per-fold metrics and `results/stats/` | `results/per_fold/`, `results/stats/` | `results/tables/` |
+| [combine_lesion_profile.py](analysis/combine_lesion_profile.py) | Combined ground-truth lesion profile (volume, contrast, sharpness, KMeans cluster) | `results/lesion_profile/MSLesSeg/` | `results/lesion_profile/MSLesSeg_lesion_profile.csv` |
 | [oof_evaluation.py](analysis/oof_evaluation.py) | Out-of-fold evaluation on the 47 cross-validation patients | data | `results/analyses_2026-11/` |
 | [extract_features.sh](scripts/extract_features.sh), [analyze_features.py](analysis/analyze_features.py) | Feature-space comparison of CATMIL and nnU-Net | data | — |
 | [select_test_cases_for_visualization.py](analysis/select_test_cases_for_visualization.py) | Pick improved, failure and typical cases for the qualitative figures | per-fold metric CSVs | CSV |
