@@ -169,15 +169,30 @@ python evaluation/multiscale_eval.py \
   --pred_prob_dir $SLS_DATA_ROOT/SmallLesionMRI/MSLesSeg/final_checkpoints/CATMIL/fold_0 \
   --out_csv results/MSLesSeg/multiscale_eval_CATMIL_fold0.csv \
   --out_json results/MSLesSeg/multiscale_eval_CATMIL_fold0.json \
-  --small_voxels_thresh 150
+  --small_voxels_thresh 150 --metrics_mode all --allow_missing_prob
 ```
 
 This reports Dice, HD95 and ASSD, lesion-wise detection (6-connected components,
 any-voxel overlap), recall by lesion size (tiny ≤10, small 11–50, medium 51–200,
 large >200 voxels), false-negative and false-positive profiles, and calibration
-(entropy, Brier score, ECE). [scripts/multiscale_eval.sh](scripts/multiscale_eval.sh)
-loops over all models and folds, and [scripts/get_all_metrics.sh](scripts/get_all_metrics.sh)
-aggregates the results.
+(entropy, Brier score, ECE). `--metrics_mode main` (the default) writes only the main paper
+metrics; `--out_json` is optional.
+
+To regenerate everything in [results/per_fold/](results/per_fold/) (all losses, PP3/PP5/PP10/PP15,
+the lambda sweep and 3D-MR-MS), and then the paper tables:
+
+```bash
+bash scripts/multiscale_eval.sh                        # -> results/per_fold_rerun/ (OUT_ROOT=...)
+python analysis/make_tables.py results/per_fold_rerun  # -> results/tables/
+```
+
+The script first rebuilds the post-processed masks with
+[evaluation/postprocess_min_size.py](evaluation/postprocess_min_size.py) (predicted 6-connected
+components below N voxels removed). [analysis/make_tables.py](analysis/make_tables.py) writes the
+mean ± std, paired-difference and ablation tables of the paper as LaTeX `tabular`s with the
+unrounded values next to them. The paired differences come from `results/stats/`; rerun
+[stats_significance.py](analysis/stats_significance.py) on the new folder first if you want them
+recomputed too.
 
 ### 5. Reproducing the analyses
 
@@ -201,6 +216,7 @@ Run the scripts from the repository root (`python analysis/<script>.py ...`). Sc
 | [architecture_vs_loss.py](analysis/architecture_vs_loss.py), [architecture_voxel_metrics.py](analysis/architecture_voxel_metrics.py) | Architecture (SegResNet, SwinUNETR, UNETR, UMambaBot) vs loss | data | `results/analyses_2026-11/` |
 | [architecture_vs_loss_twolevel.py](analysis/architecture_vs_loss_twolevel.py) | The same comparison with the paper's two-level bootstrap | `results/analyses_2026-11/` | `results/analyses_2026-11/` |
 | [pp5_3dmrms_twolevel.py](analysis/pp5_3dmrms_twolevel.py), [pp5_case_metrics.py](analysis/pp5_case_metrics.py) | Results after removing predicted components < 5 voxels (PP5) | lesion tables / data | `results/analyses_2026-11/` |
+| [make_tables.py](analysis/make_tables.py) | Paper tables from the per-fold metrics and `results/stats/` | `results/per_fold/`, `results/stats/` | `results/tables/` |
 | [oof_evaluation.py](analysis/oof_evaluation.py) | Out-of-fold evaluation on the 47 cross-validation patients | data | `results/analyses_2026-11/` |
 | [extract_features.sh](scripts/extract_features.sh), [analyze_features.py](analysis/analyze_features.py) | Feature-space comparison of CATMIL and nnU-Net | data | — |
 | [select_test_cases_for_visualization.py](analysis/select_test_cases_for_visualization.py) | Pick improved, failure and typical cases for the qualitative figures | per-fold metric CSVs | CSV |
