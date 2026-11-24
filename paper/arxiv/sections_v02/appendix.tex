@@ -99,16 +99,16 @@ $\lambda_{\text{MIL}}$ on the MSLesSeg test set.}
 Model & DSC & HD95 $\downarrow$ & Lesion F1 & Small Recall & FP Vol $\downarrow$ \\
 \midrule
 CATMIL0101 & 0.7675 & 9.3881 & \underline{0.7720} & 0.8514 & 2292.17 \\
-CATMIL0102 & \textbf{0.7954} & \textbf{5.9771} & 0.7452 & \underline{0.8711} & \underline{1345.83} \\
+CATMIL0102 & \textbf{0.7953} & \textbf{5.9771} & 0.7452 & \underline{0.8711} & \underline{1345.83} \\
 CATMIL0201 & \underline{0.7921} & \underline{6.7964} & \textbf{0.7754} & \textbf{0.8784} & \textbf{1233.92} \\
-CATMIL0202 & 0.7663 & 9.4507 & 0.7632 & 0.8699 & 1729.42 \\
+CATMIL0202 & 0.7663 & 9.4506 & 0.7632 & 0.8699 & 1729.42 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The configuration used in the main experiments (CATMIL0102), in which the
 MIL term has the larger weight, gives the best global segmentation
-performance, with the highest DSC (0.7954) and lowest HD95 (5.9771~mm), but
+performance, with the highest DSC (0.7953) and lowest HD95 (5.9771~mm), but
 also the lowest lesion-wise F1 (0.7452). Exchanging the two weights
 (CATMIL0201) improves lesion-level behavior, with the highest lesion F1
 (0.7754), the highest small lesion recall (0.8784), and the lowest FP
@@ -215,7 +215,7 @@ in \textbf{bold}; second-best values are \underline{underlined}.}
 & \textbf{CC-DiceCE} \\
 \midrule
 Small Lesion Recall $\uparrow$
-& \textbf{0.8554 $\pm$ 0.01}
+& \textbf{0.8553 $\pm$ 0.01}
 & 0.7853 $\pm$ 0.03
 & \underline{0.8223 $\pm$ 0.02}
 & 0.8196 $\pm$ 0.02
