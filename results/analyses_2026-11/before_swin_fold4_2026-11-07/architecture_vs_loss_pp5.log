@@ -1,0 +1,33 @@
+                    small_recall  fn_count  lesion_f1
+model                                                
+nnU-Net (CATMIL)          0.8553    3.1333     0.8415
+nnU-Net (DiceCE)          0.7853    5.2333     0.8586
+SegResNet (DiceCE)        0.7634    5.2333     0.8439
+SwinUNETR (DiceCE)        0.7409    5.5833     0.8181
+UNETR (DiceCE)            0.6877    7.1167     0.7823
+UMambaBot (DiceCE)        0.7641    5.0000     0.8535
+      metric                                        comparison                  a                  b    diff   ci_lo   ci_hi
+small_recall         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SegResNet (DiceCE)  0.0919  0.0239  0.2098
+small_recall architecture change: arch DiceCE - nnU-Net DiceCE SegResNet (DiceCE)   nnU-Net (DiceCE) -0.0219 -0.0754  0.0073
+small_recall         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SwinUNETR (DiceCE)  0.1145  0.0493  0.2152
+small_recall architecture change: arch DiceCE - nnU-Net DiceCE SwinUNETR (DiceCE)   nnU-Net (DiceCE) -0.0444 -0.0894 -0.0052
+small_recall         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL)     UNETR (DiceCE)  0.1677  0.0726  0.3183
+small_recall architecture change: arch DiceCE - nnU-Net DiceCE     UNETR (DiceCE)   nnU-Net (DiceCE) -0.0976 -0.1875 -0.0348
+small_recall         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) UMambaBot (DiceCE)  0.0912  0.0256  0.1998
+small_recall architecture change: arch DiceCE - nnU-Net DiceCE UMambaBot (DiceCE)   nnU-Net (DiceCE) -0.0212 -0.0711  0.0191
+    fn_count         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SegResNet (DiceCE) -2.1000 -4.8667 -0.6749
+    fn_count architecture change: arch DiceCE - nnU-Net DiceCE SegResNet (DiceCE)   nnU-Net (DiceCE)  0.0000 -0.1750  0.2400
+    fn_count         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SwinUNETR (DiceCE) -2.4500 -5.2000 -0.9614
+    fn_count architecture change: arch DiceCE - nnU-Net DiceCE SwinUNETR (DiceCE)   nnU-Net (DiceCE)  0.3500  0.0450  0.6538
+    fn_count         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL)     UNETR (DiceCE) -3.9833 -8.0000 -1.7529
+    fn_count architecture change: arch DiceCE - nnU-Net DiceCE     UNETR (DiceCE)   nnU-Net (DiceCE)  1.8833  0.8588  3.3002
+    fn_count         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) UMambaBot (DiceCE) -1.8667 -4.1443 -0.6133
+    fn_count architecture change: arch DiceCE - nnU-Net DiceCE UMambaBot (DiceCE)   nnU-Net (DiceCE) -0.2333 -0.8502  0.1333
+   lesion_f1         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SegResNet (DiceCE) -0.0025 -0.0195  0.0114
+   lesion_f1 architecture change: arch DiceCE - nnU-Net DiceCE SegResNet (DiceCE)   nnU-Net (DiceCE) -0.0146 -0.0264 -0.0034
+   lesion_f1         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SwinUNETR (DiceCE)  0.0234  0.0037  0.0408
+   lesion_f1 architecture change: arch DiceCE - nnU-Net DiceCE SwinUNETR (DiceCE)   nnU-Net (DiceCE) -0.0405 -0.0624 -0.0188
+   lesion_f1         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL)     UNETR (DiceCE)  0.0592  0.0338  0.0856
+   lesion_f1 architecture change: arch DiceCE - nnU-Net DiceCE     UNETR (DiceCE)   nnU-Net (DiceCE) -0.0763 -0.1037 -0.0537
+   lesion_f1         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) UMambaBot (DiceCE) -0.0120 -0.0290 -0.0003
+   lesion_f1 architecture change: arch DiceCE - nnU-Net DiceCE UMambaBot (DiceCE)   nnU-Net (DiceCE) -0.0051 -0.0130  0.0069

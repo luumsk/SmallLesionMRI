@@ -1,0 +1,9 @@
+infinite HD95 values (empty prediction or reference): 0
+                    dice_mean  dice_std  dice_count  hd95_mm_mean  hd95_mm_std  hd95_mm_count
+model                                                                                        
+nnU-Net (CATMIL)       0.7834    0.0102           5        7.9817       1.8430              5
+nnU-Net (DiceCE)       0.7796    0.0141           5        9.0372       1.3381              5
+SegResNet (DiceCE)     0.7614    0.0068           5       10.5762       2.1972              5
+SwinUNETR (DiceCE)     0.7622    0.0113           5       10.5698       2.1681              5
+UNETR (DiceCE)         0.7445    0.0155           5       10.9620       2.1743              5
+UMambaBot (DiceCE)     0.7815    0.0025           5        8.6785       1.6800              5

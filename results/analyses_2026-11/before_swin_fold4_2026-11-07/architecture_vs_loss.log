@@ -1,0 +1,262 @@
+skipped (model, fold): [('SwinUNETR', 4)]
+MSLesSeg SegResNet 0 P2_T1 16
+MSLesSeg SegResNet 0 P13_T1 39
+MSLesSeg SegResNet 0 P13_T2 61
+MSLesSeg SegResNet 0 P26_T1 43
+MSLesSeg SegResNet 0 P2_T3 14
+MSLesSeg SegResNet 0 P2_T2 20
+MSLesSeg SegResNet 0 P2_T4 18
+MSLesSeg SegResNet 0 P47_T1 59
+MSLesSeg SegResNet 0 P49_T2 19
+MSLesSeg SegResNet 0 P49_T1 30
+MSLesSeg SegResNet 0 P52_T1 28
+MSLesSeg SegResNet 0 P52_T2 14
+MSLesSeg SegResNet 1 P13_T1 39
+MSLesSeg SegResNet 1 P13_T2 61
+MSLesSeg SegResNet 1 P26_T1 43
+MSLesSeg SegResNet 1 P2_T1 16
+MSLesSeg SegResNet 1 P2_T2 20
+MSLesSeg SegResNet 1 P2_T3 14
+MSLesSeg SegResNet 1 P2_T4 18
+MSLesSeg SegResNet 1 P47_T1 59
+MSLesSeg SegResNet 1 P49_T2 19
+MSLesSeg SegResNet 1 P52_T1 28
+MSLesSeg SegResNet 1 P49_T1 30
+MSLesSeg SegResNet 1 P52_T2 14
+MSLesSeg SegResNet 2 P13_T1 39
+MSLesSeg SegResNet 2 P26_T1 43
+MSLesSeg SegResNet 2 P13_T2 61
+MSLesSeg SegResNet 2 P2_T1 16
+MSLesSeg SegResNet 2 P2_T2 20
+MSLesSeg SegResNet 2 P2_T3 14
+MSLesSeg SegResNet 2 P2_T4 18
+MSLesSeg SegResNet 2 P47_T1 59
+MSLesSeg SegResNet 2 P49_T2 19
+MSLesSeg SegResNet 2 P49_T1 30
+MSLesSeg SegResNet 2 P52_T1 28
+MSLesSeg SegResNet 2 P52_T2 14
+MSLesSeg SegResNet 3 P13_T1 39
+MSLesSeg SegResNet 3 P13_T2 61
+MSLesSeg SegResNet 3 P26_T1 43
+MSLesSeg SegResNet 3 P2_T1 16
+MSLesSeg SegResNet 3 P2_T2 20
+MSLesSeg SegResNet 3 P2_T3 14
+MSLesSeg SegResNet 3 P2_T4 18
+MSLesSeg SegResNet 3 P47_T1 59
+MSLesSeg SegResNet 3 P49_T1 30
+MSLesSeg SegResNet 3 P52_T1 28
+MSLesSeg SegResNet 3 P49_T2 19
+MSLesSeg SegResNet 3 P52_T2 14
+MSLesSeg SegResNet 4 P13_T1 39
+MSLesSeg SegResNet 4 P26_T1 43
+MSLesSeg SegResNet 4 P13_T2 61
+MSLesSeg SegResNet 4 P2_T1 16
+MSLesSeg SegResNet 4 P2_T2 20
+MSLesSeg SegResNet 4 P2_T3 14
+MSLesSeg SegResNet 4 P2_T4 18
+MSLesSeg SegResNet 4 P47_T1 59
+MSLesSeg SegResNet 4 P49_T2 19
+MSLesSeg SegResNet 4 P52_T1 28
+MSLesSeg SegResNet 4 P49_T1 30
+MSLesSeg SegResNet 4 P52_T2 14
+MSLesSeg SwinUNETR 0 P13_T1 39
+MSLesSeg SwinUNETR 0 P26_T1 43
+MSLesSeg SwinUNETR 0 P13_T2 61
+MSLesSeg SwinUNETR 0 P2_T1 16
+MSLesSeg SwinUNETR 0 P2_T3 14
+MSLesSeg SwinUNETR 0 P2_T2 20
+MSLesSeg SwinUNETR 0 P2_T4 18
+MSLesSeg SwinUNETR 0 P47_T1 59
+MSLesSeg SwinUNETR 0 P49_T2 19
+MSLesSeg SwinUNETR 0 P52_T1 28
+MSLesSeg SwinUNETR 0 P49_T1 30
+MSLesSeg SwinUNETR 0 P52_T2 14
+MSLesSeg SwinUNETR 1 P13_T1 39
+MSLesSeg SwinUNETR 1 P26_T1 43
+MSLesSeg SwinUNETR 1 P13_T2 61
+MSLesSeg SwinUNETR 1 P2_T1 16
+MSLesSeg SwinUNETR 1 P2_T2 20
+MSLesSeg SwinUNETR 1 P2_T3 14
+MSLesSeg SwinUNETR 1 P2_T4 18
+MSLesSeg SwinUNETR 1 P47_T1 59
+MSLesSeg SwinUNETR 1 P49_T2 19
+MSLesSeg SwinUNETR 1 P49_T1 30
+MSLesSeg SwinUNETR 1 P52_T1 28
+MSLesSeg SwinUNETR 1 P52_T2 14
+MSLesSeg SwinUNETR 2 P13_T1 39
+MSLesSeg SwinUNETR 2 P26_T1 43
+MSLesSeg SwinUNETR 2 P13_T2 61
+MSLesSeg SwinUNETR 2 P2_T1 16
+MSLesSeg SwinUNETR 2 P2_T2 20
+MSLesSeg SwinUNETR 2 P2_T3 14
+MSLesSeg SwinUNETR 2 P2_T4 18
+MSLesSeg SwinUNETR 2 P47_T1 59
+MSLesSeg SwinUNETR 2 P49_T2 19
+MSLesSeg SwinUNETR 2 P49_T1 30
+MSLesSeg SwinUNETR 2 P52_T1 28
+MSLesSeg SwinUNETR 2 P52_T2 14
+MSLesSeg SwinUNETR 3 P13_T1 39
+MSLesSeg SwinUNETR 3 P26_T1 43
+MSLesSeg SwinUNETR 3 P13_T2 61
+MSLesSeg SwinUNETR 3 P2_T1 16
+MSLesSeg SwinUNETR 3 P2_T3 14
+MSLesSeg SwinUNETR 3 P2_T2 20
+MSLesSeg SwinUNETR 3 P2_T4 18
+MSLesSeg SwinUNETR 3 P47_T1 59
+MSLesSeg SwinUNETR 3 P49_T2 19
+MSLesSeg SwinUNETR 3 P49_T1 30
+MSLesSeg SwinUNETR 3 P52_T1 28
+MSLesSeg SwinUNETR 3 P52_T2 14
+MSLesSeg UNETR 0 P26_T1 43
+MSLesSeg UNETR 0 P13_T1 39
+MSLesSeg UNETR 0 P13_T2 61
+MSLesSeg UNETR 0 P2_T1 16
+MSLesSeg UNETR 0 P2_T4 18
+MSLesSeg UNETR 0 P2_T2 20
+MSLesSeg UNETR 0 P2_T3 14
+MSLesSeg UNETR 0 P47_T1 59
+MSLesSeg UNETR 0 P52_T1 28
+MSLesSeg UNETR 0 P49_T2 19
+MSLesSeg UNETR 0 P49_T1 30
+MSLesSeg UNETR 0 P52_T2 14
+MSLesSeg UNETR 1 P13_T1 39
+MSLesSeg UNETR 1 P26_T1 43
+MSLesSeg UNETR 1 P13_T2 61
+MSLesSeg UNETR 1 P2_T1 16
+MSLesSeg UNETR 1 P2_T3 14
+MSLesSeg UNETR 1 P2_T2 20
+MSLesSeg UNETR 1 P2_T4 18
+MSLesSeg UNETR 1 P47_T1 59
+MSLesSeg UNETR 1 P49_T1 30
+MSLesSeg UNETR 1 P52_T1 28
+MSLesSeg UNETR 1 P49_T2 19
+MSLesSeg UNETR 1 P52_T2 14
+MSLesSeg UNETR 2 P26_T1 43
+MSLesSeg UNETR 2 P13_T1 39
+MSLesSeg UNETR 2 P13_T2 61
+MSLesSeg UNETR 2 P2_T1 16
+MSLesSeg UNETR 2 P2_T3 14
+MSLesSeg UNETR 2 P2_T2 20
+MSLesSeg UNETR 2 P2_T4 18
+MSLesSeg UNETR 2 P47_T1 59
+MSLesSeg UNETR 2 P49_T2 19
+MSLesSeg UNETR 2 P49_T1 30
+MSLesSeg UNETR 2 P52_T1 28
+MSLesSeg UNETR 2 P52_T2 14
+MSLesSeg UNETR 3 P13_T1 39
+MSLesSeg UNETR 3 P13_T2 61
+MSLesSeg UNETR 3 P26_T1 43
+MSLesSeg UNETR 3 P2_T1 16
+MSLesSeg UNETR 3 P2_T3 14
+MSLesSeg UNETR 3 P2_T4 18
+MSLesSeg UNETR 3 P2_T2 20
+MSLesSeg UNETR 3 P47_T1 59
+MSLesSeg UNETR 3 P49_T1 30
+MSLesSeg UNETR 3 P52_T1 28
+MSLesSeg UNETR 3 P49_T2 19
+MSLesSeg UNETR 3 P52_T2 14
+MSLesSeg UNETR 4 P13_T1 39
+MSLesSeg UNETR 4 P13_T2 61
+MSLesSeg UNETR 4 P26_T1 43
+MSLesSeg UNETR 4 P2_T1 16
+MSLesSeg UNETR 4 P2_T3 14
+MSLesSeg UNETR 4 P2_T2 20
+MSLesSeg UNETR 4 P2_T4 18
+MSLesSeg UNETR 4 P47_T1 59
+MSLesSeg UNETR 4 P49_T1 30
+MSLesSeg UNETR 4 P52_T1 28
+MSLesSeg UNETR 4 P49_T2 19
+MSLesSeg UNETR 4 P52_T2 14
+MSLesSeg UMambaBot 0 P13_T1 39
+MSLesSeg UMambaBot 0 P26_T1 43
+MSLesSeg UMambaBot 0 P13_T2 61
+MSLesSeg UMambaBot 0 P2_T1 16
+MSLesSeg UMambaBot 0 P2_T2 20
+MSLesSeg UMambaBot 0 P2_T3 14
+MSLesSeg UMambaBot 0 P2_T4 18
+MSLesSeg UMambaBot 0 P47_T1 59
+MSLesSeg UMambaBot 0 P49_T1 30
+MSLesSeg UMambaBot 0 P49_T2 19
+MSLesSeg UMambaBot 0 P52_T1 28
+MSLesSeg UMambaBot 0 P52_T2 14
+MSLesSeg UMambaBot 1 P13_T1 39
+MSLesSeg UMambaBot 1 P13_T2 61
+MSLesSeg UMambaBot 1 P26_T1 43
+MSLesSeg UMambaBot 1 P2_T1 16
+MSLesSeg UMambaBot 1 P2_T3 14
+MSLesSeg UMambaBot 1 P2_T2 20
+MSLesSeg UMambaBot 1 P2_T4 18
+MSLesSeg UMambaBot 1 P47_T1 59
+MSLesSeg UMambaBot 1 P49_T1 30
+MSLesSeg UMambaBot 1 P52_T1 28
+MSLesSeg UMambaBot 1 P49_T2 19
+MSLesSeg UMambaBot 1 P52_T2 14
+MSLesSeg UMambaBot 2 P13_T1 39
+MSLesSeg UMambaBot 2 P26_T1 43
+MSLesSeg UMambaBot 2 P13_T2 61
+MSLesSeg UMambaBot 2 P2_T1 16
+MSLesSeg UMambaBot 2 P2_T3 14
+MSLesSeg UMambaBot 2 P2_T4 18
+MSLesSeg UMambaBot 2 P2_T2 20
+MSLesSeg UMambaBot 2 P47_T1 59
+MSLesSeg UMambaBot 2 P49_T1 30
+MSLesSeg UMambaBot 2 P49_T2 19
+MSLesSeg UMambaBot 2 P52_T1 28
+MSLesSeg UMambaBot 2 P52_T2 14
+MSLesSeg UMambaBot 3 P13_T1 39
+MSLesSeg UMambaBot 3 P26_T1 43
+MSLesSeg UMambaBot 3 P13_T2 61
+MSLesSeg UMambaBot 3 P2_T1 16
+MSLesSeg UMambaBot 3 P2_T2 20
+MSLesSeg UMambaBot 3 P2_T3 14
+MSLesSeg UMambaBot 3 P2_T4 18
+MSLesSeg UMambaBot 3 P47_T1 59
+MSLesSeg UMambaBot 3 P49_T2 19
+MSLesSeg UMambaBot 3 P49_T1 30
+MSLesSeg UMambaBot 3 P52_T1 28
+MSLesSeg UMambaBot 3 P52_T2 14
+MSLesSeg UMambaBot 4 P13_T1 39
+MSLesSeg UMambaBot 4 P13_T2 61
+MSLesSeg UMambaBot 4 P26_T1 43
+MSLesSeg UMambaBot 4 P2_T1 16
+MSLesSeg UMambaBot 4 P2_T3 14
+MSLesSeg UMambaBot 4 P2_T4 18
+MSLesSeg UMambaBot 4 P2_T2 20
+MSLesSeg UMambaBot 4 P47_T1 59
+MSLesSeg UMambaBot 4 P49_T2 19
+MSLesSeg UMambaBot 4 P52_T1 28
+MSLesSeg UMambaBot 4 P49_T1 30
+MSLesSeg UMambaBot 4 P52_T2 14
+                    small_recall  fn_count  lesion_f1
+model                                                
+nnU-Net (CATMIL)          0.8730    2.5667     0.7571
+nnU-Net (DiceCE)          0.7956    4.9500     0.8433
+SegResNet (DiceCE)        0.7790    4.8333     0.8358
+SwinUNETR (DiceCE)        0.7661    4.9583     0.8032
+UNETR (DiceCE)            0.7149    6.4333     0.7649
+UMambaBot (DiceCE)        0.7784    4.6500     0.8424
+      metric                                        comparison                  a                  b    diff   ci_lo   ci_hi
+small_recall         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SegResNet (DiceCE)  0.0940  0.0318  0.1978
+small_recall architecture change: arch DiceCE - nnU-Net DiceCE SegResNet (DiceCE)   nnU-Net (DiceCE) -0.0166 -0.0632  0.0109
+small_recall         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SwinUNETR (DiceCE)  0.1068  0.0423  0.2097
+small_recall architecture change: arch DiceCE - nnU-Net DiceCE SwinUNETR (DiceCE)   nnU-Net (DiceCE) -0.0295 -0.0762  0.0131
+small_recall         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL)     UNETR (DiceCE)  0.1581  0.0713  0.2964
+small_recall architecture change: arch DiceCE - nnU-Net DiceCE     UNETR (DiceCE)   nnU-Net (DiceCE) -0.0807 -0.1610 -0.0248
+small_recall         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) UMambaBot (DiceCE)  0.0946  0.0340  0.1982
+small_recall architecture change: arch DiceCE - nnU-Net DiceCE UMambaBot (DiceCE)   nnU-Net (DiceCE) -0.0173 -0.0649  0.0191
+    fn_count         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SegResNet (DiceCE) -2.2667 -5.1333 -0.8000
+    fn_count architecture change: arch DiceCE - nnU-Net DiceCE SegResNet (DiceCE)   nnU-Net (DiceCE) -0.1167 -0.3714  0.1455
+    fn_count         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SwinUNETR (DiceCE) -2.3917 -5.3562 -0.8036
+    fn_count architecture change: arch DiceCE - nnU-Net DiceCE SwinUNETR (DiceCE)   nnU-Net (DiceCE)  0.0083 -0.5950  0.3455
+    fn_count         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL)     UNETR (DiceCE) -3.8667 -7.9556 -1.6706
+    fn_count architecture change: arch DiceCE - nnU-Net DiceCE     UNETR (DiceCE)   nnU-Net (DiceCE)  1.4833  0.6819  2.6400
+    fn_count         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) UMambaBot (DiceCE) -2.0833 -4.4889 -0.7885
+    fn_count architecture change: arch DiceCE - nnU-Net DiceCE UMambaBot (DiceCE)   nnU-Net (DiceCE) -0.3000 -0.9000  0.1000
+   lesion_f1         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SegResNet (DiceCE) -0.0787 -0.1219 -0.0390
+   lesion_f1 architecture change: arch DiceCE - nnU-Net DiceCE SegResNet (DiceCE)   nnU-Net (DiceCE) -0.0075 -0.0173  0.0047
+   lesion_f1         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) SwinUNETR (DiceCE) -0.0461 -0.0861 -0.0122
+   lesion_f1 architecture change: arch DiceCE - nnU-Net DiceCE SwinUNETR (DiceCE)   nnU-Net (DiceCE) -0.0401 -0.0586 -0.0204
+   lesion_f1         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL)     UNETR (DiceCE) -0.0079 -0.0587  0.0332
+   lesion_f1 architecture change: arch DiceCE - nnU-Net DiceCE     UNETR (DiceCE)   nnU-Net (DiceCE) -0.0783 -0.0943 -0.0576
+   lesion_f1         loss change: CATMIL nnU-Net - arch DiceCE   nnU-Net (CATMIL) UMambaBot (DiceCE) -0.0853 -0.1328 -0.0424
+   lesion_f1 architecture change: arch DiceCE - nnU-Net DiceCE UMambaBot (DiceCE)   nnU-Net (DiceCE) -0.0009 -0.0113  0.0140

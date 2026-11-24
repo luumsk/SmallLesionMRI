@@ -1,0 +1,19 @@
+nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.
+nnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.
+nnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.
+perform_everything_on_device=True is only supported for cuda devices! Setting this to False
+resizing data, order is 3
+data shape (3, 154, 183, 143)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 154, 183, 143)
+resizing data, order is 1
+data shape (2, 154, 183, 143)
+fold 0 P2_T1 done  Dice vs stored 1.0000  voxels new/stored 2139/2139  differing voxels 0
+resizing data, order is 3
+data shape (3, 157, 186, 151)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 157, 186, 151)
+resizing data, order is 1
+data shape (2, 157, 186, 151)
+fold 0 P47_T1 done  Dice vs stored 0.9999  voxels new/stored 21640/21643  differing voxels 3
+done

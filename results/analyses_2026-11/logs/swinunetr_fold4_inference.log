@@ -1,0 +1,89 @@
+nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.
+nnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.
+nnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.
+perform_everything_on_device=True is only supported for cuda devices! Setting this to False
+resizing data, order is 3
+data shape (3, 157, 189, 154)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 157, 189, 154)
+resizing data, order is 1
+data shape (2, 157, 189, 154)
+fold 4 P13_T1 done
+resizing data, order is 3
+data shape (3, 166, 189, 152)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 166, 189, 152)
+resizing data, order is 1
+data shape (2, 166, 189, 152)
+fold 4 P13_T2 done
+resizing data, order is 3
+data shape (3, 158, 186, 151)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 158, 186, 151)
+resizing data, order is 1
+data shape (2, 158, 186, 151)
+fold 4 P26_T1 done
+resizing data, order is 3
+data shape (3, 154, 183, 143)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 154, 183, 143)
+resizing data, order is 1
+data shape (2, 154, 183, 143)
+fold 4 P2_T1 done
+resizing data, order is 3
+data shape (3, 159, 184, 154)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 159, 184, 154)
+resizing data, order is 1
+data shape (2, 159, 184, 154)
+fold 4 P2_T2 done
+resizing data, order is 3
+data shape (3, 154, 184, 147)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 154, 184, 147)
+resizing data, order is 1
+data shape (2, 154, 184, 147)
+fold 4 P2_T3 done
+resizing data, order is 3
+data shape (3, 164, 185, 144)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 164, 185, 144)
+resizing data, order is 1
+data shape (2, 164, 185, 144)
+fold 4 P2_T4 done
+resizing data, order is 3
+data shape (3, 157, 186, 151)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 157, 186, 151)
+resizing data, order is 1
+data shape (2, 157, 186, 151)
+fold 4 P47_T1 done
+resizing data, order is 3
+data shape (3, 166, 182, 150)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 166, 182, 150)
+resizing data, order is 1
+data shape (2, 166, 182, 150)
+fold 4 P49_T1 done
+resizing data, order is 3
+data shape (3, 159, 202, 163)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 159, 202, 163)
+resizing data, order is 1
+data shape (2, 159, 202, 163)
+fold 4 P49_T2 done
+resizing data, order is 3
+data shape (3, 162, 191, 156)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 162, 191, 156)
+resizing data, order is 1
+data shape (2, 162, 191, 156)
+fold 4 P52_T1 done
+resizing data, order is 3
+data shape (3, 180, 213, 176)
+resizing segmentation, order is 1 order z is 0
+data shape (1, 180, 213, 176)
+resizing data, order is 1
+data shape (2, 180, 213, 176)
+fold 4 P52_T2 done
+done

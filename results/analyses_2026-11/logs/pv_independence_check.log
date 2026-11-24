@@ -1,0 +1,78 @@
+Reproduction of tab:pv_missed
+                          all  small  n_lesions_per_fold  n_small_per_fold
+dataset  loss                                                            
+3D-MR-MS CATMIL        0.474  0.800                54.0              30.0
+         DiceCE        0.481  0.827                54.0              30.0
+         FocalTversky  0.496  0.833                54.0              30.0
+         Tversky       0.500  0.833                54.0              30.0
+MSLesSeg CATMIL        0.058  0.102               104.0              47.0
+         DiceCE        0.112  0.209               104.0              47.0
+         FocalTversky  0.071  0.119               104.0              47.0
+         Tversky       0.071  0.119               104.0              47.0 
+
+Lost indicators per fold model (mean over 5 folds): expected under independence vs observed
+                        expected  observed
+dataset  loss                            
+3D-MR-MS CATMIL           0.794       1.0
+         DiceCE           0.821       1.0
+         FocalTversky     0.831       1.0
+         Tversky          0.830       1.0
+MSLesSeg CATMIL           0.001       0.0
+         DiceCE           0.010       0.0
+         FocalTversky     0.002       0.0
+         Tversky          0.001       0.0 
+
+Scans with k = 1
+                                  p_lost_indep  lost_obs
+dataset  case      loss                                
+3D-MR-MS patient29 CATMIL               0.793       1.0
+                   DiceCE               0.821       1.0
+                   FocalTversky         0.828       1.0
+                   Tversky              0.828       1.0 
+
+Dispersion of missed PV lesions per scan (1 = independence)
+                        dispersion_obs  ...  folds_p_lt_05
+dataset  loss                          ...               
+3D-MR-MS CATMIL                 1.453  ...              1
+         DiceCE                 2.408  ...              4
+         FocalTversky           2.267  ...              5
+         Tversky                2.744  ...              5
+MSLesSeg CATMIL                 1.512  ...              2
+         DiceCE                 1.429  ...              2
+         FocalTversky           1.384  ...              1
+         Tversky                1.444  ...              2
+
+[8 rows x 4 columns] 
+
+Pairwise co-miss within scans (ratio 1 = independence)
+                        pairs_both_missed  pairs_expected_indep  co_miss_ratio
+dataset  loss                                                                
+3D-MR-MS CATMIL                     82.8                 90.89           0.91
+         DiceCE                     93.2                 95.41           0.98
+         FocalTversky               97.2                 99.49           0.98
+         Tversky                   101.4                101.33           1.00
+MSLesSeg CATMIL                      1.2                  2.58           0.44
+         DiceCE                      7.4                 10.41           0.67
+         FocalTversky                1.8                  3.93           0.47
+         Tversky                     1.8                  3.72           0.48 
+
+k per scan
+  dataset      case  k  k_small
+3D-MR-MS patient29  1        1
+3D-MR-MS patient18  3        0
+3D-MR-MS patient03  6        2
+3D-MR-MS patient26 13        4
+3D-MR-MS patient21 15       11
+3D-MR-MS patient13 16       12
+MSLesSeg     P2_T4  3        3
+MSLesSeg    P26_T1  4        0
+MSLesSeg     P2_T3  4        3
+MSLesSeg     P2_T2  5        2
+MSLesSeg     P2_T1  6        3
+MSLesSeg    P49_T1  6        2
+MSLesSeg    P52_T2  6        1
+MSLesSeg    P47_T1  9        2
+MSLesSeg    P49_T2 10        1
+MSLesSeg    P52_T1 10        4
+MSLesSeg    P13_T1 15        8
+MSLesSeg    P13_T2 26       18
