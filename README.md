@@ -87,6 +87,13 @@ pip install torch                  # pick the build for your CUDA version: https
 pip install -r requirements.txt    # slsseg (nnunetv2 2.1.1), comploss 0.1.0, analysis packages
 ```
 
+PyTorch: the paper's models were trained with torch 2.0.1 (CUDA 11.8), as recorded in each fold's
+`debug.json`. To match that setup, install `torch==2.0.1` (e.g. `pip install torch==2.0.1
+--index-url https://download.pytorch.org/whl/cu118`). Newer versions work too: inference and
+evaluation were re-run with torch 2.15 and reproduce the stored predictions, and comploss is tested
+with torch 2.0.1–2.15. Retraining matches the paper up to normal GPU nondeterminism, not to the last
+digit.
+
 The UMamba baselines also need `mamba-ssm` and `causal-conv1d`; CATMIL itself does not.
 A few analysis scripts need extra packages, listed at the end of `requirements.txt`.
 

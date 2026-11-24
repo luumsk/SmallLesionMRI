@@ -1,6 +1,9 @@
 # Environment to reproduce the paper (Python >= 3.10).
 # Install PyTorch for your CUDA version first (https://pytorch.org), then:
 #   pip install -r requirements.txt
+# PyTorch versions: the paper's models were trained with torch 2.0.1 (CUDA 11.8; recorded in each
+# fold's debug.json). Inference and evaluation were re-run with torch 2.15. comploss is tested with
+# torch 2.0.1-2.15. numpy is pinned to 1.26.4 below, which every torch version in that range accepts.
 
 # Modified nnU-Net v2 used in the paper (installs as `nnunetv2`, version 2.1.1, 150 epochs by default)
 -e ./slsseg
