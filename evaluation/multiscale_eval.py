@@ -112,7 +112,12 @@ def load_nii_mask(path: Path) -> Tuple[np.ndarray, Tuple[float, float, float]]:
 
 
 def load_npz_probability(path: Path) -> np.ndarray:
-    """Load foreground probability volume from a .npz file."""
+    """Load the foreground probability volume from an nnU-Net .npz file.
+
+    nnU-Net saves probabilities as (C, z, y, x) (SimpleITK order), while
+    nibabel returns masks as (x, y, z). The spatial axes are reversed here so
+    the result lines up voxel for voxel with load_nii_mask.
+    """
     obj = np.load(str(path))
     keys = list(obj.keys())
     if not keys:
@@ -140,7 +145,7 @@ def load_npz_probability(path: Path) -> np.ndarray:
         raise ValueError(f"Unexpected probability array ndim: {arr.ndim}")
 
     fg = np.clip(fg.astype(np.float32), 0.0, 1.0)
-    return fg
+    return np.ascontiguousarray(fg.transpose(2, 1, 0))
 
 
 def dice_score(gt: np.ndarray, pred: np.ndarray) -> float:
@@ -568,7 +573,8 @@ def mean_entropy_in_mask(prob: np.ndarray, mask: np.ndarray) -> float:
     if mask.sum() == 0:
         return float("nan")
 
-    p = prob[mask].astype(np.float32)
+    # float64: in float32, 1 - EPS rounds to 1 and log(1 - p) becomes -inf.
+    p = prob[mask].astype(np.float64)
     p = p[np.isfinite(p)]
     if p.size == 0:
         return float("nan")
@@ -821,8 +827,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--small_voxels_thresh",
         type=int,
-        default=50,
-        help="Threshold (in voxels) to define small GT lesions.",
+        default=150,
+        help="Small GT lesions have at most this many voxels (paper: 150).",
     )
     p.add_argument(
         "--fp_near_mm",
@@ -907,6 +913,15 @@ def main() -> None:
                     f"Probability shape mismatch for case '{case.case_id}': "
                     f"prob={prob.shape} gt={gt.shape}"
                 )
+            # Guard against a wrong axis order when x and z have the same
+            # length (e.g. MSLesSeg, 182 x 218 x 182): the probabilities of an
+            # unfiltered prediction must reproduce its mask almost everywhere.
+            agree = float(np.mean((prob > 0.5) == pred))
+            if agree < 0.999:
+                print(
+                    f"Warning: '{case.case_id}': prob > 0.5 agrees with the "
+                    f"mask on only {agree:.4f} of voxels."
+                )
 
         metrics = compute_case_metrics(
             gt=gt,
@@ -943,6 +958,8 @@ def main() -> None:
 
     print(f"Saved per-case metrics to: {out_csv_path}")
 
+    if args.out_json is None:
+        return
 
     out_json_path = Path(args.out_json)
     out_json_suffix = out_json_path.suffix
