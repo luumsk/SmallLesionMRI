@@ -18,9 +18,18 @@ change the last printed digit.
 
 Model names: `nnUNet` is DiceCE, `CCDiceCE` is CC-DiceCE.
 
-The brier, ECE and entropy columns are not reported in any document and
-should not be used: they were computed with the probability array in the
-wrong axis order.
+The brier, ECE and entropy columns in these files are not reported in any
+document and should not be used: they were computed with the probability
+array in the wrong axis order (fixed in `multiscale_eval.py` since).
+
+The `Ljubljana/all/*_pp5` files (except CATMIL fold 0) were computed on
+unfiltered copies of the masks, so they equal the files without `_pp5`. The
+3D-MR-MS PP5 results in the paper come from
+`analysis/pp5_3dmrms_twolevel.py` instead.
+
+`bash scripts/multiscale_eval.sh` regenerates every file here (into
+`results/per_fold_rerun/` by default), and `analysis/make_tables.py` builds the
+paper tables from them.
 
 `analysis/stats_significance.py results/per_fold results/lesion_tables/lesions.csv results/stats`
 reproduces `results/stats/` from these files.
