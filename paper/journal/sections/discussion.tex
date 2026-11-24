@@ -3,8 +3,10 @@ model halved the number of completely missed lesions on MSLesSeg and
 improved the detection of lesions of at least 3~mm on two datasets, without
 loss of voxel-level agreement; the gain was reproduced on 47 further
 patients and held against four alternative objectives and four alternative
-architectures. Its cost, additional small false-positive detections, was
-largely removed by a simple size filter.
+architectures. The ablation attributes this gain to the lesion-level MIL
+term. Its cost, additional small false-positive detections, was largely
+removed by a 5-voxel size filter on MSLesSeg but was considerably larger on
+3D-MR-MS, where a 20-voxel filter was needed.
 
 \paragraph{Clinical relevance of missed small lesions.}
 Because the 2024 McDonald criteria rest on counting lesions by location and
@@ -50,7 +52,14 @@ penalize missed voxels more heavily (Tversky-based) or balance lesions
 within an overlap term (CC-DiceCE~\cite{bouteille_learning_2026}) recovered
 part of these lesions but remained below CATMIL, and the ablation
 (\cref{appendix:catmil-components}) attributes the gain to the lesion-level
-detection term. Changing the network architecture without changing the
+detection term: the MIL term alone reached the small-lesion recall of
+CATMIL, whereas the CAT term alone, which balances lesions within an
+overlap term as CC-DiceCE does, performed like CC-DiceCE. Reweighting
+lesions within an overlap loss is therefore not sufficient; missed lesions
+have to be penalized directly. The CAT term contributes to how the
+detected lesions are delineated: combined with the MIL term, it gave the
+best DSC and HD95 of the ablation variants, although within the variation
+between models. Changing the network architecture without changing the
 objective did not recover them (\cref{sec:arch_vs_objective}). Together
 with reports that the errors of current MS segmentation tools are
 concentrated in small lesions~\cite{dereskewicz_flames_2025}, this suggests
@@ -76,7 +85,9 @@ reference lesions. The 47 MSLesSeg
 cross-validation patients reproduce the main findings
 (\cref{sec:catmil_oof}), but the corresponding analysis was not performed
 for 3D-MR-MS, and validation on a clinical cohort from routine practice is
-needed. Fourth, the reference segmentations are themselves imperfect: some
+needed. The ablation of the two CATMIL terms was likewise performed on
+MSLesSeg only, so whether the CAT term adds value on other data is
+untested. Fourth, the reference segmentations are themselves imperfect: some
 detections counted as false positives may be unannotated lesions, and some
 missed lesions may be annotations that the image barely supports. Fifth,
 the false-positive cost of CATMIL was larger on 3D-MR-MS, where a larger
@@ -89,9 +100,14 @@ method increases the influence of small lesions during training, but it
 cannot compensate for evidence that the image does not contain.
 
 \paragraph{Future work.}
-The next step is a reader study in which radiologists assess MRI scans with
-and without CATMIL detections, measuring lesion detection, agreement
-between readers, and reading time against an expert consensus reference.
+Two analyses on existing data come first: the cross-validation analysis
+of \cref{sec:catmil_oof} repeated for the 24 3D-MR-MS training patients,
+which would reduce the dependence of the 3D-MR-MS results on the single
+patient who dominates its test set, and the ablation of the CAT and MIL
+terms repeated on 3D-MR-MS. The next clinical step is a reader study in
+which radiologists assess MRI scans with and without CATMIL detections,
+measuring lesion detection, agreement between readers, and reading time
+against an expert consensus reference.
 A longitudinal extension that compares serial scans would address the
 detection of new lesions directly, and an analysis by McDonald location
 would show whether the recovered lesions change the classification of

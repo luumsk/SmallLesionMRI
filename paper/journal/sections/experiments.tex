@@ -99,7 +99,12 @@ counts components regardless of their size, many small false-positive
 components lower it substantially even when their total volume is small.
 Small Lesion Recall is the lesion-wise recall restricted to reference
 lesions of at most 150 voxels, which corresponds to 150~mm$^3$ at the 1~mm
-isotropic spacing of MSLesSeg and to about 26~mm$^3$ on 3D-MR-MS. The FN
+isotropic spacing of MSLesSeg and to about 26~mm$^3$ on 3D-MR-MS. The
+metric therefore covers a much smaller physical size range on 3D-MR-MS, so
+its absolute values are not comparable between the two datasets and are
+used only to compare losses within a dataset; the comparison across
+datasets relies on the recall of lesions of at least 3~mm, which is defined
+in physical units. The FN
 Count is the number of reference lesions that are completely missed. The
 recall of lesions of at least 3~mm is the lesion-wise recall restricted to
 lesions above the clinical size threshold (\cref{sec:intro};

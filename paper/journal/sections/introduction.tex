@@ -56,12 +56,15 @@ lesion by how well it is outlined rather than by whether it is found at
 all (\cref{sec:related}).
 
 In this study, we change the training objective rather than the network.
-The proposed objective, CATMIL, adds two lesion-level terms to the
-standard nnU-Net loss. The \emph{Component-Adaptive Tversky (CAT)} term
-gives every lesion a comparable weight regardless of its volume, and the
-lesion-level \emph{Multiple Instance Learning (MIL)} term penalizes any
-lesion in which no voxel is detected, mirroring the question a reader asks:
-was this lesion found? Because only the objective changes, CATMIL can be
+The proposed objective, CATMIL, adds to the standard nnU-Net loss a
+lesion-level \emph{Multiple Instance Learning (MIL)} term that penalizes
+any lesion in which no voxel is detected, mirroring the question a reader
+asks: was this lesion found? It also includes a \emph{Component-Adaptive
+Tversky (CAT)} term that gives every lesion a comparable weight regardless
+of its volume, so that detected small lesions are also delineated; an
+ablation shows that the MIL term drives the detection gain and that
+adding the CAT term gives the best voxel-level and boundary accuracy.
+Because only the objective changes, CATMIL can be
 used in existing nnU-Net-based pipelines without changes to the
 architecture or to inference. We evaluated CATMIL on two public MS
 datasets with T1-weighted images (T1-WI), T2-weighted images (T2-WI),
@@ -77,7 +80,10 @@ by about half compared with the standard nnU-Net objective, in every test
 patient and without loss of voxel-level agreement with the reference
 segmentation; the reduction is reproduced on the 47 cross-validation
 patients and against four alternative training objectives. CATMIL also
-improves the detection of lesions of at least 3~mm on both datasets.
+improves the detection of lesions of at least 3~mm on both datasets. The
+detection gain is due to the lesion-level (MIL) term, while adding the CAT
+term gives the best voxel-level and boundary accuracy of the ablation
+variants.
 \item Standard objectives do not miss small lesions by a narrow margin:
 for most of them, the model produces no response at all. Making an
 existing tool more sensitive by lowering its decision threshold therefore
@@ -86,5 +92,7 @@ cannot recover these lesions; the training objective must change.
 false-positive detections. A simple minimum-size filter removes most of
 them while preserving the gain in detected lesions, so the operating point
 can be adapted to the intended use, such as a sensitive setting for
-follow-up reading with radiologist confirmation.
+follow-up reading with radiologist confirmation. This cost depends on the
+dataset: it was considerably larger on 3D-MR-MS, where a larger filter was
+needed.
 \end{itemize}

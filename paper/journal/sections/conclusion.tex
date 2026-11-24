@@ -5,9 +5,11 @@ changing the network, reduced the number of completely missed lesions by
 about half on MSLesSeg and improved the detection of lesions of at least
 3~mm, the size considered in the 2024 McDonald criteria and MAGNIMS--CMSC--NAIMS
 recommendations, on two independent datasets (94.4\% against 87.0\% and
-89.4\% against 83.0\%). The gain was reproduced on 47 further patients.
-Its cost, additional small false-positive detections, was largely removed
-by a simple size filter that can be adjusted to the intended use. Because
+89.4\% against 83.0\%). The gain was reproduced on 47 further patients and
+came from the term that penalizes completely missed lesions. Its cost,
+additional small false-positive detections, depended on the dataset: a
+simple size filter removed most of them, but the filter had to be larger
+on 3D-MR-MS and must be adjusted to the data and the intended use. Because
 a reader can dismiss a false positive but cannot review a lesion that is
 never shown, this trade-off makes lesion-level training a candidate for a
 second reader that flags lesions for radiologist confirmation. A reader
