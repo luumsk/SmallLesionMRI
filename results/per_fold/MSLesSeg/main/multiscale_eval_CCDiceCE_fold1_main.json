@@ -1,5 +1,5 @@
 {
-  "per_case_csv": "../metrics/MSLesSeg/latest_checkpoints/multiscale_eval_CCDiceCE_fold1_main.csv",
+  "per_case_csv": "/private/tmp/claude-501/-Volumes-KHUE1TB-projects-SmallLesionMRI/8f599901-ce79-4d44-9cc9-3ccf9d50d44b/scratchpad/rerun/MSLesSeg/main/multiscale_eval_CCDiceCE_fold1_main.csv",
   "model_name": "CCDiceCE",
   "fold": 1,
   "dice": 0.78003,

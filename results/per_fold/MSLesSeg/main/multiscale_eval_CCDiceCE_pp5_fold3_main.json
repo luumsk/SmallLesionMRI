@@ -1,0 +1,12 @@
+{
+  "per_case_csv": "/private/tmp/claude-501/-Volumes-KHUE1TB-projects-SmallLesionMRI/8f599901-ce79-4d44-9cc9-3ccf9d50d44b/scratchpad/rerun/MSLesSeg/main/multiscale_eval_CCDiceCE_pp5_fold3_main.csv",
+  "model_name": "CCDiceCE_pp5",
+  "fold": 3,
+  "dice": 0.77343,
+  "hd95_mm": 10.16007,
+  "small_lesion_recall": 0.80272,
+  "lesion_f1": 0.82307,
+  "fn_lesion_count": 4.33333,
+  "fn_volume_fraction": 0.04005,
+  "fp_volume_mm3": 1420.91667
+}

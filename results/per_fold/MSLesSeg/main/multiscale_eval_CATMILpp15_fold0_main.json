@@ -1,5 +1,5 @@
 {
-  "per_case_csv": "/media/storage/luu/SmallLesionMRI/metrics/MSLesSeg/main/multiscale_eval_CATMILpp15_fold0_main.csv",
+  "per_case_csv": "/private/tmp/claude-501/-Volumes-KHUE1TB-projects-SmallLesionMRI/8f599901-ce79-4d44-9cc9-3ccf9d50d44b/scratchpad/rerun/MSLesSeg/main/multiscale_eval_CATMILpp15_fold0_main.csv",
   "model_name": "CATMILpp15",
   "fold": 0,
   "dice": 0.77607,

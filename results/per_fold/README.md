@@ -18,18 +18,18 @@ change the last printed digit.
 
 Model names: `nnUNet` is DiceCE, `CCDiceCE` is CC-DiceCE.
 
-The brier, ECE and entropy columns in these files are not reported in any
-document and should not be used: they were computed with the probability
-array in the wrong axis order (fixed in `multiscale_eval.py` since).
-
-The `Ljubljana/all/*_pp5` files (except CATMIL fold 0) were computed on
-unfiltered copies of the masks, so they equal the files without `_pp5`. The
-3D-MR-MS PP5 results in the paper come from
-`analysis/pp5_3dmrms_twolevel.py` instead.
-
-`bash scripts/multiscale_eval.sh` regenerates every file here (into
+Every file here except `MSLesSeg/lambda_sweep/multiscale_eval_CAT01MIL02_foldall_all.csv`
+was written by `bash scripts/multiscale_eval.sh` (which writes to
 `results/per_fold_rerun/` by default), and `analysis/make_tables.py` builds the
-paper tables from them.
+paper tables from them. The CAT01MIL02 predictions are not in the data
+mirror, so that file comes from the original evaluation.
+
+The brier, ECE and entropy columns are not reported in any document. In the
+CAT01MIL02 file they are wrong (probabilities read in the wrong axis order,
+fixed in `multiscale_eval.py` since). The `Ljubljana/all/*_pp5` files now hold
+metrics on masks that were actually filtered; they equal the 3D-MR-MS PP5
+values from `analysis/pp5_3dmrms_twolevel.py` (lesion F1: CATMIL 0.6302,
+DiceCE 0.6867).
 
 `analysis/stats_significance.py results/per_fold results/lesion_tables/lesions.csv results/stats`
 reproduces `results/stats/` from these files.
