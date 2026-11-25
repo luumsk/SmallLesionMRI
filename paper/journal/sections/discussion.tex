@@ -15,9 +15,7 @@ disease activity (\cref{sec:intro}), the clinically decisive error is often
 a single missed lesion rather than an inaccurate lesion volume. This is
 also the error that overlap metrics conceal: on one test scan, CATMIL
 recovered about 11 lesions that the standard model missed while the
-scan-level Dice score did not change (\cref{sec:main_results}). A model
-selected and reported by its Dice score can therefore appear accurate while
-it misses the lesions that would change a report. For lesions of at least
+scan-level Dice score did not change (\cref{sec:main_results}). For lesions of at least
 3~mm, CATMIL raised recall over the standard objective by 6.5--7.4
 percentage points, and by about 10 points for the smaller lesions in this
 group (\cref{tab:clinical_size}). These lesions are also the ones in which
@@ -29,9 +27,8 @@ information available for diagnosis, not only the total lesion count.
 \paragraph{Use in tandem with a human reader.}
 For an assistive tool, a missed lesion is worse than a false positive,
 because the reader can dismiss a false positive but receives no prompt for
-an unmarked lesion (\cref{sec:intro}). The trade-off produced by CATMIL is
-therefore in the favorable direction, provided that the number of false
-positives remains manageable. The false positives of CATMIL were small,
+an unmarked lesion (\cref{sec:intro}). The trade-off of CATMIL is
+therefore favorable if the false positives remain manageable. The false positives of CATMIL were small,
 lay at a median distance of 1--2~mm from true lesions, and added little
 false-positive volume; some of them, such as the focal hyperintensity in
 \cref{fig:qual_lesion_gallery}, may be small lesions that the reference
@@ -47,20 +44,17 @@ F1 (\cref{tab:matched_precision}).
 \paragraph{Why current models miss small lesions.}
 The baselines produced no response at all for most of the small lesions
 they missed, so these lesions cannot be recovered by lowering the decision
-threshold; the omission has to be addressed during training. Losses that
-penalize missed voxels more heavily (Tversky-based) or balance lesions
-within an overlap term (CC-DiceCE~\cite{bouteille_learning_2026}) recovered
-part of these lesions but remained below CATMIL, and the ablation
-(\cref{appendix:catmil-components}) attributes the gain to the lesion-level
-detection term: the MIL term alone reached the small-lesion recall of
-CATMIL, whereas the CAT term alone, which balances lesions within an
-overlap term as CC-DiceCE does, performed like CC-DiceCE. Reweighting
-lesions within an overlap loss is therefore not sufficient; missed lesions
-have to be penalized directly. The CAT term contributes to how the
-detected lesions are delineated: combined with the MIL term, it gave the
-best DSC and HD95 of the ablation variants, although within the variation
-between models. Changing the network architecture without changing the
-objective did not recover them (\cref{sec:arch_vs_objective}). Together
+threshold; the omission has to be addressed during training. The
+Tversky-based losses and CC-DiceCE~\cite{bouteille_learning_2026}
+recovered part of these lesions but remained below CATMIL. In the ablation
+(\cref{appendix:catmil-components}), the MIL term alone reached the
+small-lesion recall of CATMIL, whereas the CAT term alone, which balances
+lesions within an overlap term as CC-DiceCE does, performed like
+CC-DiceCE: missed lesions have to be penalized directly. Combined with the
+MIL term, the CAT term gave the best DSC and HD95 of the ablation variants,
+although within the variation between models. Changing the architecture
+without changing the objective did not recover the missed lesions
+(\cref{sec:arch_vs_objective}). Together
 with reports that the errors of current MS segmentation tools are
 concentrated in small lesions~\cite{dereskewicz_flames_2025}, this suggests
 that such errors are better addressed through the training objective than
@@ -69,7 +63,7 @@ be adopted in existing nnU-Net-based pipelines without changes to
 inference.
 
 \paragraph{Limitations.}
-Several limitations should be noted. First, this study measures detection
+First, this study measures detection
 against a reference segmentation, not the effect on radiologists: whether
 CATMIL improves the accuracy, agreement, or reading time of human readers
 was not tested and requires a reader study. Second, each scan was segmented
