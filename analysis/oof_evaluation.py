@@ -18,7 +18,7 @@ component of >= 5 voxels exists). Also DSC per scan.
 Step 0 (check): the same code on the stored test-set fold predictions must
 reproduce the dissertation (CATMIL small recall 0.8730, DiceCE 0.7956).
 Step 1: out-of-fold metrics on the 81 training scans; each scan is predicted
-once. Mean over scans; patient-level bootstrap (2000 resamples of the 47
+once. Mean over scans; patient-level bootstrap (10000 resamples of the 47
 patients, scans of a patient kept together) of CATMIL - each other model.
 Step 2: the same on all 93 scans of 53 patients (out-of-fold + test; for the
 test scans the per-scan value is the mean over the 5 fold models).
@@ -106,7 +106,7 @@ def jobs():
                     yield m, k, f[:-7], f"{tdir}/{f}", f"{GT_TS}/{f}", "test"
 
 
-def bootstrap(per_scan, models, n=2000, seed=0):
+def bootstrap(per_scan, models, n=10000, seed=0):
     rng = np.random.default_rng(seed)
     pats = sorted(per_scan.patient.unique())
     by_p = {p: per_scan[per_scan.patient == p] for p in pats}
