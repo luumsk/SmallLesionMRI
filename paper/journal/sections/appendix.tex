@@ -109,11 +109,8 @@ to all metrics and to the MSLesSeg results after PP5.
 
 \begin{table}[t]
 \centering
-\caption{All paired differences between CATMIL and each baseline on the test sets (CATMIL minus
-baseline), with 95\% patient-level bootstrap CIs and, in parentheses, the
-number of test patients in which CATMIL is better. Differences whose CI
-excludes zero are shown in \textbf{bold}. PP5: after removing predicted
-components smaller than 5 voxels. With six patients, the smallest possible
+\caption{All paired differences between CATMIL and each baseline on the test sets, formatted as in
+\cref{tab:paired_differences}. With six patients, the smallest possible
 Holm-corrected Wilcoxon $p$-value is 0.125 (\cref{sec:stats}).}
 \label{tab:paired_differences_full}
 \resizebox{\textwidth}{!}{%
@@ -408,9 +405,7 @@ resolution.
 \Cref{fig:recall_vs_size_curve_3dmrms,fig:lesion_fate_3dmrms,fig:operating_curve_3dmrms,fig:max_prob_by_size_3dmrms}
 repeat the analyses of
 \cref{fig:recall_vs_size_curve,fig:lesion_fate,fig:operating_curve,fig:max_prob_by_size}
-on the 3D-MR-MS dataset, and are read in the same way. Because the voxels
-of this dataset are anisotropic ($0.47 \times 0.47 \times 0.8$~mm), lesion
-sizes are given in mm$^3$ rather than in voxels.
+on the 3D-MR-MS dataset, and are read in the same way.
 
 The recall curve (\cref{fig:recall_vs_size_curve_3dmrms}) reproduces the
 main result. CATMIL detects 51\% of lesions of at most 10~mm$^3$, compared
@@ -497,9 +492,8 @@ of increasing strictness. A lesion counts as detected if the prediction
 covers any of its voxels, or at least the stated fraction of them. Recall
 is pooled over the reference lesions of the test set and averaged over the
 five fold models, so the any-overlap values differ slightly from the
-case-averaged Small Lesion Recall in the main tables. $\Delta$: CATMIL
-minus DiceCE or CC-DiceCE with 95\% patient-level bootstrap CI; differences
-whose CI excludes zero are shown in \textbf{bold}.}
+case-averaged Small Lesion Recall in the main tables. $\Delta$ and bold
+as in \cref{tab:clinical_size}.}
 \label{tab:strict_detection}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llcccccll}
@@ -551,13 +545,10 @@ selected on MSLesSeg and applied unchanged to 3D-MR-MS
 \begin{table}[t]
 \centering
 \caption{Small-lesion recall and lesion-wise F1 of CATMIL at matched
-lesion-wise precision. For each baseline, the CATMIL setting $(t, s)$ with
-the highest small-lesion recall whose precision on MSLesSeg is at least
-that of the baseline at its default output $(0.5, 1)$ was selected on
-MSLesSeg and applied unchanged to 3D-MR-MS. Values are differences CATMIL
-minus baseline with 95\% patient-level bootstrap CIs in brackets;
-differences whose CI excludes zero are shown in \textbf{bold}. The MSLesSeg
-values are optimistic because the setting is selected on the same data.}
+lesion-wise precision (setting selected on MSLesSeg and applied unchanged
+to 3D-MR-MS; the MSLesSeg values are therefore optimistic). Values are
+CATMIL minus baseline with 95\% patient-level bootstrap CIs in brackets;
+bold: CI excludes zero.}
 \label{tab:matched_precision}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{l r@{\hspace{0.4em}}l r@{\hspace{0.4em}}l r@{\hspace{0.4em}}l r@{\hspace{0.4em}}l}
@@ -621,8 +612,8 @@ models, with each architecture's default hyperparameters
 \caption{Small-lesion detection by architecture and objective on the
 MSLesSeg test set, without post-processing. All architectures are trained
 with the DiceCE objective, except nnU-Net with CATMIL. Values are means
-over the test scans and the five fold models. Best values are shown in
-\textbf{bold}; second-best values are \underline{underlined}.}
+over the test scans and the five fold models; formatting as in
+\cref{tab:loss_comparison_small_lesion}.}
 \label{tab:arch_vs_objective}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lcccccc}
@@ -683,9 +674,8 @@ DiceCE by 0.100 to 0.146 in small-lesion recall
 \centering
 \caption{Paired differences between nnU-Net with CATMIL and four further
 architectures trained with DiceCE on the cross-validation predictions of
-the 81 MSLesSeg training scans (47 patients). Values are CATMIL minus
-architecture with the 95\% patient-level bootstrap CI in brackets;
-differences whose CI excludes zero are shown in \textbf{bold}.}
+the 81 MSLesSeg training scans (47 patients). Values and formatting as in
+\cref{tab:oof_paired}.}
 \label{tab:oof_arch}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccc}
@@ -715,10 +705,8 @@ $w_i = (|C_k| + \varepsilon_{c})^{-\gamma}$ for $i \in C_k$, where the
 exponent $\gamma \geq 0$ controls the degree of size compensation:
 $\gamma=0$ keeps the weighting proportional to the number of voxels, and
 $\gamma=1$ is used in this work (\cref{eq:sl_cat_weights}). The offset
-$\varepsilon_{c}=5$ voxels limits the per-voxel weight, so that lesions of
-only a few voxels do not receive excessively large per-voxel weights; since
-$\rho_k \in [1/6, 1)$ for any lesion of at least one voxel, lesion weights
-differ by less than a factor of six. Because the foreground weights are much
+$\varepsilon_{c}=5$ voxels limits the per-voxel weight of very small lesions,
+and $\rho_k \in [1/6, 1)$ for any lesion of at least one voxel. Because the foreground weights are much
 less than one, the background weight is set to $w_{\mathrm{bg}}=0.01$ so
 that the false-positive term remains on a comparable scale. The weighted
 sums are

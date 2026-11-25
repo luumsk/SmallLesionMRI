@@ -98,19 +98,13 @@ correct, and the lesion-wise F1 score combines the two. Because precision
 counts components regardless of their size, many small false-positive
 components lower it substantially even when their total volume is small.
 Small Lesion Recall is the lesion-wise recall restricted to reference
-lesions of at most 150 voxels, which corresponds to 150~mm$^3$ at the 1~mm
-isotropic spacing of MSLesSeg and to about 26~mm$^3$ on 3D-MR-MS. The
-metric therefore covers a much smaller physical size range on 3D-MR-MS, so
-its absolute values are not comparable between the two datasets and are
-used only to compare losses within a dataset; the comparison across
-datasets relies on the recall of lesions of at least 3~mm, which is defined
-in physical units. The FN
+lesions of at most 150 voxels (150~mm$^3$ on MSLesSeg, about 26~mm$^3$ on
+3D-MR-MS). Its values are therefore compared only within a dataset; across
+datasets, the recall of lesions of at least 3~mm is used. The FN
 Count is the number of reference lesions that are completely missed. The
 recall of lesions of at least 3~mm is the lesion-wise recall restricted to
-lesions above the clinical size threshold (\cref{sec:intro};
-\cite{barkhof_2024_2025,filippi_mri_2016}); the longest diameter of a
-reference lesion is measured as its largest in-plane extent over all
-axial, coronal, and sagittal slices.
+lesions of at least 3~mm in longest diameter
+(\cref{sec:intro,appendix:metrics}; \cite{barkhof_2024_2025,filippi_mri_2016}).
 
 \paragraph{Error-volume metrics.}
 The FP Volume is the physical volume of the false-positive voxels, and the
@@ -125,8 +119,8 @@ averaged over cases; their exact definitions are given in
 The standard deviations in the result tables describe the variation
 between the five fold models, not the uncertainty from the small test sets.
 Differences between CATMIL and each baseline were therefore also assessed
-with the patient as the independent unit, which matters for MSLesSeg, whose
-12 test cases are longitudinal scans of six patients. For each metric, a
+with the patient as the independent unit, because the 12 MSLesSeg test
+cases are longitudinal scans of six patients. For each metric, a
 95\% confidence interval (CI) was obtained with a patient-level bootstrap
 (10{,}000 resamples), and the number of patients in which CATMIL was better
 is reported. With six patients, no Holm-corrected paired Wilcoxon test can

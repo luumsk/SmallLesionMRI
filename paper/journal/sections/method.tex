@@ -66,15 +66,8 @@ that differences in performance can be attributed to the objective.
 
 CATMIL adds two terms to the standard nnU-Net loss, one for each
 requirement: a lesion-level MIL term for detection and a Component-Adaptive
-Tversky (CAT) term to balance lesions. The two terms act on different
-properties. In the ablation (\cref{appendix:catmil-components}), the MIL
-term accounted for the detection gain: alone, it reached the small-lesion
-recall of CATMIL, whereas the CAT term alone performed like existing
-size-balanced losses. Adding the CAT term to the MIL term gave the best
-DSC and HD95 and the fewest false-positive blobs of the three variants,
-and its weight shifts the balance between voxel-level accuracy and
-lesion-wise precision (\cref{appendix:catmil-loss-weights}); these
-differences lie within the variation between patients and fold models.
+Tversky (CAT) term to balance lesions. The ablation attributes the detection gain to the MIL term
+(\cref{appendix:catmil-components}).
 The connected components
 $C_1,\ldots,C_K$ are computed from the ground-truth mask of each training
 patch using 6-connectivity, the same lesion definition as in the

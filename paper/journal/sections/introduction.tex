@@ -61,9 +61,7 @@ lesion-level \emph{Multiple Instance Learning (MIL)} term that penalizes
 any lesion in which no voxel is detected, mirroring the question a reader
 asks: was this lesion found? It also includes a \emph{Component-Adaptive
 Tversky (CAT)} term that gives every lesion a comparable weight regardless
-of its volume, so that detected small lesions are also delineated; an
-ablation shows that the MIL term drives the detection gain and that
-adding the CAT term gives the best voxel-level and boundary accuracy.
+of its volume, so that detected small lesions are also delineated.
 Because only the objective changes, CATMIL can be
 used in existing nnU-Net-based pipelines without changes to the
 architecture or to inference. We evaluated CATMIL on two public MS

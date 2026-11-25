@@ -25,10 +25,9 @@ towards dissemination in space. Detecting them therefore affects the
 information available for diagnosis, not only the total lesion count.
 
 \paragraph{Use in tandem with a human reader.}
-For an assistive tool, a missed lesion is worse than a false positive,
-because the reader can dismiss a false positive but receives no prompt for
-an unmarked lesion (\cref{sec:intro}). The trade-off of CATMIL is
-therefore favorable if the false positives remain manageable. The false positives of CATMIL were small,
+For an assistive tool, a missed lesion is worse than a false positive
+(\cref{sec:intro}), so the trade-off of CATMIL is favorable if the false
+positives remain manageable. The false positives of CATMIL were small,
 lay at a median distance of 1--2~mm from true lesions, and added little
 false-positive volume; some of them, such as the focal hyperintensity in
 \cref{fig:qual_lesion_gallery}, may be small lesions that the reference
@@ -42,9 +41,9 @@ CATMIL model still detected more small lesions and had a higher lesion-wise
 F1 (\cref{tab:matched_precision}).
 
 \paragraph{Why current models miss small lesions.}
-The baselines produced no response at all for most of the small lesions
-they missed, so these lesions cannot be recovered by lowering the decision
-threshold; the omission has to be addressed during training. The
+Because the baselines produced no response to most of the small lesions
+they missed (\cref{fig:max_prob_by_size}), the omission has to be addressed
+during training. The
 Tversky-based losses and CC-DiceCE~\cite{bouteille_learning_2026}
 recovered part of these lesions but remained below CATMIL. In the ablation
 (\cref{appendix:catmil-components}), the MIL term alone reached the
@@ -58,9 +57,7 @@ without changing the objective did not recover the missed lesions
 with reports that the errors of current MS segmentation tools are
 concentrated in small lesions~\cite{dereskewicz_flames_2025}, this suggests
 that such errors are better addressed through the training objective than
-through larger networks; because CATMIL changes only the objective, it can
-be adopted in existing nnU-Net-based pipelines without changes to
-inference.
+through larger networks.
 
 \paragraph{Limitations.}
 First, this study measures detection
@@ -84,11 +81,10 @@ MSLesSeg only, so whether the CAT term adds value on other data is
 untested. Fourth, the reference segmentations are themselves imperfect: some
 detections counted as false positives may be unannotated lesions, and some
 missed lesions may be annotations that the image barely supports. Fifth,
-the false-positive cost of CATMIL was larger on 3D-MR-MS, where a larger
-size filter was needed, and the filter size must be chosen for each
-setting rather than being fixed by the method; the operating points at
-matched precision were selected on the MSLesSeg test set, so those
-MSLesSeg values are optimistic. Finally, lesions of only a few voxels and
+the false-positive cost of CATMIL was larger on 3D-MR-MS and required a
+larger size filter, which must be chosen for each setting. The operating
+points at matched precision were selected on the MSLesSeg test set, so
+those values are optimistic. Finally, lesions of only a few voxels and
 lesions with very low contrast remained difficult for every objective: the
 method increases the influence of small lesions during training, but it
 cannot compensate for evidence that the image does not contain.
@@ -96,8 +92,7 @@ cannot compensate for evidence that the image does not contain.
 \paragraph{Future work.}
 Two analyses on existing data come first: the cross-validation analysis
 of \cref{sec:catmil_oof} repeated for the 24 3D-MR-MS training patients,
-which would reduce the dependence of the 3D-MR-MS results on the single
-patient who dominates its test set, and the ablation of the CAT and MIL
+which would reduce the dependence on a single patient, and the ablation of the CAT and MIL
 terms repeated on 3D-MR-MS. The next clinical step is a reader study in
 which radiologists assess MRI scans with and without CATMIL detections,
 measuring lesion detection, agreement between readers, and reading time
