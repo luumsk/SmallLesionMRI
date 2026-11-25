@@ -64,7 +64,7 @@ are reported in
 
 All models use nnU-Net (version 2.1.1)~\cite{isensee_nnu-net_2021} with
 its default preprocessing, patch-based training, and optimizer, trained for
-150 epochs (details in \cref{appendix:implementation}). The loss
+150 epochs (details in \cref{appendix:impl-stats}, `Implementation'). The loss
 implementation and evaluation code are available at
 \url{https://github.com/luumsk/SmallLesionMRI}.
 
@@ -133,6 +133,6 @@ is reported. With six patients, no Holm-corrected paired Wilcoxon test can
 reach $p < 0.05$, so a difference is regarded as supported when its 95\%
 CI excludes zero; these analyses describe the consistency of an effect
 across patients, not population-level estimates. Details are given in
-\cref{appendix:stats}. To obtain a larger sample, the MSLesSeg comparisons
+\cref{appendix:impl-stats}, `Statistical analysis'. To obtain a larger sample, the MSLesSeg comparisons
 are also repeated on the cross-validation predictions of the 47 training
 patients (\cref{sec:catmil_oof}).
