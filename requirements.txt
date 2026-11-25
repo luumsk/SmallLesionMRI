@@ -10,7 +10,7 @@
 
 # CATMIL, CAT, MIL and the baseline losses with their nnU-Net trainers.
 # Pinned: the slsseg trainer stubs import the trainers from this exact version.
-comploss==0.1.0
+comploss==0.1.1
 
 # Evaluation and analysis (versions with which the analysis/ scripts were re-run on 2026-11-23).
 # numpy 1.26.4, scipy 1.11.4, scikit-learn 1.7.2 and monai 1.3.0 are pinned by slsseg/setup.py.

@@ -84,7 +84,7 @@ git clone https://github.com/luumsk/SmallLesionMRI.git
 cd SmallLesionMRI
 python -m venv .venv && source .venv/bin/activate
 pip install torch                  # pick the build for your CUDA version: https://pytorch.org
-pip install -r requirements.txt    # slsseg (nnunetv2 2.1.1), comploss 0.1.0, analysis packages
+pip install -r requirements.txt    # slsseg (nnunetv2 2.1.1), comploss 0.1.1, analysis packages
 ```
 
 PyTorch: the paper's models were trained with torch 2.0.1 (CUDA 11.8), as recorded in each fold's
