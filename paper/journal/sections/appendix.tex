@@ -81,9 +81,9 @@ DiceCE loss, whereas CC-DiceCE and CATMIL add terms to it. CC-DiceCE adds
 its per-lesion term, built on the component-wise evaluation protocol of
 CC-Metrics~\cite{jaus_every_2025}, to the global DiceCE loss with equal
 weight. FocalTversky is $\mathcal{L}_{\mathrm{Tversky}}^{1/\gamma_{\mathrm{F}}}$
-with the same $\alpha$ and $\beta$ as Tversky. The auxiliary terms introduce
-no parameters and are used only during training, so the inference cost is
-unchanged; their training-time cost is dominated by connected-component
+with the same $\alpha$ and $\beta$ as Tversky. The auxiliary terms of CATMIL
+introduce no parameters and are used only during training, so the inference
+cost is unchanged; their training-time cost is dominated by connected-component
 labelling of the ground-truth patches at each iteration.
 
 \paragraph{Statistical analysis.}
