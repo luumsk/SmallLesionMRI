@@ -15,6 +15,7 @@
 #                                       main.tex, sections/, figures/, Definitions/, references.bib, main.bbl
 #   build/                              aux, log, bbl, blg, out
 #   latex_source_<label>.zip            zip of source/ for upload to the MDPI system
+#   supplementary_materials_<label>.zip CSV tables S1-S3 + README from ./supplementary (if present)
 set -euo pipefail
 
 LABEL="${1:-$(date +%F)}"
@@ -122,6 +123,10 @@ cp "$BUILD/$MAIN.bbl" "$SRC/"   # include the .bbl so the editorial office can c
 
 # ---------- submission bundle ----------
 (cd "$SRC" && COPYFILE_DISABLE=1 zip -qr -X "$OUT/latex_source_${LABEL}.zip" .)
+# Supplementary Materials (CSV tables + README, written by analysis/export_supplementary.py)
+if [[ -d "$ROOT/supplementary" ]]; then
+    (cd "$ROOT/supplementary" && COPYFILE_DISABLE=1 zip -q -X "$OUT/supplementary_materials_${LABEL}.zip" README.txt TableS*.csv)
+fi
 
 # ---------- summary ----------
 undefined=$(grep -cE "undefined" "$BUILD/$MAIN.log" || true)

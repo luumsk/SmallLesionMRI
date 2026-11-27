@@ -4,7 +4,8 @@
 \Cref{tab:loss_comparison_small_lesion} summarizes the results on the six
 held-out MSLesSeg test patients (12 scans), and \cref{tab:paired_differences}
 gives the paired differences between CATMIL and each baseline with
-patient-level 95\% CIs (\cref{sec:stats}).
+patient-level 95\% CIs (\cref{sec:stats}). Per-case values for every loss
+and fold model are given in Table~S1.
 
 \begin{table}[t]
 \centering
@@ -170,7 +171,8 @@ least 3~mm and at most 150 voxels), for which CATMIL raised recall over
 DiceCE by about 10 percentage points on both datasets. These are lesions
 that a reader would count but that a voxel-wise objective tends to miss.
 Lesions below 3~mm were rare on MSLesSeg (16 of 361) but common on 3D-MR-MS
-(120 of 389), and their recall remained low for every loss (at most 0.39);
+(120 of 389), and their recall remained low for every loss (at most 0.39;
+per-lesion sizes and detections in Table~S2);
 some of them may still be relevant in specific
 locations~\cite{barkhof_2024_2025}, but lesion location was not analyzed.
 
@@ -491,7 +493,7 @@ was predicted once, by the fold model that was not trained on it; the
 validation folds were used only for monitoring during training, and the
 CATMIL weights were fixed before the experiments. Paired differences were
 assessed with a patient-level bootstrap over the 47 patients (10{,}000
-resamples; \cref{tab:oof_paired}).
+resamples; \cref{tab:oof_paired}; per-scan values in Table~S3).
 
 \begin{table}[t]
 \centering
