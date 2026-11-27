@@ -20,8 +20,7 @@ in MRI. It adds two auxiliary terms to the standard nnU-Net loss (Dice + cross-e
 **To use CATMIL in your own project**, install the loss package instead:
 [comploss](https://github.com/luumsk/comploss) (`pip install comploss`). It contains CATMIL, CAT,
 MIL, CC-DiceCE and the baseline losses, nnU-Net v2 trainers for each, and object-level metrics.
-This repository pins the exact version used for the paper, comploss 0.1.1
-([doi:10.5281/zenodo.24590691](https://doi.org/10.5281/zenodo.24590691)).
+This repository pins the exact version used for the paper.
 
 ## Results
 
