@@ -147,7 +147,10 @@ NVIDIA Quadro RTX 8000.
 
 ### 3. Inference
 
-**Pretrained weights:** [download link TBA]() (CATMIL and baselines, all five folds).
+**Pretrained weights:** [doi:10.5281/zenodo.24591106](https://doi.org/10.5281/zenodo.24591106)
+(all MSLesSeg models of the paper: 7 losses and 4 architectures × 5 folds, and the 4 loss-weight
+models; CC BY 4.0). The 3D-MR-MS models are available on request, since that dataset's licence
+(CC BY-NC-ND) may not allow sharing derived models publicly.
 Install a downloaded model with `nnUNetv2_install_pretrained_model_from_zip <file.zip>`.
 
 ```bash
