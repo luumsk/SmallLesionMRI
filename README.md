@@ -241,6 +241,9 @@ LaTeX source exactly as of the arXiv v5 submission (before this repository was r
 the losses moved to comploss). The losses in comploss reproduce that implementation; its parity
 tests compare values and gradients against a frozen copy of the original code.
 
+The tag [`journal-v1`](https://github.com/luumsk/SmallLesionMRI/tree/journal-v1) holds the code,
+results and LaTeX source as of the journal submission to Biomedicines.
+
 ## Citation
 
 If you use this code, please cite:
